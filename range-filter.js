@@ -159,15 +159,15 @@
       ],
     },
     // Contract type — categorical, no custom.
-    // NOTE: placeholder options — awaiting the real Contract Type menu contents.
     contracttype: {
       label: "Contract type",
       title: "Contract type",
-      help: "Standard, mini, or other listed contract sizes.",
+      help: "Regular, adjusted, or mini listed contract sizes.",
       custom: "none",
       presets: [
         { id: "all",      label: "All" },
-        { id: "standard", label: "Standard" },
+        { id: "regular",  label: "Regular" },
+        { id: "adjusted", label: "Adjusted" },
         { id: "mini",     label: "Mini" },
       ],
     },
