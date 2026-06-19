@@ -132,9 +132,13 @@
 
   /* ====================================================================== */
   class FilingFilter {
-    constructor(trigger, summaryEl) {
+    constructor(trigger) {
       this.trigger = trigger;
-      this.summaryEl = summaryEl;
+      // chip parts (the trigger is the chip's main button)
+      this.chip = trigger.closest(".qm-chip");
+      this.chipText = this.chip && this.chip.querySelector("[data-chip-text]");
+      this.chipBadge = this.chip && this.chip.querySelector("[data-chip-badge]");
+      this.chipClear = this.chip && this.chip.querySelector("[data-chip-clear]");
       this.applied = new Set();   // last applied selection
       this.staged = new Set();    // working copy while open
       this.isOpen = false;
@@ -244,6 +248,13 @@
     /* ---- Event wiring -------------------------------------------------- */
     _wire() {
       this.trigger.addEventListener("click", () => this.toggleOpen());
+
+      if (this.chipClear) {
+        this.chipClear.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.clearApplied();
+        });
+      }
 
       this.overlay.addEventListener("mousedown", (e) => {
         if (e.target === this.overlay) this.dismiss();
@@ -634,14 +645,46 @@
 
     /* ---- Trigger summary ----------------------------------------------- */
     _renderSummary() {
-      const n = this.applied.size;
-      if (this.summaryEl) {
-        this.summaryEl.innerHTML = n
-          ? `<strong>${n}</strong> filing type${n === 1 ? "" : "s"}`
-          : `<span class="qm-muted">No filing types</span>`;
-      }
       this.trigger.setAttribute("aria-controls", "qm-filter-panel");
       this.trigger.setAttribute("aria-haspopup", "dialog");
+      if (!this.chip) return;
+
+      const n = this.applied.size;
+      const label = "Filing type";
+      if (n === 0) {
+        // empty → label + chevron
+        this.chip.setAttribute("data-state", "empty");
+        this.chipText.textContent = label;
+        this.chipText.removeAttribute("title");
+        this.chipBadge.hidden = true;
+        this.chipClear.hidden = true;
+      } else if (n === 1) {
+        // single → the selected value's code
+        const id = this.applied.values().next().value;
+        const code = id.slice(id.indexOf(":") + 1);
+        this.chip.setAttribute("data-state", "single");
+        this.chipText.textContent = code;
+        this.chipText.title = code;
+        this.chipBadge.hidden = true;
+        this.chipClear.hidden = false;
+      } else {
+        // multi → label + count badge
+        this.chip.setAttribute("data-state", "multi");
+        this.chipText.textContent = label;
+        this.chipText.removeAttribute("title");
+        this.chipBadge.hidden = false;
+        this.chipBadge.textContent = String(n);
+        this.chipClear.hidden = false;
+      }
+      this.trigger.setAttribute("aria-label",
+        n ? `${label} filter, ${n} selected` : `${label} filter`);
+    }
+
+    // Clear the applied selection from the chip's × (panel closed).
+    clearApplied() {
+      this.applied.clear();
+      this.staged.clear();
+      this._renderSummary();
     }
 
     /* ---- Helpers ------------------------------------------------------- */
@@ -718,7 +761,6 @@
   /* ---- Boot ------------------------------------------------------------ */
   window.addEventListener("DOMContentLoaded", () => {
     const trigger = document.getElementById("qm-add-filter");
-    const summary = document.getElementById("qm-filter-summary");
-    if (trigger) window.qmFilter = new FilingFilter(trigger, summary);
+    if (trigger) window.qmFilter = new FilingFilter(trigger);
   });
 })();

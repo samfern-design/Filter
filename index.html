@@ -107,16 +107,27 @@
     </p>
 
     <div class="toolbar">
-      <span class="toolbar__label">Filing type</span>
-      <span id="qm-filter-summary"></span>
+      <span class="toolbar__label">Filter by</span>
 
-      <div class="qm-filter qm-add">
-        <button id="qm-add-filter" class="qm-btn qm-btn--outline" type="button">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-            <path d="M8 3v10M3 8h10" />
-          </svg>
-          Add filter
-        </button>
+      <div class="qm-filter">
+        <div class="qm-chip" data-state="empty">
+          <button id="qm-add-filter" class="qm-chip__main" type="button"
+                  aria-haspopup="dialog" aria-controls="qm-filter-panel" aria-expanded="false">
+            <span class="qm-chip__text" data-chip-text>Filing type</span>
+            <span class="qm-chip__badge" data-chip-badge hidden></span>
+            <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" />
+            </svg>
+          </button>
+          <button class="qm-chip__clear" type="button" data-chip-clear
+                  aria-label="Clear filing type filter" hidden>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"
+                 stroke-linecap="round" aria-hidden="true">
+              <path d="M4 4l8 8M12 4l-8 8" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
