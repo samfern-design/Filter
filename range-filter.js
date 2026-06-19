@@ -63,7 +63,7 @@
       help: "Show option strikes within this percentage of the spot price.",
       unit: "%",
       step: 1,
-      single: true,   // custom is a single value, not a From/To range
+      custom: "single",   // custom is a single value, not a From/To range
       presets: [
         { id: "all", label: "All",  from: null, to: null },
         { id: "2",   label: "2%",   from: 2,  to: 2 },
@@ -72,6 +72,18 @@
         { id: "15",  label: "15%",  from: 15, to: 15 },
         { id: "20",  label: "20%",  from: 20, to: 20 },
         { id: "25",  label: "25%",  from: 25, to: 25 },
+      ],
+    },
+    expiry: {
+      label: "Expiry",
+      title: "Expiry",
+      help: "Filter option expiries by cadence or a custom date range.",
+      custom: "dates",   // custom screen is a From/To date range
+      presets: [
+        { id: "all",         label: "All" },
+        { id: "weeklies",    label: "Weeklies" },
+        { id: "monthlies",   label: "Monthlies" },
+        { id: "quarterlies", label: "Quarterlies" },
       ],
     },
   };
@@ -95,9 +107,10 @@
       this.panelId = "qm-rf-panel-" + (++UID);
       this.chip = trigger.closest(".qm-rf-chip") || trigger;
       this.chipText = this.chip.querySelector("[data-rf-text]");
-      this.value = null;           // { from, to, presetId|null }
-      this.customs = [];           // saved custom ranges { id, from, to }
+      this.value = null;           // { from, to, presetId, text }
+      this.customs = [];           // saved customs { id, from, to, kind }
       this._cid = 0;
+      this.customMode = this.cfg.custom || "range"; // range | single | dates
       this.isOpen = false;
       this.screen = 1;
       this.mqTouch = window.matchMedia("(pointer: coarse)");
@@ -150,11 +163,19 @@
             <!-- screen 2: custom (single value or From/To range) -->
             <section class="qm-rf-screen" data-screen="2">
               <div class="qm-rf-manual">
-                ${c.single ? `
+                ${(c.custom || "range") === "single" ? `
                 <label class="qm-rf-field">
                   <span>Value</span>
                   <input class="qm-rf-input" type="number" inputmode="decimal"
                          step="${c.step}" data-from placeholder="e.g. 7" />
+                </label>` : (c.custom === "dates") ? `
+                <label class="qm-rf-field">
+                  <span>From</span>
+                  <input class="qm-rf-input" type="date" data-from />
+                </label>
+                <label class="qm-rf-field">
+                  <span>To</span>
+                  <input class="qm-rf-input" type="date" data-to />
                 </label>` : `
                 <label class="qm-rf-field">
                   <span>From</span>
@@ -167,7 +188,7 @@
                          step="${c.step}" data-to placeholder="Max" />
                 </label>`}
               </div>
-              ${c.unit ? `<div class="qm-rf-unit">${c.single ? "Value" : "Values"} in ${esc(c.unit === "$" ? "$ millions" : c.unit)}</div>` : ""}
+              ${c.unit && c.custom !== "dates" ? `<div class="qm-rf-unit">${c.custom === "single" ? "Value" : "Values"} in ${esc(c.unit === "$" ? "$ millions" : c.unit)}</div>` : ""}
               <div class="qm-rf-foot">
                 <button class="qm-btn qm-btn--ghost" data-manual-clear type="button">Clear</button>
                 <span class="qm-rf-foot__spacer"></span>
@@ -286,12 +307,13 @@
       const q = this.el.search.value.trim().toLowerCase();
       this.el.list.innerHTML = "";
       const presets = this.cfg.presets.filter((p) =>
-        !q || p.label.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+        !q || p.label.toLowerCase().includes(q) || (p.desc || "").toLowerCase().includes(q));
       const customs = this.customs.filter((c) =>
-        !q || this._fmt(c).toLowerCase().includes(q) || "custom".includes(q));
+        !q || this._customLabel(c).toLowerCase().includes(q) || "custom".includes(q));
 
       presets.forEach((p) => this.el.list.appendChild(this._optRow({
-        id: p.id, label: p.label, desc: p.desc || "", from: p.from, to: p.to,
+        id: p.id, label: p.label, desc: p.desc || "", text: this._presetText(p),
+        from: p.from, to: p.to,
       })));
 
       if (customs.length) {
@@ -300,8 +322,8 @@
         sub.textContent = "Custom";
         this.el.list.appendChild(sub);
         customs.forEach((c) => this.el.list.appendChild(this._optRow({
-          id: c.id, label: this._fmt(c), desc: "Custom range",
-          from: c.from, to: c.to, deletable: true,
+          id: c.id, label: this._customLabel(c), desc: "",
+          text: this._customLabel(c), from: c.from, to: c.to, deletable: true,
         })));
       }
 
@@ -332,7 +354,7 @@
         `</span>` +
         `<span class="qm-rf-opt__check">${ICONS.check}</span>`;
       main.addEventListener("click", () => {
-        this.value = { from: o.from, to: o.to, presetId: o.id };
+        this.value = { from: o.from, to: o.to, presetId: o.id, text: o.text };
         this._renderChip();
         this.close();
       });
@@ -342,7 +364,7 @@
         const del = document.createElement("button");
         del.type = "button";
         del.className = "qm-rf-opt__del";
-        del.setAttribute("aria-label", "Delete custom range " + o.label);
+        del.setAttribute("aria-label", "Delete custom " + o.label);
         del.innerHTML = ICONS.trash;
         del.addEventListener("click", (e) => { e.stopPropagation(); this._deleteCustom(o.id); });
         row.appendChild(del);
@@ -358,33 +380,57 @@
 
     /* ---- Custom range -> saved under the main menu --------------------- */
     _applyManual() {
-      const from = this.el.from.value === "" ? null : Number(this.el.from.value);
-      // single-value metrics store the value as from === to
-      const to = this.cfg.single
-        ? from
-        : (this.el.to.value === "" ? null : Number(this.el.to.value));
+      let from, to;
+      if (this.customMode === "dates") {
+        from = this.el.from.value || null;          // "yyyy-mm-dd"
+        to = this.el.to.value || null;
+      } else {
+        from = this.el.from.value === "" ? null : Number(this.el.from.value);
+        // single-value metrics store the value as from === to
+        to = this.customMode === "single"
+          ? from
+          : (this.el.to.value === "" ? null : Number(this.el.to.value));
+      }
       if (from == null && to == null) {
         this.value = null;
         this._renderChip();
         this.close();
         return;
       }
-      // save the custom range (dedupe identical ranges), select it, and close
-      let entry = this.customs.find((c) => c.from === from && c.to === to);
-      if (!entry) { entry = { id: "custom-" + (++this._cid), from, to }; this.customs.push(entry); }
-      this.value = { from, to, presetId: entry.id };
+      const kind = this.customMode === "dates" ? "dates" : "range";
+      // save the custom (dedupe identical), select it, and close
+      let entry = this.customs.find((c) => c.from === from && c.to === to && c.kind === kind);
+      if (!entry) { entry = { id: "custom-" + (++this._cid), from, to, kind }; this.customs.push(entry); }
+      this.value = { from, to, presetId: entry.id, text: this._customLabel(entry) };
       this._renderChip();
       this.close();
     }
 
-    /* ---- Chip ---------------------------------------------------------- */
+    /* ---- Chip + formatting -------------------------------------------- */
     _renderChip() {
       const v = this.value;
       this.chip.setAttribute("data-set", String(!!v));
       this.chip.setAttribute("aria-haspopup", "dialog");
       this.chip.setAttribute("aria-controls", this.panelId);
       if (!this.chipText) return;
-      this.chipText.textContent = v ? `${this.cfg.label} ${this._fmt(v)}` : this.cfg.label;
+      this.chipText.textContent = v ? `${this.cfg.label} ${v.text}` : this.cfg.label;
+    }
+
+    // chip text for a preset (categorical → its label; numeric → formatted)
+    _presetText(p) {
+      if (p.from === undefined && p.to === undefined) return p.label;
+      return this._fmt({ from: p.from, to: p.to });
+    }
+    // list/chip text for a saved custom
+    _customLabel(c) {
+      return c.kind === "dates" ? this._fmtDates(c.from, c.to) : this._fmt(c);
+    }
+    _fmtDates(from, to) {
+      const d = (s) => new Date(s + "T00:00:00").toLocaleDateString("en-US",
+        { month: "short", day: "numeric", year: "numeric" });
+      if (from && !to) return "From " + d(from);
+      if (!from && to) return "Until " + d(to);
+      return `${d(from)} – ${d(to)}`;
     }
 
     _fmt(v) {
