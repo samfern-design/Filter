@@ -1,0 +1,464 @@
+/* ==========================================================================
+   filing-filter.css
+   Responsive filing-type filter: desktop dropdown (miller columns) +
+   touch bottom-sheet drill-down. One selection state, two presentations.
+   ========================================================================== */
+
+/* Host wrapper just anchors the desktop dropdown to the trigger. */
+.qm-filter {
+  position: relative;
+  display: inline-block;
+}
+
+/* The scrim/backdrop. Used as a click-to-dismiss target + dim layer.
+   On desktop it's invisible (just captures outside clicks); on mobile it
+   dims the page behind the sheet. */
+.qm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-in, background-color 200ms ease-in;
+}
+.qm-overlay[data-open="true"] {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* The panel itself. Default (desktop) = anchored popover. */
+.qm-panel {
+  position: absolute;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  background: var(--qm-surface);
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  box-shadow: var(--qm-shadow-pop);
+  overflow: hidden;
+  width: 560px;
+  max-width: calc(100vw - 24px);
+  height: 440px;
+  /* anchored under the trigger via inline top/left from JS */
+  transform-origin: top left;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transition: opacity 140ms ease-out, transform 140ms ease-out;
+}
+.qm-panel[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ===========================================================================
+   DESKTOP — two-column miller layout (>= 768px)
+   =========================================================================== */
+.qm-miller { display: none; }
+.qm-sheet-view { display: none; }
+
+@media (min-width: 768px) {
+  .qm-miller {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr auto;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* Left rail: categories */
+  .qm-cats {
+    grid-row: 1;
+    grid-column: 1;
+    border-right: 1px solid var(--qm-border);
+    overflow-y: auto;
+    padding: var(--qm-s2);
+    background: var(--qm-surface-sunk);
+  }
+  .qm-cat {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--qm-s2);
+    width: 100%;
+    text-align: left;
+    padding: 9px 10px;
+    border: none;
+    background: transparent;
+    border-radius: var(--qm-radius-sm);
+    cursor: pointer;
+    color: var(--qm-text);
+    font-family: var(--qm-font-ui);
+    font-size: var(--qm-fs-md);
+    min-height: 38px;
+  }
+  .qm-cat:hover { background: rgba(16, 22, 35, 0.04); }
+  .qm-cat[aria-current="true"] {
+    background: var(--qm-surface);
+    box-shadow: var(--qm-shadow-1);
+    font-weight: 600;
+  }
+  .qm-cat[aria-current="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    bottom: 7px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--qm-accent);
+  }
+  .qm-cat__name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-cat__chev {
+    flex: 0 0 auto;
+    color: var(--qm-text-faint);
+    opacity: 0;
+  }
+  .qm-cat[aria-current="true"] .qm-cat__chev { opacity: 1; }
+
+  /* Right pane: item list */
+  .qm-items {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .qm-items__head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: var(--qm-s2);
+    padding: var(--qm-s3) var(--qm-s4) var(--qm-s2);
+    border-bottom: 1px solid var(--qm-border);
+  }
+  .qm-items__title {
+    font-size: var(--qm-fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--qm-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-items__count {
+    flex: 0 0 auto;
+    margin-left: auto;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-sm);
+    color: var(--qm-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-items__list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--qm-s2) var(--qm-s2) var(--qm-s3);
+  }
+
+}
+
+/* ===========================================================================
+   Shared item rows (used by desktop list + mobile screen 2 + search results)
+   =========================================================================== */
+.qm-row {
+  display: flex;
+  align-items: center;
+  gap: var(--qm-s3);
+  width: 100%;
+  text-align: left;
+  padding: 0 12px;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  border-radius: var(--qm-radius-sm);
+  cursor: pointer;
+  color: var(--qm-text);
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+}
+.qm-row:hover { background: var(--qm-surface-sunk); }
+.qm-row:active { background: var(--qm-accent-weak); }
+
+.qm-row__code {
+  flex: 0 0 auto;
+  font-family: var(--qm-font-mono);
+  font-size: var(--qm-fs-sm);
+  font-weight: 600;
+  color: var(--qm-text);
+  background: var(--qm-surface-sunk);
+  border: 1px solid var(--qm-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  min-width: 60px;
+  text-align: center;
+}
+[data-checked="true"] .qm-row__code {
+  color: var(--qm-accent-press);
+  background: var(--qm-accent-weak);
+  border-color: transparent;
+}
+.qm-row__label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qm-text-muted);
+}
+.qm-row__cat {
+  flex: 0 0 auto;
+  font-size: var(--qm-fs-xs);
+  color: var(--qm-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.qm-row--all {
+  font-weight: 600;
+}
+.qm-row--all .qm-row__label { color: var(--qm-text); }
+
+/* ===========================================================================
+   Shared footer
+   =========================================================================== */
+.qm-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--qm-s3);
+  padding: var(--qm-s3) var(--qm-s4);
+  border-top: 1px solid var(--qm-border);
+  background: var(--qm-surface);
+}
+.qm-footer__count {
+  font-size: var(--qm-fs-md);
+  color: var(--qm-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.qm-footer__count strong {
+  font-family: var(--qm-font-mono);
+  color: var(--qm-text);
+}
+.qm-footer__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--qm-s2);
+}
+
+/* Empty state for no search matches */
+.qm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--qm-s3);
+  min-height: 160px;
+  padding: var(--qm-s5);
+  text-align: center;
+  color: var(--qm-text-muted);
+}
+.qm-empty__q { color: var(--qm-text); font-weight: 600; }
+
+/* ===========================================================================
+   MOBILE — bottom sheet drill-down (< 768px)
+   =========================================================================== */
+@media (max-width: 767px) {
+  .qm-overlay[data-open="true"] { background: var(--qm-scrim); }
+
+  .qm-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: calc(100vh - 40px);
+    /* near-full height; small top margin shows page behind */
+    border: none;
+    border-radius: var(--qm-radius-lg) var(--qm-radius-lg) 0 0;
+    box-shadow: var(--qm-shadow-sheet);
+    transform: translateY(100%);
+    transform-origin: bottom center;
+    transition: transform 240ms ease-out, opacity 1ms;
+    opacity: 1;
+  }
+  .qm-panel[data-open="true"] { transform: translateY(0); }
+  .qm-panel[data-closing="true"] {
+    transform: translateY(100%);
+    transition: transform 200ms ease-in;
+  }
+
+  .qm-miller { display: none !important; }
+  /* desktop footer is a panel-level sibling — hide it on mobile so the
+     sheet's own footer is the only one shown */
+  [data-d-footer] { display: none !important; }
+  .qm-sheet-view {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    /* fill the sheet; max-height on panel governs total */
+    max-height: calc(100vh - 40px);
+  }
+
+  /* Drag handle */
+  .qm-handle {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 4px;
+    cursor: grab;
+    touch-action: none;
+  }
+  .qm-handle::before {
+    content: "";
+    width: 40px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--qm-border-strong);
+  }
+
+  /* The two screens live in a sliding track */
+  .qm-stage {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .qm-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--qm-surface);
+    transition: transform 220ms ease-out;
+  }
+  /* screen 1 default in view; screen 2 parked to the right */
+  .qm-screen[data-screen="1"] { transform: translateX(0); }
+  .qm-screen[data-screen="2"] { transform: translateX(100%); }
+  /* when drilled in: 1 slides slightly left, 2 slides in */
+  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"] {
+    transform: translateX(-22%);
+  }
+  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="2"] {
+    transform: translateX(0);
+  }
+
+  .qm-shead {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--qm-s2);
+    padding: var(--qm-s2) var(--qm-s3) var(--qm-s2) var(--qm-s4);
+    min-height: 52px;
+  }
+  .qm-shead__title {
+    flex: 1 1 auto;
+    font-size: var(--qm-fs-xl);
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-shead__count {
+    flex: 0 0 auto;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-sm);
+    color: var(--qm-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-shead--screen2 .qm-shead__title { font-size: var(--qm-fs-lg); }
+
+  .qm-ssearch {
+    flex: 0 0 auto;
+    padding: 0 var(--qm-s4) var(--qm-s3);
+  }
+
+  .qm-slist {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 var(--qm-s2) var(--qm-s3);
+  }
+
+  /* Category row (screen 1) */
+  .qm-catrow {
+    display: flex;
+    align-items: center;
+    gap: var(--qm-s2);
+    width: 100%;
+    text-align: left;
+    min-height: 48px;
+    padding: 0 12px;
+    border: none;
+    background: transparent;
+    border-radius: var(--qm-radius-sm);
+    cursor: pointer;
+    color: var(--qm-text);
+    font-family: var(--qm-font-ui);
+    font-size: var(--qm-fs-lg);
+  }
+  .qm-catrow:active { background: var(--qm-accent-weak); }
+  .qm-catrow__name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-catrow__badge {
+    flex: 0 0 auto;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-sm);
+    font-weight: 600;
+    color: #fff;
+    background: var(--qm-accent);
+    border-radius: 999px;
+    padding: 2px 8px;
+    min-width: 22px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-catrow__chev { flex: 0 0 auto; color: var(--qm-text-faint); }
+
+  /* Mobile rows are taller for touch */
+  .qm-screen .qm-row { min-height: 48px; }
+
+  .qm-footer {
+    padding-bottom: max(var(--qm-s3), env(safe-area-inset-bottom));
+  }
+}
+
+/* Close (×) glyph sizing */
+.qm-x svg { width: 18px; height: 18px; }
+.qm-chev svg { width: 18px; height: 18px; }
+
+/* ===========================================================================
+   Reduced motion
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .qm-panel,
+  .qm-overlay,
+  .qm-screen {
+    transition: opacity 1ms linear !important;
+    transform: none !important;
+  }
+  .qm-panel[data-open="true"] { transform: none !important; }
+  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"] {
+    /* instant swap: hide screen 1 rather than slide */
+    transform: none !important;
+    visibility: hidden;
+  }
+  .qm-screen[data-screen="2"] { transform: none !important; }
+  .qm-sheet-view:not([data-screen="2"]) .qm-screen[data-screen="2"] {
+    visibility: hidden;
+  }
+}
