@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>QuoteMedia · Filing-type filter</title>
+  <title>QuoteMedia · Industry / sector filter</title>
   <link rel="stylesheet" href="quotemedia-styles.css" />
   <link rel="stylesheet" href="filing-filter.css" />
   <style>
@@ -63,17 +63,6 @@
       text-transform: uppercase;
       color: var(--qm-text-faint);
     }
-    #qm-filter-summary {
-      font-size: var(--qm-fs-md);
-      color: var(--qm-text);
-      font-variant-numeric: tabular-nums;
-    }
-    .qm-muted { color: var(--qm-text-faint); }
-
-    .toolbar .qm-add {
-      margin-left: auto;
-    }
-    .qm-add svg { width: 16px; height: 16px; }
 
     .hint {
       margin-top: 24px;
@@ -95,15 +84,15 @@
   <div class="lab">
     <div class="lab__bar">
       <span class="lab__logo">Quote<span>Media</span></span>
-      <span class="lab__crumb">/ Filings / Filter</span>
+      <span class="lab__crumb">/ Screener / Filter</span>
     </div>
 
-    <h1>Filing-type filter</h1>
+    <h1>Industry / sector filter</h1>
     <p class="lab__sub">
-      Pick the SEC filing types to show. On a wide screen it opens as a
-      dropdown with categories on the left and types on the right; on a phone
-      it rises as a bottom sheet you drill into. Your selection is the same
-      either way.
+      The same component as the filing-type filter, driven by a different
+      dataset — GICS sectors as categories, industries as the options. Wide
+      screens open a dropdown; touch devices a bottom sheet; narrow desktop a
+      compact drill-down.
     </p>
 
     <div class="toolbar">
@@ -112,9 +101,9 @@
       <div class="qm-filter">
         <div class="qm-chip" data-state="empty">
           <button id="qm-add-filter" class="qm-chip__main" type="button"
-                  data-qm-filter data-dataset="filings"
+                  data-qm-filter data-dataset="sectors"
                   aria-haspopup="dialog" aria-controls="qm-filter-panel" aria-expanded="false">
-            <span class="qm-chip__text" data-chip-text>Filing type</span>
+            <span class="qm-chip__text" data-chip-text>Industry / sector</span>
             <span class="qm-chip__badge" data-chip-badge></span>
             <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -126,11 +115,10 @@
     </div>
 
     <p class="hint">
-      Try: select <code>10-K</code> in Annual Reports, switch to Proxy
-      Statements and add <code>DEF 14A</code> — both persist. Resize across
-      <code>768px</code> with the panel open to see the layout swap while the
-      selection holds. On mobile, the cross-category search on screen 1 finds
-      and checks any type.
+      Try: pick <code>Semiconductors</code> under Information Technology, switch
+      to Health Care and add <code>Biotechnology</code> — both persist. Resize
+      across <code>768px</code> with the panel open to see the layout swap. On
+      mobile, the cross-category search finds an industry in any sector.
     </p>
   </div>
 

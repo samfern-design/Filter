@@ -30,9 +30,25 @@ swap while the selection holds.
 | File | Purpose |
 |---|---|
 | `quotemedia-styles.css` | Shared design tokens + base primitives (the lab stylesheet). |
-| `filing-filter.css` | The responsive component: dropdown + bottom sheet. |
-| `filing-filter.js` | Component logic, selection state, and the filing-type data. |
-| `index.html` | Demo harness that mounts the filter on an "Add filter" button. |
+| `filing-filter.css` | The responsive component: dropdown + drill-down + bottom sheet. |
+| `filing-filter.js` | The data-driven component, plus both datasets (filings + sectors). |
+| `index.html` | Filing-type demo (`data-dataset="filings"`). |
+| `sector.html` | Industry/sector demo (`data-dataset="sectors"`). |
+
+## One component, multiple datasets
+
+The component is data-driven. A trigger opts in with `data-qm-filter` and picks
+a dataset with `data-dataset`:
+
+```html
+<button data-qm-filter data-dataset="sectors" …>…</button>
+```
+
+Datasets live in the `DATASETS` registry in `filing-filter.js`
+(`filings` = SEC filing types, `sectors` = GICS industries). Each sets its
+label, search placeholder, categories, default category, and whether option
+text renders in mono (codes) or the UI font (names). Add a new filter by
+adding a dataset entry — no component changes needed.
 
 ## Decisions on the spec's open questions (§10)
 

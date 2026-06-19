@@ -295,6 +295,14 @@
   color: var(--qm-accent-press);
   font-weight: 600;
 }
+/* datasets whose options are names, not codes, render in the UI font */
+.qm-panel[data-codestyle="text"] .qm-row__code {
+  font-family: var(--qm-font-ui);
+  font-weight: 400;
+}
+.qm-panel[data-codestyle="text"] [data-checked="true"] .qm-row__code {
+  font-weight: 600;
+}
 .qm-row__label {
   flex: 1 1 auto;
   overflow: hidden;

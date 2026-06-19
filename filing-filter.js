@@ -17,7 +17,7 @@
 
   /* ---- Data: SEC-style filing categories & types ----------------------- */
   // Each item id is `${catId}:${code}` and is globally unique.
-  const CATEGORIES = [
+  const FILING_CATEGORIES = [
     { id: "6k", name: "6K Related", items: [
       ["6-K", "Report of foreign private issuer"],
       ["6-K/A", "Report of foreign private issuer (amended)"],
@@ -114,13 +114,177 @@
 
   const itemId = (catId, code) => catId + ":" + code;
 
-  // Flat index for cross-category search.
-  const ALL_ITEMS = [];
-  CATEGORIES.forEach((c) => c.items.forEach(([code, label]) =>
-    ALL_ITEMS.push({ id: itemId(c.id, code), code, label, catId: c.id, catName: c.name })
-  ));
-  const itemsByCat = (catId) => CATEGORIES.find((c) => c.id === catId).items;
-  const catById = (catId) => CATEGORIES.find((c) => c.id === catId);
+  /* ---- Data: GICS-style industry / sector taxonomy --------------------- */
+  // Items carry the industry name as their "code" (shown as the row text).
+  const SECTOR_CATEGORIES = [
+    { id: "energy", name: "Energy", items: [
+      ["Oil & Gas Drilling", ""],
+      ["Oil & Gas Equipment & Services", ""],
+      ["Integrated Oil & Gas", ""],
+      ["Oil & Gas Exploration & Production", ""],
+      ["Oil & Gas Refining & Marketing", ""],
+      ["Oil & Gas Storage & Transportation", ""],
+      ["Coal & Consumable Fuels", ""],
+    ]},
+    { id: "materials", name: "Materials", items: [
+      ["Commodity Chemicals", ""],
+      ["Diversified Chemicals", ""],
+      ["Specialty Chemicals", ""],
+      ["Industrial Gases", ""],
+      ["Construction Materials", ""],
+      ["Metal & Glass Containers", ""],
+      ["Paper Packaging", ""],
+      ["Aluminum", ""],
+      ["Diversified Metals & Mining", ""],
+      ["Copper", ""],
+      ["Gold", ""],
+      ["Silver", ""],
+      ["Steel", ""],
+      ["Forest Products", ""],
+      ["Paper Products", ""],
+    ]},
+    { id: "industrials", name: "Industrials", items: [
+      ["Aerospace & Defense", ""],
+      ["Building Products", ""],
+      ["Construction & Engineering", ""],
+      ["Electrical Components & Equipment", ""],
+      ["Heavy Electrical Equipment", ""],
+      ["Industrial Conglomerates", ""],
+      ["Industrial Machinery", ""],
+      ["Trading Companies & Distributors", ""],
+      ["Commercial Printing", ""],
+      ["Environmental & Facilities Services", ""],
+      ["Human Resource & Employment Services", ""],
+      ["Air Freight & Logistics", ""],
+      ["Passenger Airlines", ""],
+      ["Marine Transportation", ""],
+      ["Rail Transportation", ""],
+      ["Cargo Ground Transportation", ""],
+    ]},
+    { id: "discretionary", name: "Consumer Discretionary", items: [
+      ["Automotive Parts & Equipment", ""],
+      ["Automobile Manufacturers", ""],
+      ["Consumer Electronics", ""],
+      ["Home Furnishings", ""],
+      ["Homebuilding", ""],
+      ["Household Appliances", ""],
+      ["Leisure Products", ""],
+      ["Apparel, Accessories & Luxury Goods", ""],
+      ["Hotels, Resorts & Cruise Lines", ""],
+      ["Restaurants", ""],
+      ["Apparel Retail", ""],
+      ["Specialty Retail", ""],
+      ["Broadline Retail", ""],
+    ]},
+    { id: "staples", name: "Consumer Staples", items: [
+      ["Drug Retail", ""],
+      ["Food Distributors", ""],
+      ["Food Retail", ""],
+      ["Consumer Staples Merchandise Retail", ""],
+      ["Brewers", ""],
+      ["Distillers & Vintners", ""],
+      ["Soft Drinks & Non-alcoholic Beverages", ""],
+      ["Agricultural Products & Services", ""],
+      ["Packaged Foods & Meats", ""],
+      ["Tobacco", ""],
+      ["Household Products", ""],
+      ["Personal Care Products", ""],
+    ]},
+    { id: "health", name: "Health Care", items: [
+      ["Health Care Equipment", ""],
+      ["Health Care Supplies", ""],
+      ["Health Care Distributors", ""],
+      ["Health Care Services", ""],
+      ["Health Care Facilities", ""],
+      ["Managed Health Care", ""],
+      ["Health Care Technology", ""],
+      ["Biotechnology", ""],
+      ["Pharmaceuticals", ""],
+      ["Life Sciences Tools & Services", ""],
+    ]},
+    { id: "financials", name: "Financials", items: [
+      ["Diversified Banks", ""],
+      ["Regional Banks", ""],
+      ["Commercial & Residential Mortgage Finance", ""],
+      ["Consumer Finance", ""],
+      ["Asset Management & Custody Banks", ""],
+      ["Investment Banking & Brokerage", ""],
+      ["Diversified Financial Services", ""],
+      ["Multi-Sector Holdings", ""],
+      ["Financial Exchanges & Data", ""],
+      ["Insurance Brokers", ""],
+      ["Life & Health Insurance", ""],
+      ["Property & Casualty Insurance", ""],
+      ["Reinsurance", ""],
+    ]},
+    { id: "infotech", name: "Information Technology", items: [
+      ["IT Consulting & Other Services", ""],
+      ["Internet Services & Infrastructure", ""],
+      ["Application Software", ""],
+      ["Systems Software", ""],
+      ["Communications Equipment", ""],
+      ["Technology Hardware, Storage & Peripherals", ""],
+      ["Electronic Equipment & Instruments", ""],
+      ["Electronic Components", ""],
+      ["Electronic Manufacturing Services", ""],
+      ["Semiconductor Materials & Equipment", ""],
+      ["Semiconductors", ""],
+    ]},
+    { id: "comms", name: "Communication Services", items: [
+      ["Alternative Carriers", ""],
+      ["Integrated Telecommunication Services", ""],
+      ["Wireless Telecommunication Services", ""],
+      ["Advertising", ""],
+      ["Broadcasting", ""],
+      ["Cable & Satellite", ""],
+      ["Publishing", ""],
+      ["Movies & Entertainment", ""],
+      ["Interactive Home Entertainment", ""],
+      ["Interactive Media & Services", ""],
+    ]},
+    { id: "utilities", name: "Utilities", items: [
+      ["Electric Utilities", ""],
+      ["Gas Utilities", ""],
+      ["Multi-Utilities", ""],
+      ["Water Utilities", ""],
+      ["Independent Power Producers & Energy Traders", ""],
+      ["Renewable Electricity", ""],
+    ]},
+    { id: "realestate", name: "Real Estate", items: [
+      ["Diversified REITs", ""],
+      ["Industrial REITs", ""],
+      ["Hotel & Resort REITs", ""],
+      ["Office REITs", ""],
+      ["Health Care REITs", ""],
+      ["Multi-Family Residential REITs", ""],
+      ["Single-Family Residential REITs", ""],
+      ["Retail REITs", ""],
+      ["Telecom Tower REITs", ""],
+      ["Data Center REITs", ""],
+      ["Real Estate Operating Companies", ""],
+      ["Real Estate Development", ""],
+      ["Real Estate Services", ""],
+    ]},
+  ];
+
+  /* ---- Dataset registry — the component is data-driven ----------------- */
+  const DATASETS = {
+    filings: {
+      label: "Filing type",
+      searchAll: "Search all filings",
+      categories: FILING_CATEGORIES,
+      defaultIndex: 2,   // Annual Reports
+      mono: true,        // codes read as market symbols
+    },
+    sectors: {
+      label: "Industry / sector",
+      searchAll: "Search all industries",
+      categories: SECTOR_CATEGORIES,
+      defaultIndex: 0,   // Energy
+      mono: false,       // names read as plain text
+    },
+  };
+
 
   /* ---- Icons ----------------------------------------------------------- */
   const ICONS = {
@@ -132,8 +296,19 @@
 
   /* ====================================================================== */
   class FilingFilter {
-    constructor(trigger) {
+    constructor(trigger, options = {}) {
       this.trigger = trigger;
+      // dataset config (data-driven; defaults to filings)
+      const ds = DATASETS[options.dataset] || DATASETS.filings;
+      this.categories = ds.categories;
+      this.label = ds.label;
+      this.searchAll = ds.searchAll;
+      this.mono = ds.mono;
+      // flat index for cross-category search
+      this.allItems = [];
+      this.categories.forEach((c) => c.items.forEach(([code, label]) =>
+        this.allItems.push({ id: itemId(c.id, code), code, label, catId: c.id, catName: c.name })
+      ));
       // chip parts (the trigger is the chip's main button)
       this.chip = trigger.closest(".qm-chip");
       this.chipText = this.chip && this.chip.querySelector("[data-chip-text]");
@@ -141,7 +316,7 @@
       this.applied = new Set();   // last applied selection
       this.staged = new Set();    // working copy while open
       this.isOpen = false;
-      this.activeCat = CATEGORIES[2].id; // desktop active column (Annual Reports)
+      this.activeCat = this.categories[ds.defaultIndex || 0].id;
       this.mobileScreen = 1;
       this.mobileCat = null;
       this.mqNarrow = window.matchMedia("(max-width: 767px)");
@@ -150,6 +325,9 @@
       this._wire();
       this._renderSummary();
     }
+
+    _catById(catId) { return this.categories.find((c) => c.id === catId); }
+    _itemsByCat(catId) { return this._catById(catId).items; }
 
     // Presentation mode:
     //  - "miller"    : wide viewport → two-column dropdown
@@ -171,19 +349,20 @@
       this.panel.className = "qm-panel";
       this.panel.setAttribute("role", "dialog");
       this.panel.setAttribute("aria-modal", "true");
-      this.panel.setAttribute("aria-label", "Filing type filter");
+      this.panel.setAttribute("aria-label", this.label + " filter");
+      this.panel.setAttribute("data-codestyle", this.mono ? "mono" : "text");
       this.panel.id = "qm-filter-panel";
 
       this.panel.innerHTML = `
         <!-- DESKTOP miller -->
         <div class="qm-miller">
-          <nav class="qm-cats" aria-label="Filing categories"></nav>
+          <nav class="qm-cats" aria-label="Categories"></nav>
           <section class="qm-items">
             <div class="qm-items__head">
               <span class="qm-items__title" data-d-title></span>
               <span class="qm-items__count" data-d-count></span>
             </div>
-            <div class="qm-items__list" data-d-list role="group" aria-label="Filing types"></div>
+            <div class="qm-items__list" data-d-list role="group" aria-label="${esc(this.label)} options"></div>
           </section>
         </div>
 
@@ -194,14 +373,14 @@
             <!-- screen 1: categories -->
             <div class="qm-screen" data-screen="1">
               <div class="qm-shead">
-                <span class="qm-shead__title">Filing type</span>
+                <span class="qm-shead__title">${esc(this.label)}</span>
                 <button class="qm-icon-btn qm-x" data-close type="button" aria-label="Close filter">${ICONS.x}</button>
               </div>
               <div class="qm-ssearch">
                 <div class="qm-search">
                   ${ICONS.search}
-                  <input type="search" data-s1-search placeholder="Search all filings"
-                         aria-label="Search all filings" autocomplete="off" />
+                  <input type="search" data-s1-search placeholder="${esc(this.searchAll)}"
+                         aria-label="${esc(this.searchAll)}" autocomplete="off" />
                 </div>
               </div>
               <div class="qm-slist" data-s1-list></div>
@@ -401,7 +580,7 @@
     _renderDesktop() {
       // categories rail
       this.el.cats.innerHTML = "";
-      CATEGORIES.forEach((c) => {
+      this.categories.forEach((c) => {
         const b = document.createElement("button");
         b.type = "button";
         b.className = "qm-cat";
@@ -417,7 +596,7 @@
         this.el.cats.appendChild(b);
       });
 
-      const cat = catById(this.activeCat);
+      const cat = this._catById(this.activeCat);
       this.el.dTitle.textContent = cat.name;
       this.el.dTitle.title = cat.name;
       this.el.dCount.textContent = cat.items.length + " items";
@@ -452,7 +631,7 @@
 
       if (q) {
         // cross-category search → flat list, each tagged with its category
-        const matches = ALL_ITEMS.filter((it) =>
+        const matches = this.allItems.filter((it) =>
           it.code.toLowerCase().includes(q) || it.label.toLowerCase().includes(q) ||
           it.catName.toLowerCase().includes(q));
         if (!matches.length) { this.el.s1List.appendChild(this._emptyState(q)); }
@@ -461,7 +640,7 @@
           this.el.s1List.appendChild(row);
         });
       } else {
-        CATEGORIES.forEach((c) => {
+        this.categories.forEach((c) => {
           const sel = this._countInCat(c.id);
           const row = document.createElement("button");
           row.type = "button";
@@ -500,7 +679,7 @@
 
     /* ---- MOBILE screen 2 (items in one category) ----------------------- */
     _renderScreen2(catId) {
-      const cat = catById(catId);
+      const cat = this._catById(catId);
       this.el.s2Title.textContent = cat.name;
       this.el.s2Title.title = cat.name;
       this.el.s2Count.textContent = cat.items.length + " items";
@@ -511,7 +690,7 @@
     }
 
     _renderScreen2List() {
-      const cat = catById(this.mobileCat);
+      const cat = this._catById(this.mobileCat);
       const q = this.el.s2Search.value.trim().toLowerCase();
       this.el.s2List.innerHTML = "";
 
@@ -556,9 +735,10 @@
       row.setAttribute("aria-checked", String(checked));
       row.setAttribute("data-checked", String(checked));
       row.setAttribute("data-id", id);
-      // show just the form code as plain text (description kept for a11y only)
-      row.setAttribute("aria-label", `${code}${catName ? `, ${catName}` : ""} — ${label}`);
-      row.title = label;
+      // show just the option code as plain text (description kept for a11y only)
+      const desc = label && label !== code ? label : "";
+      row.setAttribute("aria-label", `${code}${catName ? `, ${catName}` : ""}${desc ? ` — ${desc}` : ""}`);
+      if (desc) row.title = desc;
       row.innerHTML =
         `<span class="qm-check" aria-hidden="true"></span>` +
         `<span class="qm-row__code">${esc(code)}</span>` +
@@ -649,7 +829,7 @@
 
     // Re-sync select-all row + item rows inside a category list container.
     _syncList(container, catId) {
-      const cat = catById(catId);
+      const cat = this._catById(catId);
       const ids = cat.items.map(([code]) => itemId(catId, code));
       const sel = ids.filter((id) => this.staged.has(id)).length;
       const allRow = container.querySelector(".qm-row--all");
@@ -682,7 +862,7 @@
     }
 
     _countInCat(catId) {
-      return itemsByCat(catId).reduce((n, [code]) =>
+      return this._itemsByCat(catId).reduce((n, [code]) =>
         n + (this.staged.has(itemId(catId, code)) ? 1 : 0), 0);
     }
 
@@ -695,7 +875,7 @@
       // The × (clear) and the blue count badge are governed by CSS — hidden
       // at rest, revealed on hover/focus. JS just sets the state + content.
       const n = this.applied.size;
-      const label = "Filing type";
+      const label = this.label;
       if (n === 0) {
         // empty → label + chevron
         this.chip.setAttribute("data-state", "empty");
@@ -791,8 +971,12 @@
   }
 
   /* ---- Boot ------------------------------------------------------------ */
+  // Expose for embedding; each trigger declares its dataset via data-dataset.
+  window.QMFilter = FilingFilter;
   window.addEventListener("DOMContentLoaded", () => {
-    const trigger = document.getElementById("qm-add-filter");
-    if (trigger) window.qmFilter = new FilingFilter(trigger);
+    document.querySelectorAll("[data-qm-filter]").forEach((trigger) => {
+      const dataset = trigger.getAttribute("data-dataset") || "filings";
+      trigger._qm = new FilingFilter(trigger, { dataset });
+    });
   });
 })();
