@@ -522,9 +522,12 @@ body {
     top: auto;
     width: 100%;
     max-width: 100%;
-    height: auto;
+    /* near-full height; small top margin shows the page behind. A definite
+       height is required so the flex body can size — the screens are
+       absolutely positioned and contribute no intrinsic height. */
+    height: calc(100vh - 40px);
+    height: calc(100dvh - 40px);
     max-height: calc(100vh - 40px);
-    /* near-full height; small top margin shows page behind */
     border: none;
     border-radius: var(--qm-radius-lg) var(--qm-radius-lg) 0 0;
     box-shadow: var(--qm-shadow-sheet);
@@ -548,8 +551,6 @@ body {
     flex-direction: column;
     min-height: 0;
     height: 100%;
-    /* fill the sheet; max-height on panel governs total */
-    max-height: calc(100vh - 40px);
   }
 
   /* Drag handle */
