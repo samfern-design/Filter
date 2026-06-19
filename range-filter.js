@@ -79,6 +79,8 @@
       this.chip = trigger.closest(".qm-rf-chip") || trigger;
       this.chipText = this.chip.querySelector("[data-rf-text]");
       this.value = null;           // { from, to, presetId|null }
+      this.customs = [];           // saved custom ranges { id, from, to }
+      this._cid = 0;
       this.isOpen = false;
       this.screen = 1;
       this.mqTouch = window.matchMedia("(pointer: coarse)");
@@ -124,7 +126,7 @@
               <div class="qm-rf-list" role="radiogroup" aria-label="${esc(c.title)} presets" data-list></div>
               <div class="qm-rf-foot">
                 <button class="qm-rf-manual-btn" data-manual type="button">
-                  ${ICONS.sliders} Manual setup
+                  ${ICONS.sliders} Custom
                 </button>
               </div>
             </section>
@@ -249,50 +251,101 @@
       this.panel.style.top = top + "px";
     }
 
-    /* ---- Presets (single-select) -------------------------------------- */
+    /* ---- Presets + saved customs (single-select) ---------------------- */
     _renderPresets() {
       const q = this.el.search.value.trim().toLowerCase();
       this.el.list.innerHTML = "";
-      const matches = this.cfg.presets.filter((p) =>
+      const presets = this.cfg.presets.filter((p) =>
         !q || p.label.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
-      if (!matches.length) {
+      const customs = this.customs.filter((c) =>
+        !q || this._fmt(c).toLowerCase().includes(q) || "custom".includes(q));
+
+      presets.forEach((p) => this.el.list.appendChild(this._optRow({
+        id: p.id, label: p.label, desc: p.desc, from: p.from, to: p.to,
+      })));
+
+      if (customs.length) {
+        const sub = document.createElement("div");
+        sub.className = "qm-rf-subhead";
+        sub.textContent = "Custom";
+        this.el.list.appendChild(sub);
+        customs.forEach((c) => this.el.list.appendChild(this._optRow({
+          id: c.id, label: this._fmt(c), desc: "Custom range",
+          from: c.from, to: c.to, deletable: true,
+        })));
+      }
+
+      if (!presets.length && !customs.length) {
         const empty = document.createElement("div");
         empty.className = "qm-rf-unit";
         empty.style.textAlign = "center";
-        empty.textContent = "No presets match — try Manual setup.";
+        empty.textContent = "No matches — try Custom.";
         this.el.list.appendChild(empty);
-        return;
       }
-      matches.forEach((p) => {
-        const sel = this.value && this.value.presetId === p.id;
-        const opt = document.createElement("button");
-        opt.type = "button";
-        opt.className = "qm-rf-opt";
-        opt.setAttribute("role", "radio");
-        opt.setAttribute("aria-checked", String(!!sel));
-        opt.innerHTML =
-          `<span class="qm-rf-opt__text">` +
-            `<span class="qm-rf-opt__label">${esc(p.label)}</span>` +
-            `<span class="qm-rf-opt__desc">${esc(p.desc)}</span>` +
-          `</span>` +
-          `<span class="qm-rf-opt__check">${ICONS.check}</span>`;
-        opt.addEventListener("click", () => {
-          this.value = { from: p.from, to: p.to, presetId: p.id };
-          this._renderChip();
-          this.close();
-        });
-        this.el.list.appendChild(opt);
-      });
     }
 
-    /* ---- Manual range -------------------------------------------------- */
+    _optRow(o) {
+      const sel = !!(this.value && this.value.presetId === o.id);
+      const row = document.createElement("div");
+      row.className = "qm-rf-row";
+      row.setAttribute("data-sel", String(sel));
+
+      const main = document.createElement("button");
+      main.type = "button";
+      main.className = "qm-rf-opt";
+      main.setAttribute("role", "radio");
+      main.setAttribute("aria-checked", String(sel));
+      main.innerHTML =
+        `<span class="qm-rf-opt__text">` +
+          `<span class="qm-rf-opt__label">${esc(o.label)}</span>` +
+          `<span class="qm-rf-opt__desc">${esc(o.desc)}</span>` +
+        `</span>` +
+        `<span class="qm-rf-opt__check">${ICONS.check}</span>`;
+      main.addEventListener("click", () => {
+        this.value = { from: o.from, to: o.to, presetId: o.id };
+        this._renderChip();
+        this.close();
+      });
+      row.appendChild(main);
+
+      if (o.deletable) {
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "qm-rf-opt__del";
+        del.setAttribute("aria-label", "Delete custom range " + o.label);
+        del.innerHTML = ICONS.trash;
+        del.addEventListener("click", (e) => { e.stopPropagation(); this._deleteCustom(o.id); });
+        row.appendChild(del);
+      }
+      return row;
+    }
+
+    _deleteCustom(id) {
+      this.customs = this.customs.filter((c) => c.id !== id);
+      if (this.value && this.value.presetId === id) { this.value = null; this._renderChip(); }
+      this._renderPresets();
+    }
+
+    /* ---- Custom range -> saved under the main menu --------------------- */
     _applyManual() {
       const from = this.el.from.value === "" ? null : Number(this.el.from.value);
       const to = this.el.to.value === "" ? null : Number(this.el.to.value);
-      if (from == null && to == null) { this.value = null; }
-      else { this.value = { from, to, presetId: null }; }
+      if (from == null && to == null) {
+        this.value = null;
+        this._renderChip();
+        this.el.search.value = "";
+        this._renderPresets();
+        this.goScreen(1);
+        return;
+      }
+      // save the custom range (dedupe identical ranges) and select it
+      let entry = this.customs.find((c) => c.from === from && c.to === to);
+      if (!entry) { entry = { id: "custom-" + (++this._cid), from, to }; this.customs.push(entry); }
+      this.value = { from, to, presetId: entry.id };
       this._renderChip();
-      this.close();
+      this.el.search.value = "";
+      this._renderPresets();
+      this.goScreen(1); // back to the main menu where it's now saved + selected
     }
 
     /* ---- Chip ---------------------------------------------------------- */
