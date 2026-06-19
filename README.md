@@ -37,6 +37,7 @@ swap while the selection holds.
 | `screener.html` | Market-screener "Add filter criteria" demo (`data-dataset="screener"`). |
 | `range-filter.css` / `range-filter.js` | Companion **range-filter editor** (single criterion: presets + manual From/To). |
 | `range.html` | Range-editor demo (P/E, dividend yield, market cap chips). |
+| `optionschain.html` | **Options-chain filter row** (Expiry, Strikes, Near money %, Near, Min volume, Min open interest, Max spread, Contract type). |
 
 ## Range-filter editor (companion component)
 
@@ -44,8 +45,13 @@ A separate, single-criterion value editor for the screener: a chip opens a
 dropdown (or compact bottom sheet on touch) with a searchable list of preset
 ranges (single-select) and a **Manual setup** screen for a custom From/To. The
 header carries a help (?) and a remove (trash) action. Triggers opt in with
-`data-qm-range` and pick a metric with `data-filter` (`pe`, `yield`, `mktcap`),
-defined in the `RANGE_FILTERS` registry in `range-filter.js`.
+`data-qm-range` and pick a metric with `data-filter` (`pe`, `yield`, `mktcap`,
+plus the options-chain set: `nearmoney`, `near`, `minvol`, `minoi`, `maxspread`,
+`contracttype`, `strikes`, `expiry`), defined in the `RANGE_FILTERS` registry in
+`range-filter.js`. Each entry's `custom` controls the manual screen: `range`
+(From/To, default), `single` (one value), `dates` (date range), or `none`
+(presets-only, no Custom button). `data-default="<preset id>"` pre-selects a
+value.
 
 ```html
 <button data-qm-range data-filter="pe" …>P/E ▾</button>

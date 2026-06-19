@@ -86,6 +86,106 @@
         { id: "quarterlies", label: "Quarterlies" },
       ],
     },
+
+    /* ---- Options-chain filters ----------------------------------------- */
+    // "Near" — center the chain on a strike (or spot). Single-select, no custom.
+    near: {
+      label: "Near",
+      title: "Near strike",
+      help: "Center the chain on this strike (or the spot price).",
+      unit: "",
+      custom: "none",
+      presets: [
+        { id: "spot",  label: "Spot (298.01)" },   // anchor to the live spot
+        { id: "285",   label: "285",   from: 285,   to: 285 },
+        { id: "287.5", label: "287.5", from: 287.5, to: 287.5 },
+        { id: "290",   label: "290",   from: 290,   to: 290 },
+        { id: "292.5", label: "292.5", from: 292.5, to: 292.5 },
+        { id: "295",   label: "295",   from: 295,   to: 295 },
+        { id: "297.5", label: "297.5", from: 297.5, to: 297.5 },
+        { id: "300",   label: "300",   from: 300,   to: 300 },
+        { id: "302.5", label: "302.5", from: 302.5, to: 302.5 },
+        { id: "305",   label: "305",   from: 305,   to: 305 },
+        { id: "307.5", label: "307.5", from: 307.5, to: 307.5 },
+        { id: "310",   label: "310",   from: 310,   to: 310 },
+      ],
+    },
+    // Min volume / Min open interest — "at least N" thresholds, with a custom value.
+    minvol: {
+      label: "Min volume",
+      title: "Minimum volume",
+      help: "Only show contracts trading at least this many today.",
+      unit: "",
+      step: 10,
+      custom: "single",
+      presets: [
+        { id: "all",  label: "All",    from: null, to: null },
+        { id: "10",   label: "10+",    from: 10,   to: null },
+        { id: "50",   label: "50+",    from: 50,   to: null },
+        { id: "100",  label: "100+",   from: 100,  to: null },
+        { id: "500",  label: "500+",   from: 500,  to: null },
+        { id: "1000", label: "1,000+", from: 1000, to: null },
+      ],
+    },
+    minoi: {
+      label: "Min open interest",
+      title: "Minimum open interest",
+      help: "Only show contracts with at least this much open interest.",
+      unit: "",
+      step: 10,
+      custom: "single",
+      presets: [
+        { id: "all",  label: "All",    from: null, to: null },
+        { id: "10",   label: "10+",    from: 10,   to: null },
+        { id: "50",   label: "50+",    from: 50,   to: null },
+        { id: "100",  label: "100+",   from: 100,  to: null },
+        { id: "500",  label: "500+",   from: 500,  to: null },
+        { id: "1000", label: "1,000+", from: 1000, to: null },
+      ],
+    },
+    // Max spread — labelled tightness presets plus a custom single value (%).
+    maxspread: {
+      label: "Max spread",
+      title: "Maximum bid/ask spread",
+      help: "Hide contracts whose bid/ask spread is wider than this.",
+      unit: "%",
+      step: 0.5,
+      custom: "single",
+      presets: [
+        { id: "all",    label: "All" },
+        { id: "tight",  label: "Tight (< 5%)" },
+        { id: "normal", label: "Normal (< 15%)" },
+        { id: "wide",   label: "Wide (< 30%)" },
+      ],
+    },
+    // Contract type — categorical, no custom.
+    // NOTE: placeholder options — awaiting the real Contract Type menu contents.
+    contracttype: {
+      label: "Contract type",
+      title: "Contract type",
+      help: "Standard, mini, or other listed contract sizes.",
+      custom: "none",
+      presets: [
+        { id: "all",      label: "All" },
+        { id: "standard", label: "Standard" },
+        { id: "mini",     label: "Mini" },
+      ],
+    },
+    // Strikes — how many strikes above/below the money. Categorical, no custom.
+    strikes: {
+      label: "Strikes",
+      title: "Strikes shown",
+      help: "How many strikes above and below the money to show.",
+      custom: "none",
+      presets: [
+        { id: "1",   label: "±1" },
+        { id: "2",   label: "±2" },
+        { id: "5",   label: "±5" },
+        { id: "10",  label: "±10" },
+        { id: "20",  label: "±20" },
+        { id: "all", label: "All" },
+      ],
+    },
   };
 
   const ICONS = {
@@ -207,6 +307,13 @@
         next: $("[data-next]"),
       };
       this.el.searchWrap = this.el.search.closest(".qm-rf-search");
+
+      // Categorical filters (custom: "none") have no manual screen — hide the
+      // Custom button (and its footer) so the panel is presets-only.
+      if (this.customMode === "none" && this.el.manual) {
+        const foot = this.el.manual.closest(".qm-rf-foot");
+        if (foot) foot.hidden = true;
+      }
     }
 
     // Custom-screen markup per mode (range / single / dates).

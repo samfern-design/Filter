@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>QuoteMedia · Options chain filters</title>
+  <link rel="stylesheet" href="quotemedia-styles.css" />
+  <link rel="stylesheet" href="range-filter.css" />
+  <style>
+    .lab { max-width: 980px; margin: 0 auto; padding: 32px 20px 80px; }
+    .lab__bar {
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 20px; border-bottom: 1px solid var(--qm-border); margin-bottom: 24px;
+    }
+    .lab__logo {
+      font-family: var(--qm-font-mono); font-weight: 700;
+      letter-spacing: -0.02em; font-size: 15px; color: var(--qm-text);
+    }
+    .lab__logo span { color: var(--qm-accent); }
+    .lab__crumb { font-size: var(--qm-fs-sm); color: var(--qm-text-faint); }
+    .lab h1 { font-size: 22px; letter-spacing: -0.01em; margin: 0 0 4px; }
+    .lab__sub { color: var(--qm-text-muted); margin: 0 0 28px; max-width: 64ch; }
+
+    /* The filter row — chips wrap on narrow widths. */
+    .chips {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      padding: 16px; background: var(--qm-surface);
+      border: 1px solid var(--qm-border); border-radius: var(--qm-radius-md);
+      box-shadow: var(--qm-shadow-1);
+    }
+
+    .hint { margin-top: 24px; font-size: var(--qm-fs-sm); color: var(--qm-text-muted); line-height: 1.7; }
+    .hint code {
+      font-family: var(--qm-font-mono); font-size: var(--qm-fs-xs);
+      background: var(--qm-surface-sunk); border: 1px solid var(--qm-border);
+      border-radius: 4px; padding: 1px 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lab">
+    <div class="lab__bar">
+      <span class="lab__logo">Quote<span>Media</span></span>
+      <span class="lab__crumb">/ Options / Chain</span>
+    </div>
+
+    <h1>Options chain filters</h1>
+    <p class="lab__sub">
+      A single row of chip filters for the options chain — strikes, near money,
+      liquidity, and contract type. Each opens a dropdown on desktop (or a
+      compact bottom sheet on touch) with a single-select list and, where it
+      makes sense, a <code>Custom…</code> value. Selections apply live.
+    </p>
+
+    <div class="chips">
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="expiry"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Expiry</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="strikes"
+              data-default="5"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Strikes</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="nearmoney"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Near money %</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="near"
+              data-default="310"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Near</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="minvol"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Min volume</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="minoi"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Min open interest</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="maxspread"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Max spread</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="contracttype"
+              data-default="mini"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Contract type</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="hint">
+      Try: open <code>Near</code> and pick a strike (or <code>Spot</code>) to
+      re-center the chain; open <code>Max spread</code> and choose
+      <code>Tight (&lt; 5%)</code>. Filters with a <code>Custom…</code> button
+      (Near money %, Min volume, Min open interest, Max spread) let you type a
+      value. <code>Strikes</code>, <code>Near</code> and <code>Contract type</code>
+      are presets-only. The header trash clears a filter.
+    </p>
+  </div>
+
+  <script src="range-filter.js"></script>
+</body>
+</html>
