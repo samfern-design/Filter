@@ -15,6 +15,8 @@
 (function () {
   "use strict";
 
+  let PUID = 0; // unique panel ids so multiple instances can share a page
+
   /* ---- Data: SEC-style filing categories & types ----------------------- */
   // Each item id is `${catId}:${code}` and is globally unique.
   const FILING_CATEGORIES = [
@@ -460,7 +462,8 @@
       this.panel.setAttribute("aria-modal", "true");
       this.panel.setAttribute("aria-label", this.label + " filter");
       this.panel.setAttribute("data-codestyle", this.mono ? "mono" : "text");
-      this.panel.id = "qm-filter-panel";
+      this.panelId = "qm-filter-panel-" + (++PUID);
+      this.panel.id = this.panelId;
 
       this.panel.innerHTML = `
         <!-- DESKTOP miller -->
@@ -1045,7 +1048,7 @@
 
     /* ---- Trigger summary ----------------------------------------------- */
     _renderSummary() {
-      this.trigger.setAttribute("aria-controls", "qm-filter-panel");
+      this.trigger.setAttribute("aria-controls", this.panelId);
       this.trigger.setAttribute("aria-haspopup", "dialog");
       if (!this.chip) return;
 
@@ -1157,16 +1160,17 @@
       trigger._qm = new FilingFilter(trigger, { dataset, narrowNav });
     });
 
-    // Optional checkbox to flip narrow nav live: data-qm-narrow-toggle="<triggerId>"
+    // Optional checkbox to flip narrow nav live. data-qm-narrow-toggle="<id>"
+    // targets one filter; empty targets every faceted filter on the page.
     document.querySelectorAll("[data-qm-narrow-toggle]").forEach((cb) => {
       const id = cb.getAttribute("data-qm-narrow-toggle");
-      const trigger = id ? document.getElementById(id)
-                         : document.querySelector("[data-qm-filter]");
-      const filter = trigger && trigger._qm;
-      if (!filter) return;
-      cb.checked = filter.narrowNav === "accordion";
+      const triggers = id ? [document.getElementById(id)]
+                          : Array.from(document.querySelectorAll("[data-qm-filter]"));
+      const filters = triggers.map((t) => t && t._qm).filter(Boolean);
+      if (!filters.length) return;
+      cb.checked = filters[0].narrowNav === "accordion";
       cb.addEventListener("change", () =>
-        filter.setNarrowNav(cb.checked ? "accordion" : "drilldown"));
+        filters.forEach((f) => f.setNarrowNav(cb.checked ? "accordion" : "drilldown")));
     });
   });
 })();

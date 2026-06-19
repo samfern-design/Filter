@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>QuoteMedia · Filter components</title>
+  <link rel="stylesheet" href="quotemedia-styles.css" />
+  <link rel="stylesheet" href="filing-filter.css" />
+  <link rel="stylesheet" href="range-filter.css" />
+  <style>
+    .lab { max-width: 960px; margin: 0 auto; padding: 32px 20px 100px; }
+    .lab__bar {
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 20px; border-bottom: 1px solid var(--qm-border); margin-bottom: 24px;
+    }
+    .lab__logo {
+      font-family: var(--qm-font-mono); font-weight: 700;
+      letter-spacing: -0.02em; font-size: 15px; color: var(--qm-text);
+    }
+    .lab__logo span { color: var(--qm-accent); }
+    .lab__crumb { font-size: var(--qm-fs-sm); color: var(--qm-text-faint); }
+    .lab h1 { font-size: 22px; letter-spacing: -0.01em; margin: 0 0 4px; }
+    .lab__sub { color: var(--qm-text-muted); margin: 0 0 28px; max-width: 64ch; }
+
+    .group { margin-bottom: 28px; }
+    .group__title {
+      font-size: var(--qm-fs-xs); font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--qm-text-faint); margin: 0 0 10px;
+    }
+    .group__desc { font-size: var(--qm-fs-sm); color: var(--qm-text-muted); margin: 0 0 12px; }
+    .bar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      padding: 16px; background: var(--qm-surface);
+      border: 1px solid var(--qm-border); border-radius: var(--qm-radius-md);
+      box-shadow: var(--qm-shadow-1);
+    }
+
+    /* live toggle */
+    .lab-toggle {
+      display: inline-flex; align-items: center; gap: 8px; margin-left: auto;
+      cursor: pointer; font-size: var(--qm-fs-md); color: var(--qm-text-muted); user-select: none;
+    }
+    .lab-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .lab-toggle__track {
+      flex: 0 0 auto; position: relative; width: 36px; height: 20px;
+      border-radius: 999px; background: var(--qm-border-strong); transition: background-color 140ms ease;
+    }
+    .lab-toggle__thumb {
+      position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; box-shadow: var(--qm-shadow-1); transition: transform 140ms ease;
+    }
+    .lab-toggle input:checked + .lab-toggle__track { background: var(--qm-accent); }
+    .lab-toggle input:checked + .lab-toggle__track .lab-toggle__thumb { transform: translateX(16px); }
+    .lab-toggle input:focus-visible + .lab-toggle__track { outline: 2px solid var(--qm-accent); outline-offset: 2px; }
+
+    .hint { margin-top: 8px; font-size: var(--qm-fs-sm); color: var(--qm-text-muted); line-height: 1.7; }
+    .hint code {
+      font-family: var(--qm-font-mono); font-size: var(--qm-fs-xs);
+      background: var(--qm-surface-sunk); border: 1px solid var(--qm-border);
+      border-radius: 4px; padding: 1px 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lab">
+    <div class="lab__bar">
+      <span class="lab__logo">Quote<span>Media</span></span>
+      <span class="lab__crumb">/ Filters / Components</span>
+    </div>
+
+    <h1>Filter components</h1>
+    <p class="lab__sub">
+      Every dropdown in one place. Two reusable components: a faceted
+      multi-select (categories → options) and a single-criterion value editor
+      (presets + custom). Each opens as a dropdown on desktop and a sheet on
+      touch.
+    </p>
+
+    <!-- Faceted multi-select -->
+    <div class="group">
+      <p class="group__title">Faceted · multi-select across categories</p>
+      <div class="bar">
+        <div class="qm-filter">
+          <div class="qm-chip" data-state="empty">
+            <button id="qm-filings" class="qm-chip__main" type="button"
+                    data-qm-filter data-dataset="filings"
+                    aria-haspopup="dialog" aria-expanded="false">
+              <span class="qm-chip__text" data-chip-text>Filing type</span>
+              <span class="qm-chip__badge" data-chip-badge></span>
+              <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="qm-filter">
+          <div class="qm-chip" data-state="empty">
+            <button id="qm-sector" class="qm-chip__main" type="button"
+                    data-qm-filter data-dataset="sectors"
+                    aria-haspopup="dialog" aria-expanded="false">
+              <span class="qm-chip__text" data-chip-text>Industry / sector</span>
+              <span class="qm-chip__badge" data-chip-badge></span>
+              <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="qm-filter">
+          <div class="qm-chip" data-state="empty">
+            <button id="qm-screener" class="qm-chip__main" type="button"
+                    data-qm-filter data-dataset="screener"
+                    aria-haspopup="dialog" aria-expanded="false">
+              <span class="qm-chip__text" data-chip-text>Add filter criteria</span>
+              <span class="qm-chip__badge" data-chip-badge></span>
+              <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <label class="lab-toggle" title="Affects small screens (< 768px) for all faceted filters">
+          <input type="checkbox" data-qm-narrow-toggle />
+          <span class="lab-toggle__track"><span class="lab-toggle__thumb"></span></span>
+          <span class="lab-toggle__text">Expanding sections</span>
+        </label>
+      </div>
+      <p class="hint">Multi-select; counts and badges update live. Narrow the window to see drill-down (or expanding sections via the toggle).</p>
+    </div>
+
+    <!-- Range / value / date editors -->
+    <div class="group">
+      <p class="group__title">Value &amp; date · single criterion</p>
+      <div class="bar">
+        <button class="qm-rf-chip" type="button" data-qm-range data-filter="pe" aria-haspopup="dialog" aria-expanded="false">
+          <span class="qm-rf-chip__text" data-rf-text>P/E</span>
+          <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+
+        <button class="qm-rf-chip" type="button" data-qm-range data-filter="yield" aria-haspopup="dialog" aria-expanded="false">
+          <span class="qm-rf-chip__text" data-rf-text>Div yield</span>
+          <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+
+        <button class="qm-rf-chip" type="button" data-qm-range data-filter="mktcap" aria-haspopup="dialog" aria-expanded="false">
+          <span class="qm-rf-chip__text" data-rf-text>Market cap</span>
+          <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+
+        <button class="qm-rf-chip" type="button" data-qm-range data-filter="nearmoney" aria-haspopup="dialog" aria-expanded="false">
+          <span class="qm-rf-chip__text" data-rf-text>Near money</span>
+          <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+
+        <button class="qm-rf-chip" type="button" data-qm-range data-filter="expiry" data-default="monthlies" aria-haspopup="dialog" aria-expanded="false">
+          <span class="qm-rf-chip__text" data-rf-text>Expiry</span>
+          <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+      </div>
+      <p class="hint">Single-select presets + <code>Custom</code> (range, single value, or a date-range calendar). Expiry starts pre-selected via <code>data-default</code>.</p>
+    </div>
+  </div>
+
+  <script src="filing-filter.js"></script>
+  <script src="range-filter.js"></script>
+</body>
+</html>

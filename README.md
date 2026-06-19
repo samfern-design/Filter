@@ -37,6 +37,7 @@ swap while the selection holds.
 | `screener.html` | Market-screener "Add filter criteria" demo (`data-dataset="screener"`). |
 | `range-filter.css` / `range-filter.js` | Companion **range-filter editor** (single criterion: presets + manual From/To). |
 | `range.html` | Range-editor demo (P/E, dividend yield, market cap chips). |
+| `all.html` | Combined gallery — every dropdown (both components) on one page. |
 
 ## Range-filter editor (companion component)
 
