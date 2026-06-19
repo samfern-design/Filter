@@ -293,11 +293,12 @@ body {
   transition: transform 160ms ease;
 }
 .qm-chip__main[aria-expanded="true"] .qm-chip__chev { transform: rotate(180deg); }
-/* chevron only in the empty state; selected states show the clear (×) */
-.qm-chip:not([data-state="empty"]) .qm-chip__chev { display: none; }
 
+/* The blue count badge and the clear (×) stay hidden in the resting/static
+   state; they reveal on hover or keyboard focus. The chevron is always shown
+   as the dropdown affordance. */
 .qm-chip__badge {
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
   min-width: 18px;
@@ -311,9 +312,12 @@ body {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+.qm-chip[data-state="multi"]:hover .qm-chip__badge,
+.qm-chip[data-state="multi"]:focus-within .qm-chip__badge { display: inline-flex; }
+
 .qm-chip__clear {
   appearance: none;
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 34px;
@@ -324,6 +328,8 @@ body {
   cursor: pointer;
   transition: background-color 120ms ease, color 120ms ease;
 }
+.qm-chip:not([data-state="empty"]):hover .qm-chip__clear,
+.qm-chip:not([data-state="empty"]):focus-within .qm-chip__clear { display: inline-flex; }
 .qm-chip__clear svg { width: 14px; height: 14px; }
 .qm-chip__clear:hover { background: var(--qm-surface-sunk); color: var(--qm-text); }
 
@@ -453,6 +459,22 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .qm-cat__badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--qm-accent);
+    color: #fff;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-xs);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
   .qm-cat__chev {
     flex: 0 0 auto;
@@ -929,14 +951,14 @@ body {
           <button id="qm-add-filter" class="qm-chip__main" type="button"
                   aria-haspopup="dialog" aria-controls="qm-filter-panel" aria-expanded="false">
             <span class="qm-chip__text" data-chip-text>Filing type</span>
-            <span class="qm-chip__badge" data-chip-badge hidden></span>
+            <span class="qm-chip__badge" data-chip-badge></span>
             <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
                  stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M4 6l4 4 4-4" />
             </svg>
           </button>
           <button class="qm-chip__clear" type="button" data-chip-clear
-                  aria-label="Clear filing type filter" hidden>
+                  aria-label="Clear filing type filter">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"
                  stroke-linecap="round" aria-hidden="true">
               <path d="M4 4l8 8M12 4l-8 8" />
@@ -1350,8 +1372,10 @@ body {
         b.setAttribute("data-cat", c.id);
         if (c.id === this.activeCat) b.setAttribute("aria-current", "true");
         b.title = c.name;
+        const sel = this._countInCat(c.id);
         b.innerHTML =
           `<span class="qm-cat__name">${esc(c.name)}</span>` +
+          (sel ? `<span class="qm-cat__badge">${sel}</span>` : "") +
           `<span class="qm-cat__chev qm-chev">${ICONS.chevR}</span>`;
         b.addEventListener("click", () => { this.activeCat = c.id; this._renderDesktop(); });
         this.el.cats.appendChild(b);
@@ -1559,7 +1583,26 @@ body {
         this._renderMobileFooter();
       } else {
         this._syncList(this.el.dList, this.activeCat);
+        this._syncCatBadge(this.activeCat);
         this._renderDesktopFooter();
+      }
+    }
+
+    // Update a desktop category row's selected-count badge in place.
+    _syncCatBadge(catId) {
+      const btn = this.el.cats.querySelector('[data-cat="' + catId + '"]');
+      if (!btn) return;
+      const n = this._countInCat(catId);
+      let badge = btn.querySelector(".qm-cat__badge");
+      if (n > 0) {
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "qm-cat__badge";
+          btn.insertBefore(badge, btn.querySelector(".qm-cat__chev"));
+        }
+        badge.textContent = String(n);
+      } else if (badge) {
+        badge.remove();
       }
     }
 
@@ -1606,6 +1649,8 @@ body {
       this.trigger.setAttribute("aria-haspopup", "dialog");
       if (!this.chip) return;
 
+      // The × (clear) and the blue count badge are governed by CSS — hidden
+      // at rest, revealed on hover/focus. JS just sets the state + content.
       const n = this.applied.size;
       const label = "Filing type";
       if (n === 0) {
@@ -1613,8 +1658,6 @@ body {
         this.chip.setAttribute("data-state", "empty");
         this.chipText.textContent = label;
         this.chipText.removeAttribute("title");
-        this.chipBadge.hidden = true;
-        this.chipClear.hidden = true;
       } else if (n === 1) {
         // single → the selected value's code
         const id = this.applied.values().next().value;
@@ -1622,16 +1665,12 @@ body {
         this.chip.setAttribute("data-state", "single");
         this.chipText.textContent = code;
         this.chipText.title = code;
-        this.chipBadge.hidden = true;
-        this.chipClear.hidden = false;
       } else {
-        // multi → label + count badge
+        // multi → label + count badge (badge shown on hover/focus)
         this.chip.setAttribute("data-state", "multi");
         this.chipText.textContent = label;
         this.chipText.removeAttribute("title");
-        this.chipBadge.hidden = false;
         this.chipBadge.textContent = String(n);
-        this.chipClear.hidden = false;
       }
       this.trigger.setAttribute("aria-label",
         n ? `${label} filter, ${n} selected` : `${label} filter`);

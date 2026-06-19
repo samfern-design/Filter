@@ -393,8 +393,10 @@
         b.setAttribute("data-cat", c.id);
         if (c.id === this.activeCat) b.setAttribute("aria-current", "true");
         b.title = c.name;
+        const sel = this._countInCat(c.id);
         b.innerHTML =
           `<span class="qm-cat__name">${esc(c.name)}</span>` +
+          (sel ? `<span class="qm-cat__badge">${sel}</span>` : "") +
           `<span class="qm-cat__chev qm-chev">${ICONS.chevR}</span>`;
         b.addEventListener("click", () => { this.activeCat = c.id; this._renderDesktop(); });
         this.el.cats.appendChild(b);
@@ -602,7 +604,26 @@
         this._renderMobileFooter();
       } else {
         this._syncList(this.el.dList, this.activeCat);
+        this._syncCatBadge(this.activeCat);
         this._renderDesktopFooter();
+      }
+    }
+
+    // Update a desktop category row's selected-count badge in place.
+    _syncCatBadge(catId) {
+      const btn = this.el.cats.querySelector('[data-cat="' + catId + '"]');
+      if (!btn) return;
+      const n = this._countInCat(catId);
+      let badge = btn.querySelector(".qm-cat__badge");
+      if (n > 0) {
+        if (!badge) {
+          badge = document.createElement("span");
+          badge.className = "qm-cat__badge";
+          btn.insertBefore(badge, btn.querySelector(".qm-cat__chev"));
+        }
+        badge.textContent = String(n);
+      } else if (badge) {
+        badge.remove();
       }
     }
 
@@ -649,6 +670,8 @@
       this.trigger.setAttribute("aria-haspopup", "dialog");
       if (!this.chip) return;
 
+      // The × (clear) and the blue count badge are governed by CSS — hidden
+      // at rest, revealed on hover/focus. JS just sets the state + content.
       const n = this.applied.size;
       const label = "Filing type";
       if (n === 0) {
@@ -656,8 +679,6 @@
         this.chip.setAttribute("data-state", "empty");
         this.chipText.textContent = label;
         this.chipText.removeAttribute("title");
-        this.chipBadge.hidden = true;
-        this.chipClear.hidden = true;
       } else if (n === 1) {
         // single → the selected value's code
         const id = this.applied.values().next().value;
@@ -665,16 +686,12 @@
         this.chip.setAttribute("data-state", "single");
         this.chipText.textContent = code;
         this.chipText.title = code;
-        this.chipBadge.hidden = true;
-        this.chipClear.hidden = false;
       } else {
-        // multi → label + count badge
+        // multi → label + count badge (badge shown on hover/focus)
         this.chip.setAttribute("data-state", "multi");
         this.chipText.textContent = label;
         this.chipText.removeAttribute("title");
-        this.chipBadge.hidden = false;
         this.chipBadge.textContent = String(n);
-        this.chipClear.hidden = false;
       }
       this.trigger.setAttribute("aria-label",
         n ? `${label} filter, ${n} selected` : `${label} filter`);

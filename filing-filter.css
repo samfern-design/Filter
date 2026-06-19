@@ -50,11 +50,12 @@
   transition: transform 160ms ease;
 }
 .qm-chip__main[aria-expanded="true"] .qm-chip__chev { transform: rotate(180deg); }
-/* chevron only in the empty state; selected states show the clear (×) */
-.qm-chip:not([data-state="empty"]) .qm-chip__chev { display: none; }
 
+/* The blue count badge and the clear (×) stay hidden in the resting/static
+   state; they reveal on hover or keyboard focus. The chevron is always shown
+   as the dropdown affordance. */
 .qm-chip__badge {
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
   min-width: 18px;
@@ -68,9 +69,12 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+.qm-chip[data-state="multi"]:hover .qm-chip__badge,
+.qm-chip[data-state="multi"]:focus-within .qm-chip__badge { display: inline-flex; }
+
 .qm-chip__clear {
   appearance: none;
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 34px;
@@ -81,6 +85,8 @@
   cursor: pointer;
   transition: background-color 120ms ease, color 120ms ease;
 }
+.qm-chip:not([data-state="empty"]):hover .qm-chip__clear,
+.qm-chip:not([data-state="empty"]):focus-within .qm-chip__clear { display: inline-flex; }
 .qm-chip__clear svg { width: 14px; height: 14px; }
 .qm-chip__clear:hover { background: var(--qm-surface-sunk); color: var(--qm-text); }
 
@@ -210,6 +216,22 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .qm-cat__badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--qm-accent);
+    color: #fff;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-xs);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
   .qm-cat__chev {
     flex: 0 0 auto;
