@@ -686,8 +686,8 @@ body {
     flex-direction: column;
     min-height: 0;
     background: var(--qm-surface);
-    /* iOS-style easing for a smoother push */
-    transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
+    /* smooth, monotonic decelerating ease — no overshoot/bounce */
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
   }
   /* screen 1 default in view; screen 2 parked to the right with a soft edge
@@ -711,7 +711,7 @@ body {
     inset: 0;
     background: rgba(16, 22, 35, 0);
     pointer-events: none;
-    transition: background-color 320ms cubic-bezier(0.32, 0.72, 0, 1);
+    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"]::after {
     background: rgba(16, 22, 35, 0.07);
