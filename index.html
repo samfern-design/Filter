@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>QuoteMedia · Filing-type filter</title>
+  <link rel="stylesheet" href="quotemedia-styles.css" />
+  <link rel="stylesheet" href="filing-filter.css" />
+  <style>
+    /* --- Demo harness chrome (intentionally quiet) --------------------- */
+    .lab {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    .lab__bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--qm-border);
+      margin-bottom: 24px;
+    }
+    .lab__logo {
+      font-family: var(--qm-font-mono);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-size: 15px;
+      color: var(--qm-text);
+    }
+    .lab__logo span { color: var(--qm-accent); }
+    .lab__crumb {
+      font-size: var(--qm-fs-sm);
+      color: var(--qm-text-faint);
+    }
+    .lab h1 {
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      margin: 0 0 4px;
+    }
+    .lab__sub {
+      color: var(--qm-text-muted);
+      margin: 0 0 28px;
+      max-width: 60ch;
+    }
+
+    /* Filter toolbar — where the component is invoked */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--qm-surface);
+      border: 1px solid var(--qm-border);
+      border-radius: var(--qm-radius-md);
+      box-shadow: var(--qm-shadow-1);
+    }
+    .toolbar__label {
+      font-size: var(--qm-fs-xs);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--qm-text-faint);
+    }
+    #qm-filter-summary {
+      font-size: var(--qm-fs-md);
+      color: var(--qm-text);
+      font-variant-numeric: tabular-nums;
+    }
+    .qm-muted { color: var(--qm-text-faint); }
+
+    .toolbar .qm-add {
+      margin-left: auto;
+    }
+    .qm-add svg { width: 16px; height: 16px; }
+
+    .hint {
+      margin-top: 24px;
+      font-size: var(--qm-fs-sm);
+      color: var(--qm-text-muted);
+      line-height: 1.7;
+    }
+    .hint code {
+      font-family: var(--qm-font-mono);
+      font-size: var(--qm-fs-xs);
+      background: var(--qm-surface-sunk);
+      border: 1px solid var(--qm-border);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lab">
+    <div class="lab__bar">
+      <span class="lab__logo">Quote<span>Media</span></span>
+      <span class="lab__crumb">/ Filings / Filter</span>
+    </div>
+
+    <h1>Filing-type filter</h1>
+    <p class="lab__sub">
+      Pick the SEC filing types to show. On a wide screen it opens as a
+      dropdown with categories on the left and types on the right; on a phone
+      it rises as a bottom sheet you drill into. Your selection is the same
+      either way.
+    </p>
+
+    <div class="toolbar">
+      <span class="toolbar__label">Filing type</span>
+      <span id="qm-filter-summary"></span>
+
+      <div class="qm-filter qm-add">
+        <button id="qm-add-filter" class="qm-btn qm-btn--outline" type="button">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M8 3v10M3 8h10" />
+          </svg>
+          Add filter
+        </button>
+      </div>
+    </div>
+
+    <p class="hint">
+      Try: select <code>10-K</code> in Annual Reports, switch to Proxy
+      Statements and add <code>DEF 14A</code> — both persist. Resize across
+      <code>768px</code> with the panel open to see the layout swap while the
+      selection holds. On mobile, the cross-category search on screen 1 finds
+      and checks any type.
+    </p>
+  </div>
+
+  <script src="filing-filter.js"></script>
+</body>
+</html>

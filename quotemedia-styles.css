@@ -1,0 +1,233 @@
+/* ==========================================================================
+   quotemedia-styles.css
+   Shared design tokens + base primitives for the QuoteMedia prototyping lab.
+   The filing-type filter (and future components) build on these.
+   ========================================================================== */
+
+:root {
+  /* --- Color: cool slate financial UI ----------------------------------- */
+  --qm-ground:        #F6F8FB;  /* page background          */
+  --qm-surface:       #FFFFFF;  /* cards, panels, sheets     */
+  --qm-surface-sunk:  #F1F4F9;  /* sunken rails / hover wells */
+  --qm-text:          #161B26;  /* primary text              */
+  --qm-text-muted:    #5B6472;  /* secondary text, captions  */
+  --qm-text-faint:    #8A93A3;  /* placeholders, disabled    */
+  --qm-border:        #E4E8EF;  /* hairlines, dividers       */
+  --qm-border-strong: #CBD3DF;
+
+  --qm-accent:        #0E63D6;  /* azure — selection / focus */
+  --qm-accent-press:  #0A4FAC;
+  --qm-accent-weak:   #E7F0FC;  /* tinted selected wells     */
+  --qm-scrim:         rgba(16, 22, 35, 0.45);
+
+  /* --- Type -------------------------------------------------------------- */
+  --qm-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Helvetica, Arial, sans-serif;
+  /* Filing codes & all counts read as market-data symbols → tabular mono. */
+  --qm-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo",
+                  "Consolas", monospace;
+
+  --qm-fs-xs: 11px;
+  --qm-fs-sm: 12px;
+  --qm-fs-md: 13px;
+  --qm-fs-lg: 15px;
+  --qm-fs-xl: 18px;
+
+  /* --- Spacing scale ----------------------------------------------------- */
+  --qm-s1: 4px;
+  --qm-s2: 8px;
+  --qm-s3: 12px;
+  --qm-s4: 16px;
+  --qm-s5: 20px;
+  --qm-s6: 24px;
+
+  /* --- Radius / elevation ------------------------------------------------ */
+  --qm-radius-sm: 6px;
+  --qm-radius-md: 10px;
+  --qm-radius-lg: 16px;
+  --qm-shadow-1: 0 1px 2px rgba(16, 22, 35, 0.06);
+  --qm-shadow-pop: 0 12px 32px rgba(16, 22, 35, 0.16),
+                   0 2px 6px rgba(16, 22, 35, 0.08);
+  --qm-shadow-sheet: 0 -8px 40px rgba(16, 22, 35, 0.22);
+
+  /* --- Breakpoint -------------------------------------------------------- */
+  --qm-bp-mobile: 768px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  line-height: 1.45;
+  color: var(--qm-text);
+  background: var(--qm-ground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+.qm-btn {
+  appearance: none;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  font-weight: 600;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--qm-s2);
+  padding: 10px 16px;
+  min-height: 40px;
+  border: 1px solid transparent;
+  border-radius: var(--qm-radius-sm);
+  cursor: pointer;
+  background: transparent;
+  color: var(--qm-text);
+  transition: background-color 120ms ease, border-color 120ms ease,
+              color 120ms ease;
+}
+
+.qm-btn--primary {
+  background: var(--qm-accent);
+  color: #fff;
+}
+.qm-btn--primary:hover:not(:disabled) { background: var(--qm-accent-press); }
+
+.qm-btn--ghost {
+  color: var(--qm-text-muted);
+  border-color: transparent;
+}
+.qm-btn--ghost:hover:not(:disabled) {
+  background: var(--qm-surface-sunk);
+  color: var(--qm-text);
+}
+
+.qm-btn--outline {
+  border-color: var(--qm-border-strong);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+}
+.qm-btn--outline:hover:not(:disabled) { background: var(--qm-surface-sunk); }
+
+.qm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Visible keyboard focus everywhere. */
+.qm-btn:focus-visible,
+.qm-icon-btn:focus-visible,
+.qm-search input:focus-visible,
+[data-row]:focus-visible {
+  outline: 2px solid var(--qm-accent);
+  outline-offset: 2px;
+}
+
+/* --- Icon button ---------------------------------------------------------- */
+.qm-icon-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--qm-radius-sm);
+  background: transparent;
+  color: var(--qm-text-muted);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.qm-icon-btn:hover {
+  background: var(--qm-surface-sunk);
+  color: var(--qm-text);
+}
+
+/* --- Search field --------------------------------------------------------- */
+.qm-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.qm-search svg {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--qm-text-faint);
+  pointer-events: none;
+}
+.qm-search input {
+  width: 100%;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  color: var(--qm-text);
+  padding: 10px 12px 10px 34px;
+  min-height: 40px;
+  border: 1px solid var(--qm-border-strong);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+}
+.qm-search input::placeholder { color: var(--qm-text-faint); }
+.qm-search input:focus { outline: none; border-color: var(--qm-accent); }
+
+/* --- Custom checkbox glyph ------------------------------------------------ */
+.qm-check {
+  flex: 0 0 auto;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--qm-border-strong);
+  border-radius: 5px;
+  background: var(--qm-surface);
+  transition: background-color 100ms ease, border-color 100ms ease;
+}
+.qm-check::after {
+  /* checkmark */
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.2l2.6 2.6L10 3.2' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+[data-checked="true"] .qm-check {
+  background: var(--qm-accent);
+  border-color: var(--qm-accent);
+}
+[data-checked="true"] .qm-check::after { opacity: 1; }
+
+[data-checked="mixed"] .qm-check {
+  background: var(--qm-accent);
+  border-color: var(--qm-accent);
+}
+[data-checked="mixed"] .qm-check::after {
+  opacity: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6h7' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* Screen-reader-only utility. */
+.qm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
