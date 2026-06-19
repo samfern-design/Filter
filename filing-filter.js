@@ -556,11 +556,12 @@
       row.setAttribute("aria-checked", String(checked));
       row.setAttribute("data-checked", String(checked));
       row.setAttribute("data-id", id);
-      row.setAttribute("aria-label", `${code} — ${label}${catName ? ` (${catName})` : ""}`);
+      // show just the form code as plain text (description kept for a11y only)
+      row.setAttribute("aria-label", `${code}${catName ? `, ${catName}` : ""} — ${label}`);
+      row.title = label;
       row.innerHTML =
         `<span class="qm-check" aria-hidden="true"></span>` +
         `<span class="qm-row__code">${esc(code)}</span>` +
-        `<span class="qm-row__label" title="${esc(label)}">${esc(label)}</span>` +
         (catName ? `<span class="qm-row__cat">${esc(catName)}</span>` : "");
       const toggle = () => this.toggleItem(id, row);
       row.addEventListener("click", toggle);

@@ -313,7 +313,10 @@ body {
   font-variant-numeric: tabular-nums;
 }
 .qm-chip[data-state="multi"]:hover .qm-chip__badge,
-.qm-chip[data-state="multi"]:focus-within .qm-chip__badge { display: inline-flex; }
+.qm-chip[data-state="multi"]:focus-within .qm-chip__badge,
+.qm-chip[data-state="multi"] .qm-chip__main[aria-expanded="true"] .qm-chip__badge {
+  display: inline-flex;
+}
 
 /* active appearance when something is selected */
 .qm-chip[data-state="single"],
@@ -522,22 +525,18 @@ body {
 .qm-row:active { background: var(--qm-accent-weak); }
 
 .qm-row__code {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   font-family: var(--qm-font-mono);
-  font-size: var(--qm-fs-sm);
-  font-weight: 600;
+  font-size: var(--qm-fs-md);
+  font-weight: 500;
   color: var(--qm-text);
-  background: var(--qm-surface-sunk);
-  border: 1px solid var(--qm-border);
-  border-radius: 4px;
-  padding: 2px 6px;
-  min-width: 60px;
-  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 [data-checked="true"] .qm-row__code {
   color: var(--qm-accent-press);
-  background: var(--qm-accent-weak);
-  border-color: transparent;
+  font-weight: 600;
 }
 .qm-row__label {
   flex: 1 1 auto;
@@ -1506,11 +1505,12 @@ body {
       row.setAttribute("aria-checked", String(checked));
       row.setAttribute("data-checked", String(checked));
       row.setAttribute("data-id", id);
-      row.setAttribute("aria-label", `${code} — ${label}${catName ? ` (${catName})` : ""}`);
+      // show just the form code as plain text (description kept for a11y only)
+      row.setAttribute("aria-label", `${code}${catName ? `, ${catName}` : ""} — ${label}`);
+      row.title = label;
       row.innerHTML =
         `<span class="qm-check" aria-hidden="true"></span>` +
         `<span class="qm-row__code">${esc(code)}</span>` +
-        `<span class="qm-row__label" title="${esc(label)}">${esc(label)}</span>` +
         (catName ? `<span class="qm-row__cat">${esc(catName)}</span>` : "");
       const toggle = () => this.toggleItem(id, row);
       row.addEventListener("click", toggle);
