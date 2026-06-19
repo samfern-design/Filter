@@ -63,6 +63,7 @@
       help: "Show option strikes within this percentage of the spot price.",
       unit: "%",
       step: 1,
+      single: true,   // custom is a single value, not a From/To range
       presets: [
         { id: "all", label: "All",  from: null, to: null },
         { id: "2",   label: "2%",   from: 2,  to: 2 },
@@ -146,9 +147,15 @@
                 </button>
               </div>
             </section>
-            <!-- screen 2: manual -->
+            <!-- screen 2: custom (single value or From/To range) -->
             <section class="qm-rf-screen" data-screen="2">
               <div class="qm-rf-manual">
+                ${c.single ? `
+                <label class="qm-rf-field">
+                  <span>Value</span>
+                  <input class="qm-rf-input" type="number" inputmode="decimal"
+                         step="${c.step}" data-from placeholder="e.g. 7" />
+                </label>` : `
                 <label class="qm-rf-field">
                   <span>From</span>
                   <input class="qm-rf-input" type="number" inputmode="decimal"
@@ -158,9 +165,9 @@
                   <span>To</span>
                   <input class="qm-rf-input" type="number" inputmode="decimal"
                          step="${c.step}" data-to placeholder="Max" />
-                </label>
+                </label>`}
               </div>
-              ${c.unit ? `<div class="qm-rf-unit">Values in ${esc(c.unit === "$" ? "$ millions" : c.unit)}</div>` : ""}
+              ${c.unit ? `<div class="qm-rf-unit">${c.single ? "Value" : "Values"} in ${esc(c.unit === "$" ? "$ millions" : c.unit)}</div>` : ""}
               <div class="qm-rf-foot">
                 <button class="qm-btn qm-btn--ghost" data-manual-clear type="button">Clear</button>
                 <span class="qm-rf-foot__spacer"></span>
@@ -202,7 +209,7 @@
       this.el.search.addEventListener("input", () => this._renderPresets());
       this.el.apply.addEventListener("click", () => this._applyManual());
       this.el.manualClear.addEventListener("click", () => {
-        this.el.from.value = ""; this.el.to.value = "";
+        this.el.from.value = ""; if (this.el.to) this.el.to.value = "";
         this.value = null; this._renderChip();
       });
       window.addEventListener("resize", () => { if (this.isOpen && !this.isSheet) this._position(); });
@@ -217,7 +224,7 @@
       this._renderPresets();
       // seed manual inputs from current value
       this.el.from.value = this.value && this.value.from != null ? this.value.from : "";
-      this.el.to.value = this.value && this.value.to != null ? this.value.to : "";
+      if (this.el.to) this.el.to.value = this.value && this.value.to != null ? this.value.to : "";
 
       this.overlay.setAttribute("data-open", "true");
       this.panel.offsetHeight; // reflow
@@ -345,7 +352,10 @@
     /* ---- Custom range -> saved under the main menu --------------------- */
     _applyManual() {
       const from = this.el.from.value === "" ? null : Number(this.el.from.value);
-      const to = this.el.to.value === "" ? null : Number(this.el.to.value);
+      // single-value metrics store the value as from === to
+      const to = this.cfg.single
+        ? from
+        : (this.el.to.value === "" ? null : Number(this.el.to.value));
       if (from == null && to == null) {
         this.value = null;
         this._renderChip();
