@@ -294,9 +294,9 @@ body {
 }
 .qm-chip__main[aria-expanded="true"] .qm-chip__chev { transform: rotate(180deg); }
 
-/* The blue count badge and the clear (×) stay hidden in the resting/static
-   state; they reveal on hover or keyboard focus. The chevron is always shown
-   as the dropdown affordance. */
+/* The blue count badge stays hidden in the resting/static state and reveals
+   on hover or keyboard focus. The chevron is always shown as the dropdown
+   affordance. */
 .qm-chip__badge {
   display: none;
   align-items: center;
@@ -315,24 +315,6 @@ body {
 .qm-chip[data-state="multi"]:hover .qm-chip__badge,
 .qm-chip[data-state="multi"]:focus-within .qm-chip__badge { display: inline-flex; }
 
-.qm-chip__clear {
-  appearance: none;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  border: none;
-  border-left: 1px solid var(--qm-border);
-  background: transparent;
-  color: var(--qm-text-muted);
-  cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
-}
-.qm-chip:not([data-state="empty"]):hover .qm-chip__clear,
-.qm-chip:not([data-state="empty"]):focus-within .qm-chip__clear { display: inline-flex; }
-.qm-chip__clear svg { width: 14px; height: 14px; }
-.qm-chip__clear:hover { background: var(--qm-surface-sunk); color: var(--qm-text); }
-
 /* active appearance when something is selected */
 .qm-chip[data-state="single"],
 .qm-chip[data-state="multi"] {
@@ -341,16 +323,8 @@ body {
 }
 .qm-chip[data-state="single"] .qm-chip__main,
 .qm-chip[data-state="multi"] .qm-chip__main { color: var(--qm-accent-press); }
-.qm-chip[data-state="single"] .qm-chip__clear,
-.qm-chip[data-state="multi"] .qm-chip__clear {
-  border-left-color: rgba(14, 99, 214, 0.25);
-  color: var(--qm-accent-press);
-}
-.qm-chip[data-state="single"] .qm-chip__clear:hover,
-.qm-chip[data-state="multi"] .qm-chip__clear:hover { background: rgba(14, 99, 214, 0.12); }
 
-.qm-chip__main:focus-visible,
-.qm-chip__clear:focus-visible {
+.qm-chip__main:focus-visible {
   outline: 2px solid var(--qm-accent);
   outline-offset: 2px;
 }
@@ -957,13 +931,6 @@ body {
               <path d="M4 6l4 4 4-4" />
             </svg>
           </button>
-          <button class="qm-chip__clear" type="button" data-chip-clear
-                  aria-label="Clear filing type filter">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"
-                 stroke-linecap="round" aria-hidden="true">
-              <path d="M4 4l8 8M12 4l-8 8" />
-            </svg>
-          </button>
         </div>
       </div>
     </div>
@@ -1117,7 +1084,6 @@ body {
       this.chip = trigger.closest(".qm-chip");
       this.chipText = this.chip && this.chip.querySelector("[data-chip-text]");
       this.chipBadge = this.chip && this.chip.querySelector("[data-chip-badge]");
-      this.chipClear = this.chip && this.chip.querySelector("[data-chip-clear]");
       this.applied = new Set();   // last applied selection
       this.staged = new Set();    // working copy while open
       this.isOpen = false;
@@ -1227,13 +1193,6 @@ body {
     /* ---- Event wiring -------------------------------------------------- */
     _wire() {
       this.trigger.addEventListener("click", () => this.toggleOpen());
-
-      if (this.chipClear) {
-        this.chipClear.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.clearApplied();
-        });
-      }
 
       this.overlay.addEventListener("mousedown", (e) => {
         if (e.target === this.overlay) this.dismiss();
@@ -1681,13 +1640,6 @@ body {
       }
       this.trigger.setAttribute("aria-label",
         n ? `${label} filter, ${n} selected` : `${label} filter`);
-    }
-
-    // Clear the applied selection from the chip's × (panel closed).
-    clearApplied() {
-      this.applied.clear();
-      this.staged.clear();
-      this._renderSummary();
     }
 
     /* ---- Helpers ------------------------------------------------------- */

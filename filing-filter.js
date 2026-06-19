@@ -138,7 +138,6 @@
       this.chip = trigger.closest(".qm-chip");
       this.chipText = this.chip && this.chip.querySelector("[data-chip-text]");
       this.chipBadge = this.chip && this.chip.querySelector("[data-chip-badge]");
-      this.chipClear = this.chip && this.chip.querySelector("[data-chip-clear]");
       this.applied = new Set();   // last applied selection
       this.staged = new Set();    // working copy while open
       this.isOpen = false;
@@ -248,13 +247,6 @@
     /* ---- Event wiring -------------------------------------------------- */
     _wire() {
       this.trigger.addEventListener("click", () => this.toggleOpen());
-
-      if (this.chipClear) {
-        this.chipClear.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this.clearApplied();
-        });
-      }
 
       this.overlay.addEventListener("mousedown", (e) => {
         if (e.target === this.overlay) this.dismiss();
@@ -702,13 +694,6 @@
       }
       this.trigger.setAttribute("aria-label",
         n ? `${label} filter, ${n} selected` : `${label} filter`);
-    }
-
-    // Clear the applied selection from the chip's × (panel closed).
-    clearApplied() {
-      this.applied.clear();
-      this.staged.clear();
-      this._renderSummary();
     }
 
     /* ---- Helpers ------------------------------------------------------- */
