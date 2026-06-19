@@ -75,6 +75,41 @@
     }
     .qm-add svg { width: 16px; height: 16px; }
 
+    .lab-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      cursor: pointer;
+      font-size: var(--qm-fs-md);
+      color: var(--qm-text-muted);
+      user-select: none;
+    }
+    .lab-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .lab-toggle__track {
+      flex: 0 0 auto;
+      position: relative;
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--qm-border-strong);
+      transition: background-color 140ms ease;
+    }
+    .lab-toggle__thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: var(--qm-shadow-1);
+      transition: transform 140ms ease;
+    }
+    .lab-toggle input:checked + .lab-toggle__track { background: var(--qm-accent); }
+    .lab-toggle input:checked + .lab-toggle__track .lab-toggle__thumb { transform: translateX(16px); }
+    .lab-toggle input:focus-visible + .lab-toggle__track { outline: 2px solid var(--qm-accent); outline-offset: 2px; }
+
     .hint {
       margin-top: 24px;
       font-size: var(--qm-fs-sm);
@@ -123,6 +158,12 @@
           </button>
         </div>
       </div>
+
+      <label class="lab-toggle" title="Only affects small screens (< 768px)">
+        <input type="checkbox" data-qm-narrow-toggle="qm-add-filter" />
+        <span class="lab-toggle__track"><span class="lab-toggle__thumb"></span></span>
+        <span class="lab-toggle__text">Expanding sections</span>
+      </label>
     </div>
 
     <p class="hint">

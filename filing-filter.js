@@ -426,6 +426,18 @@
     _catById(catId) { return this.categories.find((c) => c.id === catId); }
     _itemsByCat(catId) { return this._catById(catId).items; }
 
+    // Switch narrow-breakpoint navigation at runtime ("drilldown"|"accordion").
+    setNarrowNav(nav) {
+      if (nav !== "accordion" && nav !== "drilldown") return;
+      this.narrowNav = nav;
+      this.expanded = new Set(nav === "accordion" ? [this.activeCat] : []);
+      if (this.isOpen) {
+        this.mobileScreen = 1;
+        this._renderForViewport();
+        if (this.mode !== "sheet") this._position();
+      }
+    }
+
     // Presentation mode:
     //  - "miller"    : wide viewport → two-column dropdown
     //  - "drilldown" : narrow + pointer device → dropdown with drill-down flow
@@ -1136,6 +1148,18 @@
       const dataset = trigger.getAttribute("data-dataset") || "filings";
       const narrowNav = trigger.getAttribute("data-narrow-nav") || undefined;
       trigger._qm = new FilingFilter(trigger, { dataset, narrowNav });
+    });
+
+    // Optional checkbox to flip narrow nav live: data-qm-narrow-toggle="<triggerId>"
+    document.querySelectorAll("[data-qm-narrow-toggle]").forEach((cb) => {
+      const id = cb.getAttribute("data-qm-narrow-toggle");
+      const trigger = id ? document.getElementById(id)
+                         : document.querySelector("[data-qm-filter]");
+      const filter = trigger && trigger._qm;
+      if (!filter) return;
+      cb.checked = filter.narrowNav === "accordion";
+      cb.addEventListener("change", () =>
+        filter.setNarrowNav(cb.checked ? "accordion" : "drilldown"));
     });
   });
 })();
