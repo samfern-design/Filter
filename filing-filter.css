@@ -436,6 +436,9 @@
     overflow: hidden;
     min-height: 0;
   }
+  /* Material 3 "Shared axis (X)" transition: a small ~30px slide carried by
+     a fade — the fade does the work, so it reads as a calm cross-fade with a
+     directional hint rather than a full-width push. Emphasized easing, 300ms. */
   .qm-screen {
     position: absolute;
     inset: 0;
@@ -443,35 +446,27 @@
     flex-direction: column;
     min-height: 0;
     background: var(--qm-surface);
-    /* smooth, monotonic decelerating ease — no overshoot/bounce */
-    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+    transition: transform 300ms cubic-bezier(0.2, 0, 0, 1),
+                opacity 300ms cubic-bezier(0.2, 0, 0, 1);
+    will-change: transform, opacity;
   }
-  /* screen 1 default in view; screen 2 parked to the right with a soft edge
-     shadow so it reads as sliding over screen 1 */
-  .qm-screen[data-screen="1"] { transform: translateX(0); }
+  /* on screen 1: list is present; detail waits just off to the right, faded */
+  .qm-screen[data-screen="1"] { transform: translateX(0); opacity: 1; }
   .qm-screen[data-screen="2"] {
-    transform: translateX(100%);
-    box-shadow: -12px 0 32px rgba(16, 22, 35, 0.10);
+    transform: translateX(30px);
+    opacity: 0;
+    pointer-events: none;
   }
-  /* when drilled in: 1 parallax-slides slightly left, 2 slides fully in */
+  /* drilled in: list shifts slightly left + fades out, detail fades in */
   .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"] {
-    transform: translateX(-28%);
+    transform: translateX(-30px);
+    opacity: 0;
+    pointer-events: none;
   }
   .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="2"] {
     transform: translateX(0);
-  }
-  /* dim the parked screen for depth */
-  .qm-screen[data-screen="1"]::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(16, 22, 35, 0);
-    pointer-events: none;
-    transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"]::after {
-    background: rgba(16, 22, 35, 0.07);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .qm-shead {
