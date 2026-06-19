@@ -91,6 +91,8 @@
   const ICONS = {
     chevDown: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>',
     chevL: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5l-5 5 5 5"/></svg>',
+    chevR: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5l5 5-5 5"/></svg>',
+    cal: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="3.2" width="11" height="10.3" rx="1.5"/><path d="M2.5 6.2h11M5.5 1.6v3M10.5 1.6v3" stroke-linecap="round"/></svg>',
     trash: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/></svg>',
     check: '<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5l3 3 7-7"/></svg>',
     sliders: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h7M11 5h3M2 11h3M7 11h7"/><circle cx="9.5" cy="5" r="1.6"/><circle cx="5.5" cy="11" r="1.6"/></svg>',
@@ -160,35 +162,9 @@
                 </button>
               </div>
             </section>
-            <!-- screen 2: custom (single value or From/To range) -->
+            <!-- screen 2: custom (range / single value / date range) -->
             <section class="qm-rf-screen" data-screen="2">
-              <div class="qm-rf-manual">
-                ${(c.custom || "range") === "single" ? `
-                <label class="qm-rf-field">
-                  <span>Value</span>
-                  <input class="qm-rf-input" type="number" inputmode="decimal"
-                         step="${c.step}" data-from placeholder="e.g. 7" />
-                </label>` : (c.custom === "dates") ? `
-                <label class="qm-rf-field">
-                  <span>From</span>
-                  <input class="qm-rf-input" type="date" data-from />
-                </label>
-                <label class="qm-rf-field">
-                  <span>To</span>
-                  <input class="qm-rf-input" type="date" data-to />
-                </label>` : `
-                <label class="qm-rf-field">
-                  <span>From</span>
-                  <input class="qm-rf-input" type="number" inputmode="decimal"
-                         step="${c.step}" data-from placeholder="Min" />
-                </label>
-                <label class="qm-rf-field">
-                  <span>To</span>
-                  <input class="qm-rf-input" type="number" inputmode="decimal"
-                         step="${c.step}" data-to placeholder="Max" />
-                </label>`}
-              </div>
-              ${c.unit && c.custom !== "dates" ? `<div class="qm-rf-unit">${c.custom === "single" ? "Value" : "Values"} in ${esc(c.unit === "$" ? "$ millions" : c.unit)}</div>` : ""}
+              ${this._customScreenHtml(c)}
               <div class="qm-rf-foot">
                 <button class="qm-btn qm-btn--ghost" data-manual-clear type="button">Clear</button>
                 <span class="qm-rf-foot__spacer"></span>
@@ -213,8 +189,56 @@
         to: $("[data-to]"),
         apply: $("[data-apply]"),
         manualClear: $("[data-manual-clear]"),
+        // calendar (dates mode only)
+        fromText: $("[data-from-text]"),
+        toText: $("[data-to-text]"),
+        fromDisp: $("[data-from-display]"),
+        toDisp: $("[data-to-display]"),
+        cal: $("[data-cal]"),
+        calLabel: $("[data-cal-label]"),
+        prev: $("[data-prev]"),
+        next: $("[data-next]"),
       };
       this.el.searchWrap = this.el.search.closest(".qm-rf-search");
+    }
+
+    // Custom-screen markup per mode (range / single / dates).
+    _customScreenHtml(c) {
+      const mode = c.custom || "range";
+      if (mode === "dates") {
+        return `
+          <div class="qm-rf-daterange">
+            <button class="qm-rf-datefield" data-from-display type="button">
+              <span data-from-text>From</span>${ICONS.cal}
+            </button>
+            <button class="qm-rf-datefield" data-to-display type="button">
+              <span data-to-text>To</span>${ICONS.cal}
+            </button>
+          </div>
+          <div class="qm-rf-cal">
+            <div class="qm-rf-cal__nav">
+              <button class="qm-icon-btn qm-rf-icon" data-prev type="button" aria-label="Previous month">${ICONS.chevL}</button>
+              <span class="qm-rf-cal__label" data-cal-label></span>
+              <button class="qm-icon-btn qm-rf-icon" data-next type="button" aria-label="Next month">${ICONS.chevR}</button>
+            </div>
+            <div class="qm-rf-cal__grid" data-cal role="grid"></div>
+          </div>`;
+      }
+      const unit = c.unit
+        ? `<div class="qm-rf-unit">${mode === "single" ? "Value" : "Values"} in ${esc(c.unit === "$" ? "$ millions" : c.unit)}</div>`
+        : "";
+      if (mode === "single") {
+        return `<div class="qm-rf-manual">
+            <label class="qm-rf-field"><span>Value</span>
+              <input class="qm-rf-input" type="number" inputmode="decimal" step="${c.step}" data-from placeholder="e.g. 7" /></label>
+          </div>${unit}`;
+      }
+      return `<div class="qm-rf-manual">
+          <label class="qm-rf-field"><span>From</span>
+            <input class="qm-rf-input" type="number" inputmode="decimal" step="${c.step}" data-from placeholder="Min" /></label>
+          <label class="qm-rf-field"><span>To</span>
+            <input class="qm-rf-input" type="number" inputmode="decimal" step="${c.step}" data-to placeholder="Max" /></label>
+        </div>${unit}`;
     }
 
     _wire() {
@@ -231,9 +255,26 @@
       this.el.search.addEventListener("input", () => this._renderPresets());
       this.el.apply.addEventListener("click", () => this._applyManual());
       this.el.manualClear.addEventListener("click", () => {
-        this.el.from.value = ""; if (this.el.to) this.el.to.value = "";
+        if (this.customMode === "dates") { this.calFrom = null; this.calTo = null; this._renderDates(); }
+        else { if (this.el.from) this.el.from.value = ""; if (this.el.to) this.el.to.value = ""; }
         this.value = null; this._renderChip();
       });
+      // calendar (dates mode)
+      if (this.el.cal) {
+        const shift = (delta) => {
+          this.calMonth = new Date(this.calMonth.getFullYear(), this.calMonth.getMonth() + delta, 1);
+          this._renderCalendar();
+        };
+        this.el.prev.addEventListener("click", () => shift(-1));
+        this.el.next.addEventListener("click", () => shift(1));
+        this.el.fromDisp.addEventListener("click", () => {
+          if (this.calFrom) { this.calMonth = this._startMonth(this.calFrom); this._renderCalendar(); }
+        });
+        this.el.toDisp.addEventListener("click", () => {
+          const d = this.calTo || this.calFrom;
+          if (d) { this.calMonth = this._startMonth(d); this._renderCalendar(); }
+        });
+      }
       window.addEventListener("resize", () => { if (this.isOpen && !this.isSheet) this._position(); });
       window.addEventListener("scroll", () => { if (this.isOpen && !this.isSheet) this._position(); }, true);
     }
@@ -244,9 +285,16 @@
       this.goScreen(1, true);
       this.el.search.value = "";
       this._renderPresets();
-      // seed manual inputs from current value
-      this.el.from.value = this.value && this.value.from != null ? this.value.from : "";
-      if (this.el.to) this.el.to.value = this.value && this.value.to != null ? this.value.to : "";
+      // seed the custom screen from the current value
+      if (this.customMode === "dates") {
+        this.calFrom = this.value && typeof this.value.from === "string" ? this._parseISO(this.value.from) : null;
+        this.calTo = this.value && typeof this.value.to === "string" ? this._parseISO(this.value.to) : null;
+        this.calMonth = this._startMonth(this.calFrom || new Date());
+        this._renderDates();
+      } else {
+        if (this.el.from) this.el.from.value = this.value && this.value.from != null ? this.value.from : "";
+        if (this.el.to) this.el.to.value = this.value && this.value.to != null ? this.value.to : "";
+      }
 
       this.overlay.setAttribute("data-open", "true");
       this.panel.offsetHeight; // reflow
@@ -278,8 +326,10 @@
       if (silent) this.panel.removeAttribute("data-dir");
       else this.panel.setAttribute("data-dir", n === 2 ? "fwd" : "back");
       this.el.back.hidden = n !== 2;
-      if (!silent) requestAnimationFrame(() =>
-        (n === 2 ? this.el.from : this.el.search).focus());
+      if (!silent) requestAnimationFrame(() => {
+        const t = n === 2 ? (this.el.from || this.el.fromDisp) : this.el.search;
+        if (t && t.focus) t.focus();
+      });
     }
 
     _position() {
@@ -382,8 +432,8 @@
     _applyManual() {
       let from, to;
       if (this.customMode === "dates") {
-        from = this.el.from.value || null;          // "yyyy-mm-dd"
-        to = this.el.to.value || null;
+        from = this.calFrom ? this._toISO(this.calFrom) : null;
+        to = this.calTo ? this._toISO(this.calTo) : null;
       } else {
         from = this.el.from.value === "" ? null : Number(this.el.from.value);
         // single-value metrics store the value as from === to
@@ -431,6 +481,75 @@
       if (from && !to) return "From " + d(from);
       if (!from && to) return "Until " + d(to);
       return `${d(from)} – ${d(to)}`;
+    }
+
+    /* ---- Inline range calendar (dates mode) --------------------------- */
+    _startMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+    _sameDay(a, b) {
+      return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+    _toISO(d) {
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${d.getFullYear()}-${m}-${day}`;
+    }
+    _parseISO(s) { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); }
+    _fmtDay(d) { return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); }
+
+    _renderDates() {
+      if (this.el.fromText) this.el.fromText.textContent = this.calFrom ? this._fmtDay(this.calFrom) : "From";
+      if (this.el.toText) this.el.toText.textContent = this.calTo ? this._fmtDay(this.calTo) : "To";
+      if (this.el.fromDisp) this.el.fromDisp.setAttribute("data-set", String(!!this.calFrom));
+      if (this.el.toDisp) this.el.toDisp.setAttribute("data-set", String(!!this.calTo));
+      this._renderCalendar();
+    }
+
+    _renderCalendar() {
+      const grid = this.el.cal;
+      if (!grid) return;
+      grid.innerHTML = "";
+      this.el.calLabel.textContent = this.calMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+      ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].forEach((w) => {
+        const s = document.createElement("span");
+        s.className = "qm-rf-cal__wd";
+        s.textContent = w;
+        grid.appendChild(s);
+      });
+      const y = this.calMonth.getFullYear(), m = this.calMonth.getMonth();
+      const offset = (new Date(y, m, 1).getDay() + 6) % 7; // Monday-first
+      for (let i = 0; i < offset; i++) {
+        const e = document.createElement("span");
+        e.className = "qm-rf-cal__cell--empty";
+        grid.appendChild(e);
+      }
+      const days = new Date(y, m + 1, 0).getDate();
+      const today = new Date();
+      for (let d = 1; d <= days; d++) {
+        const date = new Date(y, m, d);
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "qm-rf-cal__day";
+        cell.textContent = String(d);
+        if (this._sameDay(date, today)) cell.setAttribute("data-today", "true");
+        const isEnd = (this.calFrom && this._sameDay(date, this.calFrom)) ||
+                      (this.calTo && this._sameDay(date, this.calTo));
+        if (isEnd) cell.setAttribute("data-end", "true");
+        if (this.calFrom && this.calTo && date > this.calFrom && date < this.calTo)
+          cell.setAttribute("data-inrange", "true");
+        cell.addEventListener("click", () => this._pickDay(date));
+        grid.appendChild(cell);
+      }
+    }
+
+    _pickDay(date) {
+      if (!this.calFrom || (this.calFrom && this.calTo)) {
+        this.calFrom = date; this.calTo = null;            // start a new range
+      } else if (date < this.calFrom) {
+        this.calTo = this.calFrom; this.calFrom = date;    // picked before start → swap
+      } else {
+        this.calTo = date;
+      }
+      this._renderDates();
     }
 
     _fmt(v) {

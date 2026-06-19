@@ -226,6 +226,66 @@
 .qm-rf-input:focus { outline: none; border-color: var(--qm-accent); }
 .qm-rf-unit { padding: 0 14px 4px; font-size: var(--qm-fs-sm); color: var(--qm-text-muted); }
 
+/* ---- Date range + inline calendar (dates mode) ------------------------- */
+.qm-rf-daterange { display: flex; gap: 12px; padding: 14px 14px 6px; }
+.qm-rf-datefield {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--qm-border-strong);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+  cursor: pointer;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  color: var(--qm-text-faint);
+}
+.qm-rf-datefield[data-set="true"] { color: var(--qm-text); border-color: var(--qm-accent); }
+.qm-rf-datefield > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qm-rf-datefield svg { flex: 0 0 auto; width: 16px; height: 16px; color: var(--qm-text-faint); }
+.qm-rf-datefield:focus-visible { outline: 2px solid var(--qm-accent); outline-offset: 2px; }
+
+.qm-rf-cal { padding: 2px 12px 10px; }
+.qm-rf-cal__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0 6px;
+}
+.qm-rf-cal__label { font-size: var(--qm-fs-md); font-weight: 700; color: var(--qm-text); }
+.qm-rf-cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.qm-rf-cal__wd {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--qm-fs-xs);
+  font-weight: 700;
+  color: var(--qm-text-faint);
+}
+.qm-rf-cal__cell--empty { height: 36px; }
+.qm-rf-cal__day {
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: var(--qm-radius-sm);
+  cursor: pointer;
+  font-family: var(--qm-font-mono);
+  font-size: var(--qm-fs-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--qm-text);
+}
+.qm-rf-cal__day:hover { background: var(--qm-surface-sunk); }
+.qm-rf-cal__day[data-inrange="true"] { background: var(--qm-accent-weak); border-radius: 0; }
+.qm-rf-cal__day[data-end="true"] { background: var(--qm-accent); color: #fff; }
+.qm-rf-cal__day[data-today="true"] { text-decoration: underline; text-underline-offset: 3px; }
+.qm-rf-cal__day:focus-visible { outline: 2px solid var(--qm-accent); outline-offset: -2px; }
+
 /* ---- Footer ------------------------------------------------------------- */
 .qm-rf-foot {
   flex: 0 0 auto;
