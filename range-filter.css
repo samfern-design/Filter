@@ -1,0 +1,262 @@
+/* ==========================================================================
+   range-filter.css
+   Single-criterion value editor: choose a preset range or enter a custom
+   From/To. Dropdown on pointer devices, compact bottom sheet on touch.
+   Reuses quotemedia-styles.css tokens + primitives (.qm-btn, .qm-icon-btn,
+   .qm-search). Self-contained — does not depend on filing-filter.css.
+   ========================================================================== */
+
+.qm-rf { position: relative; display: inline-block; }
+
+/* ---- Trigger chip -------------------------------------------------------- */
+.qm-rf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  min-height: 38px;
+  border: 1px solid var(--qm-border-strong);
+  border-radius: 9px;
+  background: var(--qm-surface);
+  cursor: pointer;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  font-weight: 600;
+  color: var(--qm-text);
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+.qm-rf-chip__text { white-space: nowrap; }
+.qm-rf-chip__chev {
+  width: 16px; height: 16px;
+  color: var(--qm-text-faint);
+  transition: transform 160ms ease;
+}
+.qm-rf-chip[aria-expanded="true"] .qm-rf-chip__chev { transform: rotate(180deg); }
+.qm-rf-chip[data-set="true"] {
+  border-color: var(--qm-accent);
+  background: var(--qm-accent-weak);
+  color: var(--qm-accent-press);
+}
+.qm-rf-chip:focus-visible { outline: 2px solid var(--qm-accent); outline-offset: 2px; }
+
+/* ---- Overlay + panel ---------------------------------------------------- */
+.qm-rf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-in, background-color 200ms ease-in;
+}
+.qm-rf-overlay[data-open="true"] { opacity: 1; pointer-events: auto; }
+
+.qm-rf-panel {
+  position: absolute;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  background: var(--qm-surface);
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  box-shadow: var(--qm-shadow-pop);
+  overflow: hidden;
+  transform-origin: top left;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transition: opacity 140ms ease-out, transform 140ms ease-out;
+}
+.qm-rf-panel[data-open="true"] { opacity: 1; transform: translateY(0) scale(1); }
+
+/* ---- Header ------------------------------------------------------------- */
+.qm-rf-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px 10px 14px;
+  border-bottom: 1px solid var(--qm-border);
+}
+.qm-rf-head__title {
+  flex: 1 1 auto;
+  font-size: var(--qm-fs-md);
+  font-weight: 700;
+  color: var(--qm-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qm-rf-head__help {
+  flex: 0 0 auto;
+  width: 16px; height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--qm-border-strong);
+  color: var(--qm-text-faint);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: help;
+}
+.qm-rf-icon { width: 36px; height: 36px; }
+.qm-rf-icon svg { width: 16px; height: 16px; }
+
+/* ---- Sliding screens (shared-axis-style slide) -------------------------- */
+.qm-rf-stage { position: relative; overflow: hidden; }
+.qm-rf-track {
+  display: flex;
+  width: 200%;
+  transition: transform 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+.qm-rf-screen {
+  flex: 0 0 50%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: opacity 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+.qm-rf-panel[data-screen="2"] .qm-rf-track { transform: translateX(-50%); }
+/* fade the off-screen panel so it reads as a calm transition */
+.qm-rf-panel[data-screen="2"] .qm-rf-screen[data-screen="1"] { opacity: 0; }
+.qm-rf-panel[data-screen="1"] .qm-rf-screen[data-screen="2"] { opacity: 0; }
+
+.qm-rf-search { padding: 12px 12px 6px; }
+
+.qm-rf-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: 320px;
+  padding: 6px;
+}
+
+/* ---- Preset option (single-select) ------------------------------------- */
+.qm-rf-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: var(--qm-radius-sm);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--qm-font-ui);
+}
+.qm-rf-opt:hover { background: var(--qm-surface-sunk); }
+.qm-rf-opt[aria-checked="true"] {
+  border-color: var(--qm-accent);
+  background: var(--qm-accent-weak);
+}
+.qm-rf-opt__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.qm-rf-opt__label {
+  font-size: var(--qm-fs-md);
+  font-weight: 600;
+  color: var(--qm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qm-rf-opt__desc { font-size: var(--qm-fs-sm); color: var(--qm-text-muted); }
+.qm-rf-opt__check { flex: 0 0 auto; width: 18px; height: 18px; color: var(--qm-accent); opacity: 0; }
+.qm-rf-opt[aria-checked="true"] .qm-rf-opt__check { opacity: 1; }
+
+/* ---- Manual range screen ----------------------------------------------- */
+.qm-rf-manual { display: flex; gap: 12px; padding: 16px 14px; }
+.qm-rf-field { flex: 1 1 0; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.qm-rf-field > span {
+  font-size: var(--qm-fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--qm-text-faint);
+}
+.qm-rf-input {
+  width: 100%;
+  font-family: var(--qm-font-mono);
+  font-size: var(--qm-fs-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--qm-text);
+  padding: 9px 10px;
+  min-height: 40px;
+  border: 1px solid var(--qm-border-strong);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+}
+.qm-rf-input::placeholder { color: var(--qm-text-faint); }
+.qm-rf-input:focus { outline: none; border-color: var(--qm-accent); }
+.qm-rf-unit { padding: 0 14px 4px; font-size: var(--qm-fs-sm); color: var(--qm-text-muted); }
+
+/* ---- Footer ------------------------------------------------------------- */
+.qm-rf-foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--qm-border);
+}
+.qm-rf-manual-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  font-weight: 600;
+  color: var(--qm-text);
+  border-radius: var(--qm-radius-sm);
+}
+.qm-rf-manual-btn:hover { background: var(--qm-surface-sunk); }
+.qm-rf-manual-btn svg { width: 16px; height: 16px; color: var(--qm-text-muted); }
+.qm-rf-foot__spacer { flex: 1 1 auto; }
+
+/* ===========================================================================
+   Touch — compact bottom sheet
+   =========================================================================== */
+@media (pointer: coarse) {
+  .qm-rf-overlay[data-open="true"] { background: var(--qm-scrim); }
+  .qm-rf-panel {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    top: auto;
+    width: auto;
+    max-width: none;
+    border: none;
+    border-radius: var(--qm-radius-lg);
+    box-shadow: var(--qm-shadow-sheet);
+    transform: translateY(calc(100% + 24px));
+    transform-origin: bottom center;
+    transition: transform 240ms ease-out;
+    opacity: 1;
+  }
+  .qm-rf-panel[data-open="true"] { transform: translateY(0); }
+  .qm-rf-panel[data-closing="true"] {
+    transform: translateY(calc(100% + 24px));
+    transition: transform 200ms ease-in;
+  }
+  .qm-rf-list { max-height: 50vh; }
+}
+
+/* ===========================================================================
+   Reduced motion
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .qm-rf-overlay, .qm-rf-panel, .qm-rf-track, .qm-rf-screen {
+    transition: opacity 1ms linear !important;
+    transform: none !important;
+  }
+  .qm-rf-panel[data-open="true"] { transform: none !important; }
+  .qm-rf-panel[data-screen="2"] .qm-rf-track { transform: translateX(-50%) !important; }
+}

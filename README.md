@@ -35,6 +35,21 @@ swap while the selection holds.
 | `index.html` | Filing-type demo (`data-dataset="filings"`). |
 | `sector.html` | Industry/sector demo (`data-dataset="sectors"`). |
 | `screener.html` | Market-screener "Add filter criteria" demo (`data-dataset="screener"`). |
+| `range-filter.css` / `range-filter.js` | Companion **range-filter editor** (single criterion: presets + manual From/To). |
+| `range.html` | Range-editor demo (P/E, dividend yield, market cap chips). |
+
+## Range-filter editor (companion component)
+
+A separate, single-criterion value editor for the screener: a chip opens a
+dropdown (or compact bottom sheet on touch) with a searchable list of preset
+ranges (single-select) and a **Manual setup** screen for a custom From/To. The
+header carries a help (?) and a remove (trash) action. Triggers opt in with
+`data-qm-range` and pick a metric with `data-filter` (`pe`, `yield`, `mktcap`),
+defined in the `RANGE_FILTERS` registry in `range-filter.js`.
+
+```html
+<button data-qm-range data-filter="pe" …>P/E ▾</button>
+```
 
 ## One component, multiple datasets
 

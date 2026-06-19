@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>QuoteMedia · Range filter editor</title>
+  <link rel="stylesheet" href="quotemedia-styles.css" />
+  <link rel="stylesheet" href="range-filter.css" />
+  <style>
+    .lab { max-width: 920px; margin: 0 auto; padding: 32px 20px 80px; }
+    .lab__bar {
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 20px; border-bottom: 1px solid var(--qm-border); margin-bottom: 24px;
+    }
+    .lab__logo {
+      font-family: var(--qm-font-mono); font-weight: 700;
+      letter-spacing: -0.02em; font-size: 15px; color: var(--qm-text);
+    }
+    .lab__logo span { color: var(--qm-accent); }
+    .lab__crumb { font-size: var(--qm-fs-sm); color: var(--qm-text-faint); }
+    .lab h1 { font-size: 22px; letter-spacing: -0.01em; margin: 0 0 4px; }
+    .lab__sub { color: var(--qm-text-muted); margin: 0 0 28px; max-width: 60ch; }
+
+    .chips {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      padding: 16px; background: var(--qm-surface);
+      border: 1px solid var(--qm-border); border-radius: var(--qm-radius-md);
+      box-shadow: var(--qm-shadow-1);
+    }
+
+    .hint { margin-top: 24px; font-size: var(--qm-fs-sm); color: var(--qm-text-muted); line-height: 1.7; }
+    .hint code {
+      font-family: var(--qm-font-mono); font-size: var(--qm-fs-xs);
+      background: var(--qm-surface-sunk); border: 1px solid var(--qm-border);
+      border-radius: 4px; padding: 1px 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lab">
+    <div class="lab__bar">
+      <span class="lab__logo">Quote<span>Media</span></span>
+      <span class="lab__crumb">/ Screener / Edit criterion</span>
+    </div>
+
+    <h1>Range filter editor</h1>
+    <p class="lab__sub">
+      A single-criterion value editor: pick a preset range or switch to manual
+      setup to type a custom From/To. The help (?) explains the metric and the
+      trash icon removes the filter. Dropdown on desktop, compact bottom sheet
+      on touch.
+    </p>
+
+    <div class="chips">
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="pe"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>P/E</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="yield"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Div yield</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+
+      <button class="qm-rf-chip" type="button" data-qm-range data-filter="mktcap"
+              aria-haspopup="dialog" aria-expanded="false">
+        <span class="qm-rf-chip__text" data-rf-text>Market cap</span>
+        <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 6l4 4 4-4" />
+        </svg>
+      </button>
+    </div>
+
+    <p class="hint">
+      Try: open <code>P/E</code>, pick <code>25 to 35</code> — the chip shows
+      <code>P/E 25–35</code>. Re-open and hit <code>Manual setup</code> to type
+      a custom range, then <code>Apply</code>. The trash icon clears it.
+    </p>
+  </div>
+
+  <script src="range-filter.js"></script>
+</body>
+</html>
