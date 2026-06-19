@@ -32,13 +32,13 @@ swap while the selection holds.
 
 ## Decisions on the spec's open questions (§10)
 
-1. **Apply model** — toggles are *staged* while the panel is open;
-   **Search** applies and closes. Re-opening restores the last applied
-   selection. Dismissing discards staged edits.
+1. **Apply model** — selections apply **live** as you toggle, so the chip and
+   all counts update immediately (not gated behind **Search**). **Search**
+   simply closes the panel; **Clear** empties the selection.
 2. **Search result grouping** — cross-category search returns a *flat list*,
    each result tagged with its category (per the spec's stated preference).
-3. **Dismiss** — *cancel-on-dismiss*: ×, scrim tap, swipe-down, and Esc all
-   close without applying.
+3. **Dismiss** — because selections apply live, closing (×, scrim, swipe-down,
+   Esc) keeps them rather than cancelling.
 4. **Framework** — plain HTML/CSS/JS (the repo had no framework).
 
 ## Accessibility

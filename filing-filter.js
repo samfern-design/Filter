@@ -316,11 +316,12 @@
     }
 
     dismiss() {
-      // cancel: drop staged edits
+      // Selections apply live, so closing keeps them (no separate confirm).
       this._close();
     }
 
     applyAndClose() {
+      // selection is already applied live; "Search" just closes the panel
       this.applied = new Set(this.staged);
       this._renderSummary();
       this._close();
@@ -594,6 +595,10 @@
 
     // Refresh derived UI (select-all, badges, counts, footer) after a change.
     _refreshAfterToggle(opts = {}) {
+      // Selections apply live: keep the committed set in sync on every toggle
+      // and update the trigger chip immediately (not only on "Search").
+      this.applied = new Set(this.staged);
+      this._renderSummary();
       if (this.isMobile) {
         if (this.mobileScreen === 2) {
           // re-sync select-all + every row's checked state in current list
@@ -655,6 +660,8 @@
 
     clearAll() {
       this.staged.clear();
+      this.applied = new Set(this.staged);
+      this._renderSummary();
       if (this.isMobile) this._renderScreen1();
       else this._renderDesktop();
     }
