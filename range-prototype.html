@@ -74,6 +74,10 @@ body {
   padding: 0;
 }
 
+/* the hidden attribute must win over component display rules
+   (e.g. .qm-icon-btn { display: inline-flex }) */
+[hidden] { display: none !important; }
+
 body {
   font-family: var(--qm-font-ui);
   font-size: var(--qm-fs-md);
@@ -240,7 +244,7 @@ body {
   border: 0;
 }
 
-/* ===== range-filter.css ===== */
+/* ===== component ===== */
 /* ==========================================================================
    range-filter.css
    Single-criterion value editor: choose a preset range or enter a custom
