@@ -193,6 +193,7 @@
         apply: $("[data-apply]"),
         manualClear: $("[data-manual-clear]"),
       };
+      this.el.searchWrap = this.el.search.closest(".qm-rf-search");
     }
 
     _wire() {
@@ -276,6 +277,12 @@
 
     /* ---- Presets + saved customs (single-select) ---------------------- */
     _renderPresets() {
+      // show the search only for longer menus (> 15 options)
+      const total = this.cfg.presets.length + this.customs.length;
+      if (this.el.searchWrap) {
+        this.el.searchWrap.hidden = total <= 15;
+        if (total <= 15) this.el.search.value = "";
+      }
       const q = this.el.search.value.trim().toLowerCase();
       this.el.list.innerHTML = "";
       const presets = this.cfg.presets.filter((p) =>
@@ -359,19 +366,15 @@
       if (from == null && to == null) {
         this.value = null;
         this._renderChip();
-        this.el.search.value = "";
-        this._renderPresets();
-        this.goScreen(1);
+        this.close();
         return;
       }
-      // save the custom range (dedupe identical ranges) and select it
+      // save the custom range (dedupe identical ranges), select it, and close
       let entry = this.customs.find((c) => c.from === from && c.to === to);
       if (!entry) { entry = { id: "custom-" + (++this._cid), from, to }; this.customs.push(entry); }
       this.value = { from, to, presetId: entry.id };
       this._renderChip();
-      this.el.search.value = "";
-      this._renderPresets();
-      this.goScreen(1); // back to the main menu where it's now saved + selected
+      this.close();
     }
 
     /* ---- Chip ---------------------------------------------------------- */

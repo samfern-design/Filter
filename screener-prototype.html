@@ -240,7 +240,7 @@ body {
   border: 0;
 }
 
-/* ===== filing-filter.css ===== */
+/* ===== component ===== */
 /* ==========================================================================
    filing-filter.css
    Responsive filing-type filter: desktop dropdown (miller columns) +
@@ -1562,6 +1562,10 @@ body {
         s2List: $("[data-s2-list]"),
         mFooter: $("[data-m-footer]"),
       };
+      this.el.s1SearchWrap = this.el.s1Search.closest(".qm-ssearch");
+      this.el.s2SearchWrap = this.el.s2Search.closest(".qm-ssearch");
+      // cross-category search only shows when there are > 15 options overall
+      this.el.s1SearchWrap.hidden = this.allItems.length <= 15;
     }
 
     /* ---- Event wiring -------------------------------------------------- */
@@ -1868,7 +1872,10 @@ body {
       this.el.s2Count.textContent = cat.items.length + " items";
       this.el.s2Search.placeholder = "Filter within " + cat.name;
       this.el.s2Search.setAttribute("aria-label", "Filter within " + cat.name);
-      this.el.s2List.setAttribute("aria-label", cat.name + " filing types");
+      this.el.s2List.setAttribute("aria-label", cat.name + " options");
+      // in-category search only shows for longer lists (> 15 options)
+      this.el.s2SearchWrap.hidden = cat.items.length <= 15;
+      if (cat.items.length <= 15) this.el.s2Search.value = "";
       this._renderScreen2List();
     }
 
