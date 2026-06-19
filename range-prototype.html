@@ -244,7 +244,7 @@ body {
   border: 0;
 }
 
-/* ===== component ===== */
+/* ===== range-filter.css ===== */
 /* ==========================================================================
    range-filter.css
    Single-criterion value editor: choose a preset range or enter a custom
@@ -683,6 +683,7 @@ body {
       </button>
 
       <button class="qm-rf-chip" type="button" data-qm-range data-filter="expiry"
+              data-default="monthlies"
               aria-haspopup="dialog" aria-expanded="false">
         <span class="qm-rf-chip__text" data-rf-text>Expiry</span>
         <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
@@ -696,7 +697,9 @@ body {
       Try: open <code>P/E</code>, pick <code>25 to 35</code> — the chip shows
       <code>P/E 25–35</code>. Re-open and hit <code>Custom</code> to type a
       range, then <code>Apply</code> — it's saved into the list with its own
-      trash to delete. The header trash clears the whole filter.
+      trash to delete. The header trash clears the whole filter. Expiry starts
+      pre-selected via <code>data-default="monthlies"</code>; the others start
+      empty.
     </p>
   </div>
   <script>
@@ -815,6 +818,13 @@ body {
       this.customs = [];           // saved customs { id, from, to, kind }
       this._cid = 0;
       this.customMode = this.cfg.custom || "range"; // range | single | dates
+      // default selection: omit/"empty" → empty; preset id or "first" → preselected
+      const def = options.default !== undefined ? options.default : this.cfg.default;
+      if (def && def !== "empty" && def !== "none") {
+        const p = def === "first" ? this.cfg.presets[0]
+                                  : this.cfg.presets.find((x) => x.id === def);
+        if (p) this.value = { from: p.from, to: p.to, presetId: p.id, text: this._presetText(p) };
+      }
       this.isOpen = false;
       this.screen = 1;
       this.mqTouch = window.matchMedia("(pointer: coarse)");
@@ -1281,7 +1291,8 @@ body {
   window.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-qm-range]").forEach((trigger) => {
       const filter = trigger.getAttribute("data-filter") || "pe";
-      trigger._qm = new RangeFilter(trigger, { filter });
+      const def = trigger.getAttribute("data-default") || undefined;
+      trigger._qm = new RangeFilter(trigger, { filter, default: def });
     });
   });
 })();

@@ -113,6 +113,13 @@
       this.customs = [];           // saved customs { id, from, to, kind }
       this._cid = 0;
       this.customMode = this.cfg.custom || "range"; // range | single | dates
+      // default selection: omit/"empty" → empty; preset id or "first" → preselected
+      const def = options.default !== undefined ? options.default : this.cfg.default;
+      if (def && def !== "empty" && def !== "none") {
+        const p = def === "first" ? this.cfg.presets[0]
+                                  : this.cfg.presets.find((x) => x.id === def);
+        if (p) this.value = { from: p.from, to: p.to, presetId: p.id, text: this._presetText(p) };
+      }
       this.isOpen = false;
       this.screen = 1;
       this.mqTouch = window.matchMedia("(pointer: coarse)");
@@ -579,7 +586,8 @@
   window.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-qm-range]").forEach((trigger) => {
       const filter = trigger.getAttribute("data-filter") || "pe";
-      trigger._qm = new RangeFilter(trigger, { filter });
+      const def = trigger.getAttribute("data-default") || undefined;
+      trigger._qm = new RangeFilter(trigger, { filter, default: def });
     });
   });
 })();

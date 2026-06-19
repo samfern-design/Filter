@@ -89,6 +89,7 @@
       </button>
 
       <button class="qm-rf-chip" type="button" data-qm-range data-filter="expiry"
+              data-default="monthlies"
               aria-haspopup="dialog" aria-expanded="false">
         <span class="qm-rf-chip__text" data-rf-text>Expiry</span>
         <svg class="qm-rf-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
@@ -102,7 +103,9 @@
       Try: open <code>P/E</code>, pick <code>25 to 35</code> — the chip shows
       <code>P/E 25–35</code>. Re-open and hit <code>Custom</code> to type a
       range, then <code>Apply</code> — it's saved into the list with its own
-      trash to delete. The header trash clears the whole filter.
+      trash to delete. The header trash clears the whole filter. Expiry starts
+      pre-selected via <code>data-default="monthlies"</code>; the others start
+      empty.
     </p>
   </div>
 
