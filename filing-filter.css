@@ -272,30 +272,31 @@
   .qm-overlay[data-open="true"] { background: var(--qm-scrim); }
 
   .qm-panel {
+    /* Floating sheet: a margin on every side, all corners rounded. */
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 14px;
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
     top: auto;
-    width: 100%;
-    max-width: 100%;
-    /* near-full height; small top margin shows the page behind. A definite
-       height is required so the flex body can size — the screens are
-       absolutely positioned and contribute no intrinsic height. */
-    height: calc(100vh - 40px);
-    height: calc(100dvh - 40px);
-    max-height: calc(100vh - 40px);
+    width: auto;
+    max-width: none;
+    /* Definite height so the flex body can size — the screens are
+       absolutely positioned and contribute no intrinsic height. Account for
+       the top gap + bottom gap + safe area. */
+    height: calc(100vh - 42px);
+    height: calc(100dvh - 42px - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 42px - env(safe-area-inset-bottom));
     border: none;
-    border-radius: var(--qm-radius-lg) var(--qm-radius-lg) 0 0;
+    border-radius: var(--qm-radius-lg);
     box-shadow: var(--qm-shadow-sheet);
-    transform: translateY(100%);
+    transform: translateY(calc(100% + 24px));
     transform-origin: bottom center;
     transition: transform 240ms ease-out, opacity 1ms;
     opacity: 1;
   }
   .qm-panel[data-open="true"] { transform: translateY(0); }
   .qm-panel[data-closing="true"] {
-    transform: translateY(100%);
+    transform: translateY(calc(100% + 24px));
     transition: transform 200ms ease-in;
   }
 
@@ -433,9 +434,7 @@
   /* Mobile rows are taller for touch */
   .qm-screen .qm-row { min-height: 48px; }
 
-  .qm-footer {
-    padding-bottom: max(var(--qm-s3), env(safe-area-inset-bottom));
-  }
+  /* sheet floats above the safe area, so the footer keeps normal padding */
 }
 
 /* Close (×) glyph sizing */
