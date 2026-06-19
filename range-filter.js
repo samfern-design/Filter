@@ -228,6 +228,8 @@
     goScreen(n, silent) {
       this.screen = n;
       this.panel.setAttribute("data-screen", String(n));
+      if (silent) this.panel.removeAttribute("data-dir");
+      else this.panel.setAttribute("data-dir", n === 2 ? "fwd" : "back");
       this.el.back.hidden = n !== 2;
       if (!silent) requestAnimationFrame(() =>
         (n === 2 ? this.el.from : this.el.search).focus());

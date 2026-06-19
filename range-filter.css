@@ -104,25 +104,27 @@
 .qm-rf-icon { width: 36px; height: 36px; }
 .qm-rf-icon svg { width: 16px; height: 16px; }
 
-/* ---- Sliding screens (shared-axis-style slide) -------------------------- */
+/* ---- Screens: only the active one is shown, so the panel height fits its
+   content. The entering screen animates (direction set by JS). -------------- */
 .qm-rf-stage { position: relative; overflow: hidden; }
-.qm-rf-track {
-  display: flex;
-  width: 200%;
-  transition: transform 300ms cubic-bezier(0.2, 0, 0, 1);
+.qm-rf-track { display: block; }
+.qm-rf-screen { display: none; flex-direction: column; min-width: 0; }
+.qm-rf-panel[data-screen="1"] .qm-rf-screen[data-screen="1"],
+.qm-rf-panel[data-screen="2"] .qm-rf-screen[data-screen="2"] { display: flex; }
+.qm-rf-panel[data-dir="fwd"] .qm-rf-screen[data-screen="2"] {
+  animation: qm-rf-in-right 280ms cubic-bezier(0.2, 0, 0, 1);
 }
-.qm-rf-screen {
-  flex: 0 0 50%;
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  transition: opacity 300ms cubic-bezier(0.2, 0, 0, 1);
+.qm-rf-panel[data-dir="back"] .qm-rf-screen[data-screen="1"] {
+  animation: qm-rf-in-left 280ms cubic-bezier(0.2, 0, 0, 1);
 }
-.qm-rf-panel[data-screen="2"] .qm-rf-track { transform: translateX(-50%); }
-/* fade the off-screen panel so it reads as a calm transition */
-.qm-rf-panel[data-screen="2"] .qm-rf-screen[data-screen="1"] { opacity: 0; }
-.qm-rf-panel[data-screen="1"] .qm-rf-screen[data-screen="2"] { opacity: 0; }
+@keyframes qm-rf-in-right {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes qm-rf-in-left {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: none; }
+}
 
 .qm-rf-search { padding: 12px 12px 6px; }
 
@@ -253,10 +255,7 @@
    Reduced motion
    =========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  .qm-rf-overlay, .qm-rf-panel, .qm-rf-track, .qm-rf-screen {
-    transition: opacity 1ms linear !important;
-    transform: none !important;
-  }
+  .qm-rf-overlay, .qm-rf-panel { transition: opacity 1ms linear !important; transform: none !important; }
   .qm-rf-panel[data-open="true"] { transform: none !important; }
-  .qm-rf-panel[data-screen="2"] .qm-rf-track { transform: translateX(-50%) !important; }
+  .qm-rf-screen { animation: none !important; }
 }
