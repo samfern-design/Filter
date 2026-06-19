@@ -34,6 +34,7 @@ swap while the selection holds.
 | `filing-filter.js` | The data-driven component, plus both datasets (filings + sectors). |
 | `index.html` | Filing-type demo (`data-dataset="filings"`). |
 | `sector.html` | Industry/sector demo (`data-dataset="sectors"`). |
+| `screener.html` | Market-screener "Add filter criteria" demo (`data-dataset="screener"`). |
 
 ## One component, multiple datasets
 
@@ -45,7 +46,8 @@ a dataset with `data-dataset`:
 ```
 
 Datasets live in the `DATASETS` registry in `filing-filter.js`
-(`filings` = SEC filing types, `sectors` = GICS industries). Each sets its
+(`filings` = SEC filing types, `sectors` = GICS industries, `screener` =
+market-screener criteria grouped by type). Each sets its
 label, search placeholder, categories, default category, and whether option
 text renders in mono (codes) or the UI font (names). Add a new filter by
 adding a dataset entry — no component changes needed.

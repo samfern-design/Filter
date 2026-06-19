@@ -1225,6 +1225,92 @@ body {
     ]},
   ];
 
+  /* ---- Data: market-screener filter criteria --------------------------- */
+  // Categories = criteria groups; items = individual screener filters.
+  // Groups are disjoint so each criterion is unique.
+  const SCREENER_CATEGORIES = [
+    { id: "classification", name: "Classification", items: [
+      ["Exchange", ""],
+      ["Sector", ""],
+      ["Industry", ""],
+      ["Country", ""],
+      ["Index Membership", ""],
+      ["Security Type", ""],
+      ["Optionable", ""],
+      ["Shortable", ""],
+    ]},
+    { id: "valuation", name: "Valuation", items: [
+      ["Market Capitalization", ""],
+      ["P/E Ratio (TTM)", ""],
+      ["Forward P/E Ratio", ""],
+      ["PEG Ratio", ""],
+      ["Price / Sales", ""],
+      ["Price / Book", ""],
+      ["Price / Cash Flow", ""],
+      ["EV / EBITDA", ""],
+      ["Enterprise Value", ""],
+    ]},
+    { id: "profitability", name: "Profitability", items: [
+      ["Profit Margin", ""],
+      ["Operating Margin", ""],
+      ["Gross Margin", ""],
+      ["Return on Equity", ""],
+      ["Return on Assets", ""],
+      ["Return on Invested Capital", ""],
+    ]},
+    { id: "dividends", name: "Dividends", items: [
+      ["Dividend Yield", ""],
+      ["Dividend Per Share", ""],
+      ["Payout Ratio", ""],
+      ["Dividend Growth (5Y)", ""],
+      ["Years of Dividend Growth", ""],
+      ["Ex-Dividend Date", ""],
+    ]},
+    { id: "growth", name: "Growth", items: [
+      ["Revenue Growth (YoY)", ""],
+      ["Revenue Growth (5Y)", ""],
+      ["EPS Growth (YoY)", ""],
+      ["EPS Growth (5Y)", ""],
+      ["EPS Growth (Next Year)", ""],
+    ]},
+    { id: "price", name: "Price & Volume", items: [
+      ["Last Price", ""],
+      ["Price Change ($)", ""],
+      ["Price Change (%)", ""],
+      ["Price Performance (90 Days)", ""],
+      ["52-Week High", ""],
+      ["52-Week Low", ""],
+      ["Beta", ""],
+      ["Average Volume (90-Day)", ""],
+      ["Relative Volume", ""],
+      ["Gap (%)", ""],
+    ]},
+    { id: "technicals", name: "Technicals", items: [
+      ["RSI (14)", ""],
+      ["50-Day Moving Average", ""],
+      ["200-Day Moving Average", ""],
+      ["MACD", ""],
+      ["Average True Range", ""],
+      ["20-Day Volatility", ""],
+    ]},
+    { id: "financials", name: "Financial Health", items: [
+      ["Total Debt / Equity", ""],
+      ["Current Ratio", ""],
+      ["Quick Ratio", ""],
+      ["Free Cash Flow", ""],
+      ["Total Revenue", ""],
+      ["Net Income", ""],
+      ["Total Cash", ""],
+    ]},
+    { id: "ownership", name: "Ownership", items: [
+      ["Institutional Ownership", ""],
+      ["Insider Ownership", ""],
+      ["Short Float", ""],
+      ["Float", ""],
+      ["Shares Outstanding", ""],
+    ]},
+  ];
+
   /* ---- Dataset registry — the component is data-driven ----------------- */
   const DATASETS = {
     filings: {
@@ -1240,6 +1326,13 @@ body {
       categories: SECTOR_CATEGORIES,
       defaultIndex: 0,   // Energy
       mono: false,       // names read as plain text
+    },
+    screener: {
+      label: "Add filter criteria",
+      searchAll: "Search filters",
+      categories: SCREENER_CATEGORIES,
+      defaultIndex: 0,   // Classification
+      mono: false,
     },
   };
 

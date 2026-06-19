@@ -1,3 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>QuoteMedia · Market screener filters</title>
+  <style>
+/* ===== quotemedia-styles.css ===== */
+/* ==========================================================================
+   quotemedia-styles.css
+   Shared design tokens + base primitives for the QuoteMedia prototyping lab.
+   The filing-type filter (and future components) build on these.
+   ========================================================================== */
+
+:root {
+  /* --- Color: cool slate financial UI ----------------------------------- */
+  --qm-ground:        #F6F8FB;  /* page background          */
+  --qm-surface:       #FFFFFF;  /* cards, panels, sheets     */
+  --qm-surface-sunk:  #F1F4F9;  /* sunken rails / hover wells */
+  --qm-text:          #161B26;  /* primary text              */
+  --qm-text-muted:    #5B6472;  /* secondary text, captions  */
+  --qm-text-faint:    #8A93A3;  /* placeholders, disabled    */
+  --qm-border:        #E4E8EF;  /* hairlines, dividers       */
+  --qm-border-strong: #CBD3DF;
+
+  --qm-accent:        #0E63D6;  /* azure — selection / focus */
+  --qm-accent-press:  #0A4FAC;
+  --qm-accent-weak:   #E7F0FC;  /* tinted selected wells     */
+  --qm-scrim:         rgba(16, 22, 35, 0.45);
+
+  /* --- Type -------------------------------------------------------------- */
+  --qm-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Helvetica, Arial, sans-serif;
+  /* Filing codes & all counts read as market-data symbols → tabular mono. */
+  --qm-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo",
+                  "Consolas", monospace;
+
+  --qm-fs-xs: 11px;
+  --qm-fs-sm: 12px;
+  --qm-fs-md: 13px;
+  --qm-fs-lg: 15px;
+  --qm-fs-xl: 18px;
+
+  /* --- Spacing scale ----------------------------------------------------- */
+  --qm-s1: 4px;
+  --qm-s2: 8px;
+  --qm-s3: 12px;
+  --qm-s4: 16px;
+  --qm-s5: 20px;
+  --qm-s6: 24px;
+
+  /* --- Radius / elevation ------------------------------------------------ */
+  --qm-radius-sm: 6px;
+  --qm-radius-md: 10px;
+  --qm-radius-lg: 16px;
+  --qm-shadow-1: 0 1px 2px rgba(16, 22, 35, 0.06);
+  --qm-shadow-pop: 0 12px 32px rgba(16, 22, 35, 0.16),
+                   0 2px 6px rgba(16, 22, 35, 0.08);
+  --qm-shadow-sheet: 0 -8px 40px rgba(16, 22, 35, 0.22);
+
+  /* --- Breakpoint -------------------------------------------------------- */
+  --qm-bp-mobile: 768px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  line-height: 1.45;
+  color: var(--qm-text);
+  background: var(--qm-ground);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+.qm-btn {
+  appearance: none;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  font-weight: 600;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--qm-s2);
+  padding: 10px 16px;
+  min-height: 40px;
+  border: 1px solid transparent;
+  border-radius: var(--qm-radius-sm);
+  cursor: pointer;
+  background: transparent;
+  color: var(--qm-text);
+  transition: background-color 120ms ease, border-color 120ms ease,
+              color 120ms ease;
+}
+
+.qm-btn--primary {
+  background: var(--qm-accent);
+  color: #fff;
+}
+.qm-btn--primary:hover:not(:disabled) { background: var(--qm-accent-press); }
+
+.qm-btn--ghost {
+  color: var(--qm-text-muted);
+  border-color: transparent;
+}
+.qm-btn--ghost:hover:not(:disabled) {
+  background: var(--qm-surface-sunk);
+  color: var(--qm-text);
+}
+
+.qm-btn--outline {
+  border-color: var(--qm-border-strong);
+  background: var(--qm-surface);
+  color: var(--qm-text);
+}
+.qm-btn--outline:hover:not(:disabled) { background: var(--qm-surface-sunk); }
+
+.qm-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Visible keyboard focus everywhere. */
+.qm-btn:focus-visible,
+.qm-icon-btn:focus-visible,
+.qm-search input:focus-visible,
+[data-row]:focus-visible {
+  outline: 2px solid var(--qm-accent);
+  outline-offset: 2px;
+}
+
+/* --- Icon button ---------------------------------------------------------- */
+.qm-icon-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--qm-radius-sm);
+  background: transparent;
+  color: var(--qm-text-muted);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.qm-icon-btn:hover {
+  background: var(--qm-surface-sunk);
+  color: var(--qm-text);
+}
+
+/* --- Search field --------------------------------------------------------- */
+.qm-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.qm-search svg {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--qm-text-faint);
+  pointer-events: none;
+}
+.qm-search input {
+  width: 100%;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  color: var(--qm-text);
+  padding: 10px 12px 10px 34px;
+  min-height: 40px;
+  border: 1px solid var(--qm-border-strong);
+  border-radius: var(--qm-radius-sm);
+  background: var(--qm-surface);
+}
+.qm-search input::placeholder { color: var(--qm-text-faint); }
+.qm-search input:focus { outline: none; border-color: var(--qm-accent); }
+
+/* --- Custom checkbox glyph ------------------------------------------------ */
+.qm-check {
+  flex: 0 0 auto;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--qm-border-strong);
+  border-radius: 5px;
+  background: var(--qm-surface);
+  transition: background-color 100ms ease, border-color 100ms ease;
+}
+.qm-check::after {
+  /* checkmark */
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.2l2.6 2.6L10 3.2' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+[data-checked="true"] .qm-check {
+  background: var(--qm-accent);
+  border-color: var(--qm-accent);
+}
+[data-checked="true"] .qm-check::after { opacity: 1; }
+
+[data-checked="mixed"] .qm-check {
+  background: var(--qm-accent);
+  border-color: var(--qm-accent);
+}
+[data-checked="mixed"] .qm-check::after {
+  opacity: 1;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6h7' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* Screen-reader-only utility. */
+.qm-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===== filing-filter.css ===== */
+/* ==========================================================================
+   filing-filter.css
+   Responsive filing-type filter: desktop dropdown (miller columns) +
+   touch bottom-sheet drill-down. One selection state, two presentations.
+   ========================================================================== */
+
+/* Host wrapper just anchors the desktop dropdown to the trigger. */
+.qm-filter {
+  position: relative;
+  display: inline-block;
+}
+
+/* ---- Trigger chip -------------------------------------------------------
+   States: empty (label + chevron), single (selected value + clear),
+   multi (label + count badge + clear). */
+.qm-chip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--qm-border-strong);
+  border-radius: 9px;
+  background: var(--qm-surface);
+  overflow: hidden;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+.qm-chip__main {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  min-height: 38px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+  font-weight: 600;
+  color: var(--qm-text);
+}
+.qm-chip__text {
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qm-chip__chev {
+  width: 16px;
+  height: 16px;
+  color: var(--qm-text-faint);
+  transition: transform 160ms ease;
+}
+.qm-chip__main[aria-expanded="true"] .qm-chip__chev { transform: rotate(180deg); }
+
+/* The blue count badge stays hidden in the resting/static state and reveals
+   on hover or keyboard focus. The chevron is always shown as the dropdown
+   affordance. */
+.qm-chip__badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--qm-accent);
+  color: #fff;
+  font-family: var(--qm-font-mono);
+  font-size: var(--qm-fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.qm-chip[data-state="multi"]:hover .qm-chip__badge,
+.qm-chip[data-state="multi"]:focus-within .qm-chip__badge,
+.qm-chip[data-state="multi"] .qm-chip__main[aria-expanded="true"] .qm-chip__badge {
+  display: inline-flex;
+}
+
+/* active appearance when something is selected */
+.qm-chip[data-state="single"],
+.qm-chip[data-state="multi"] {
+  border-color: var(--qm-accent);
+  background: var(--qm-accent-weak);
+}
+.qm-chip[data-state="single"] .qm-chip__main,
+.qm-chip[data-state="multi"] .qm-chip__main { color: var(--qm-accent-press); }
+
+.qm-chip__main:focus-visible {
+  outline: 2px solid var(--qm-accent);
+  outline-offset: 2px;
+}
+
+/* The scrim/backdrop. Used as a click-to-dismiss target + dim layer.
+   On desktop it's invisible (just captures outside clicks); on mobile it
+   dims the page behind the sheet. */
+.qm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-in, background-color 200ms ease-in;
+}
+.qm-overlay[data-open="true"] {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* The panel itself. Default (desktop) = anchored popover. */
+.qm-panel {
+  position: absolute;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  background: var(--qm-surface);
+  border: 1px solid var(--qm-border);
+  border-radius: var(--qm-radius-md);
+  box-shadow: var(--qm-shadow-pop);
+  overflow: hidden;
+  width: 560px;
+  max-width: calc(100vw - 24px);
+  height: 440px;
+  /* anchored under the trigger via inline top/left from JS */
+  transform-origin: top left;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transition: opacity 140ms ease-out, transform 140ms ease-out;
+}
+.qm-panel[data-open="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ===========================================================================
+   DESKTOP — two-column miller layout (>= 768px)
+   =========================================================================== */
+.qm-miller { display: none; }
+.qm-sheet-view { display: none; }
+
+@media (min-width: 768px) {
+  .qm-miller {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr auto;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* Left rail: categories */
+  .qm-cats {
+    grid-row: 1;
+    grid-column: 1;
+    border-right: 1px solid var(--qm-border);
+    overflow-y: auto;
+    padding: var(--qm-s2);
+    background: var(--qm-surface-sunk);
+  }
+  .qm-cat {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--qm-s2);
+    width: 100%;
+    text-align: left;
+    padding: 9px 10px;
+    border: none;
+    background: transparent;
+    border-radius: var(--qm-radius-sm);
+    cursor: pointer;
+    color: var(--qm-text);
+    font-family: var(--qm-font-ui);
+    font-size: var(--qm-fs-md);
+    min-height: 38px;
+  }
+  .qm-cat:hover { background: rgba(16, 22, 35, 0.04); }
+  .qm-cat[aria-current="true"] {
+    background: var(--qm-surface);
+    box-shadow: var(--qm-shadow-1);
+    font-weight: 600;
+  }
+  .qm-cat[aria-current="true"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    bottom: 7px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--qm-accent);
+  }
+  .qm-cat__name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-cat__badge {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--qm-accent);
+    color: #fff;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-xs);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-cat__chev {
+    flex: 0 0 auto;
+    color: var(--qm-text-faint);
+    opacity: 0;
+  }
+  .qm-cat[aria-current="true"] .qm-cat__chev { opacity: 1; }
+
+  /* Right pane: item list */
+  .qm-items {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .qm-items__head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: var(--qm-s2);
+    padding: var(--qm-s3) var(--qm-s4) var(--qm-s2);
+    border-bottom: 1px solid var(--qm-border);
+  }
+  .qm-items__title {
+    font-size: var(--qm-fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--qm-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-items__count {
+    flex: 0 0 auto;
+    margin-left: auto;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-sm);
+    color: var(--qm-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-items__list {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--qm-s2) var(--qm-s2) var(--qm-s3);
+  }
+
+}
+
+/* ===========================================================================
+   Shared item rows (used by desktop list + mobile screen 2 + search results)
+   =========================================================================== */
+.qm-row {
+  display: flex;
+  align-items: center;
+  gap: var(--qm-s3);
+  width: 100%;
+  text-align: left;
+  padding: 0 12px;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  border-radius: var(--qm-radius-sm);
+  cursor: pointer;
+  color: var(--qm-text);
+  font-family: var(--qm-font-ui);
+  font-size: var(--qm-fs-md);
+}
+.qm-row:hover { background: var(--qm-surface-sunk); }
+.qm-row:active { background: var(--qm-accent-weak); }
+
+.qm-row__code {
+  flex: 1 1 auto;
+  font-family: var(--qm-font-mono);
+  font-size: var(--qm-fs-md);
+  font-weight: 500;
+  color: var(--qm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+[data-checked="true"] .qm-row__code {
+  color: var(--qm-accent-press);
+  font-weight: 600;
+}
+/* datasets whose options are names, not codes, render in the UI font */
+.qm-panel[data-codestyle="text"] .qm-row__code {
+  font-family: var(--qm-font-ui);
+  font-weight: 400;
+}
+.qm-panel[data-codestyle="text"] [data-checked="true"] .qm-row__code {
+  font-weight: 600;
+}
+.qm-row__label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qm-text-muted);
+}
+.qm-row__cat {
+  flex: 0 0 auto;
+  font-size: var(--qm-fs-xs);
+  color: var(--qm-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.qm-row--all {
+  font-weight: 600;
+}
+.qm-row--all .qm-row__label { color: var(--qm-text); }
+
+/* ===========================================================================
+   Shared footer
+   =========================================================================== */
+.qm-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--qm-s3);
+  padding: var(--qm-s3) var(--qm-s4);
+  border-top: 1px solid var(--qm-border);
+  background: var(--qm-surface);
+}
+.qm-footer__count {
+  font-size: var(--qm-fs-md);
+  color: var(--qm-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.qm-footer__count strong {
+  font-family: var(--qm-font-mono);
+  color: var(--qm-text);
+}
+.qm-footer__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--qm-s2);
+}
+
+/* Empty state for no search matches */
+.qm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--qm-s3);
+  min-height: 160px;
+  padding: var(--qm-s5);
+  text-align: center;
+  color: var(--qm-text-muted);
+}
+.qm-empty__q { color: var(--qm-text); font-weight: 600; }
+
+/* ===========================================================================
+   NARROW (< 768px) — drill-down flow.
+   Two skins share the same screens/footer:
+     • data-mode="sheet"     → touch: floating bottom sheet
+     • data-mode="drilldown" → pointer: anchored dropdown (desktop look)
+   =========================================================================== */
+@media (max-width: 767px) {
+  /* dim the page only behind the touch bottom sheet */
+  .qm-overlay[data-mode="sheet"][data-open="true"] { background: var(--qm-scrim); }
+
+  /* TOUCH — floating bottom sheet: margin on every side, all corners rounded */
+  .qm-panel[data-mode="sheet"] {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    top: auto;
+    width: auto;
+    max-width: none;
+    /* Definite height so the flex body can size — the screens are
+       absolutely positioned and contribute no intrinsic height. */
+    height: calc(100vh - 42px);
+    height: calc(100dvh - 42px - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 42px - env(safe-area-inset-bottom));
+    border: none;
+    border-radius: var(--qm-radius-lg);
+    box-shadow: var(--qm-shadow-sheet);
+    transform: translateY(calc(100% + 24px));
+    transform-origin: bottom center;
+    transition: transform 240ms ease-out, opacity 1ms;
+    opacity: 1;
+  }
+  .qm-panel[data-mode="sheet"][data-open="true"] { transform: translateY(0); }
+  .qm-panel[data-mode="sheet"][data-closing="true"] {
+    transform: translateY(calc(100% + 24px));
+    transition: transform 200ms ease-in;
+  }
+
+  /* POINTER — anchored dropdown: keeps the base popover skin (absolute,
+     rounded, shadow, fade/scale from JS positioning), just narrower and
+     without the drag handle */
+  .qm-panel[data-mode="drilldown"] { width: 380px; }
+  .qm-panel[data-mode="drilldown"] .qm-handle { display: none; }
+
+  .qm-miller { display: none !important; }
+  /* desktop footer is a panel-level sibling — hide it in the narrow drill-down
+     so the sheet-view's own footer is the only one shown */
+  [data-d-footer] { display: none !important; }
+  .qm-sheet-view {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+  }
+
+  /* Drag handle */
+  .qm-handle {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0 4px;
+    cursor: grab;
+    touch-action: none;
+  }
+  .qm-handle::before {
+    content: "";
+    width: 40px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--qm-border-strong);
+  }
+
+  /* The two screens live in a sliding track */
+  .qm-stage {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+  }
+  /* Material 3 "Shared axis (X)" transition: a small ~30px slide carried by
+     a fade — the fade does the work, so it reads as a calm cross-fade with a
+     directional hint rather than a full-width push. Emphasized easing, 300ms. */
+  .qm-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--qm-surface);
+    transition: transform 300ms cubic-bezier(0.2, 0, 0, 1),
+                opacity 300ms cubic-bezier(0.2, 0, 0, 1);
+    will-change: transform, opacity;
+  }
+  /* on screen 1: list is present; detail waits just off to the right, faded */
+  .qm-screen[data-screen="1"] { transform: translateX(0); opacity: 1; }
+  .qm-screen[data-screen="2"] {
+    transform: translateX(30px);
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* drilled in: list shifts slightly left + fades out, detail fades in */
+  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"] {
+    transform: translateX(-30px);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="2"] {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .qm-shead {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--qm-s2);
+    padding: var(--qm-s2) var(--qm-s3) var(--qm-s2) var(--qm-s4);
+    min-height: 52px;
+  }
+  .qm-shead__title {
+    flex: 1 1 auto;
+    font-size: var(--qm-fs-xl);
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-shead__count {
+    flex: 0 0 auto;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-sm);
+    color: var(--qm-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-shead--screen2 .qm-shead__title { font-size: var(--qm-fs-lg); }
+
+  .qm-ssearch {
+    flex: 0 0 auto;
+    padding: 0 var(--qm-s4) var(--qm-s3);
+  }
+
+  .qm-slist {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 var(--qm-s2) var(--qm-s3);
+  }
+
+  /* Category row (screen 1) */
+  .qm-catrow {
+    display: flex;
+    align-items: center;
+    gap: var(--qm-s2);
+    width: 100%;
+    text-align: left;
+    min-height: 48px;
+    padding: 0 12px;
+    border: none;
+    background: transparent;
+    border-radius: var(--qm-radius-sm);
+    cursor: pointer;
+    color: var(--qm-text);
+    font-family: var(--qm-font-ui);
+    font-size: var(--qm-fs-lg);
+  }
+  .qm-catrow:active { background: var(--qm-accent-weak); }
+  .qm-catrow__name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .qm-catrow__badge {
+    flex: 0 0 auto;
+    font-family: var(--qm-font-mono);
+    font-size: var(--qm-fs-sm);
+    font-weight: 600;
+    color: #fff;
+    background: var(--qm-accent);
+    border-radius: 999px;
+    padding: 2px 8px;
+    min-width: 22px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .qm-catrow__chev { flex: 0 0 auto; color: var(--qm-text-faint); }
+
+  /* Mobile rows are taller for touch */
+  .qm-screen .qm-row { min-height: 48px; }
+
+  /* sheet floats above the safe area, so the footer keeps normal padding */
+}
+
+/* Close (×) glyph sizing */
+.qm-x svg { width: 18px; height: 18px; }
+.qm-chev svg { width: 18px; height: 18px; }
+
+/* ===========================================================================
+   Reduced motion
+   =========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .qm-panel,
+  .qm-overlay,
+  .qm-screen {
+    transition: opacity 1ms linear !important;
+    transform: none !important;
+  }
+  .qm-panel[data-open="true"] { transform: none !important; }
+  .qm-sheet-view[data-screen="2"] .qm-screen[data-screen="1"] {
+    /* instant swap: hide screen 1 rather than slide */
+    transform: none !important;
+    visibility: hidden;
+  }
+  .qm-screen[data-screen="2"] { transform: none !important; }
+  .qm-sheet-view:not([data-screen="2"]) .qm-screen[data-screen="2"] {
+    visibility: hidden;
+  }
+}
+
+  </style>
+  <style>
+    /* --- Demo harness chrome (intentionally quiet) --------------------- */
+    .lab {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+    .lab__bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--qm-border);
+      margin-bottom: 24px;
+    }
+    .lab__logo {
+      font-family: var(--qm-font-mono);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-size: 15px;
+      color: var(--qm-text);
+    }
+    .lab__logo span { color: var(--qm-accent); }
+    .lab__crumb {
+      font-size: var(--qm-fs-sm);
+      color: var(--qm-text-faint);
+    }
+    .lab h1 {
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      margin: 0 0 4px;
+    }
+    .lab__sub {
+      color: var(--qm-text-muted);
+      margin: 0 0 28px;
+      max-width: 60ch;
+    }
+
+    /* Filter toolbar — where the component is invoked */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--qm-surface);
+      border: 1px solid var(--qm-border);
+      border-radius: var(--qm-radius-md);
+      box-shadow: var(--qm-shadow-1);
+    }
+    .toolbar__label {
+      font-size: var(--qm-fs-xs);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--qm-text-faint);
+    }
+
+    .hint {
+      margin-top: 24px;
+      font-size: var(--qm-fs-sm);
+      color: var(--qm-text-muted);
+      line-height: 1.7;
+    }
+    .hint code {
+      font-family: var(--qm-font-mono);
+      font-size: var(--qm-fs-xs);
+      background: var(--qm-surface-sunk);
+      border: 1px solid var(--qm-border);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="lab">
+    <div class="lab__bar">
+      <span class="lab__logo">Quote<span>Media</span></span>
+      <span class="lab__crumb">/ Screener / Add criteria</span>
+    </div>
+
+    <h1>Market screener filters</h1>
+    <p class="lab__sub">
+      The same component, used as a screener's "Add filter criteria" picker —
+      categories are criteria groups (Valuation, Profitability, Dividends…) and
+      the options are individual filters. Pick across groups; the count is the
+      number of active criteria.
+    </p>
+
+    <div class="toolbar">
+      <span class="toolbar__label">Screener</span>
+
+      <div class="qm-filter">
+        <div class="qm-chip" data-state="empty">
+          <button id="qm-add-filter" class="qm-chip__main" type="button"
+                  data-qm-filter data-dataset="screener"
+                  aria-haspopup="dialog" aria-controls="qm-filter-panel" aria-expanded="false">
+            <span class="qm-chip__text" data-chip-text>Add filter criteria</span>
+            <span class="qm-chip__badge" data-chip-badge></span>
+            <svg class="qm-chip__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p class="hint">
+      Try: add <code>Market Capitalization</code> under Valuation, switch to
+      Dividends and add <code>Dividend Yield</code> — both persist as active
+      criteria. The chip shows the active-criteria count when open. On mobile,
+      the cross-group search finds a criterion in any group.
+    </p>
+  </div>
+  <script>
 /* ==========================================================================
    filing-filter.js
    Responsive filing-type filter.
@@ -1073,3 +2019,7 @@
     });
   });
 })();
+
+  </script>
+</body>
+</html>
