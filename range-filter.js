@@ -57,6 +57,22 @@
         { id: "micro", label: "Micro (under $300M)", desc: "Below 300M",     from: null,   to: 300 },
       ],
     },
+    nearmoney: {
+      label: "Near money",
+      title: "Near money %",
+      help: "Show option strikes within this percentage of the spot price.",
+      unit: "%",
+      step: 1,
+      presets: [
+        { id: "all", label: "All",  from: null, to: null },
+        { id: "2",   label: "2%",   from: 2,  to: 2 },
+        { id: "5",   label: "5%",   from: 5,  to: 5 },
+        { id: "10",  label: "10%",  from: 10, to: 10 },
+        { id: "15",  label: "15%",  from: 15, to: 15 },
+        { id: "20",  label: "20%",  from: 20, to: 20 },
+        { id: "25",  label: "25%",  from: 25, to: 25 },
+      ],
+    },
   };
 
   const ICONS = {
@@ -261,7 +277,7 @@
         !q || this._fmt(c).toLowerCase().includes(q) || "custom".includes(q));
 
       presets.forEach((p) => this.el.list.appendChild(this._optRow({
-        id: p.id, label: p.label, desc: p.desc, from: p.from, to: p.to,
+        id: p.id, label: p.label, desc: p.desc || "", from: p.from, to: p.to,
       })));
 
       if (customs.length) {
@@ -298,7 +314,7 @@
       main.innerHTML =
         `<span class="qm-rf-opt__text">` +
           `<span class="qm-rf-opt__label">${esc(o.label)}</span>` +
-          `<span class="qm-rf-opt__desc">${esc(o.desc)}</span>` +
+          (o.desc ? `<span class="qm-rf-opt__desc">${esc(o.desc)}</span>` : "") +
         `</span>` +
         `<span class="qm-rf-opt__check">${ICONS.check}</span>`;
       main.addEventListener("click", () => {
@@ -359,6 +375,7 @@
     }
 
     _fmt(v) {
+      if (v.from == null && v.to == null) return "All";
       const u = this.cfg.unit === "$" ? "" : this.cfg.unit; // $ handled by magnitude
       const n = (x) => {
         if (this.cfg.unit === "$") {
