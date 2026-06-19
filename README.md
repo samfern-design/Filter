@@ -45,6 +45,15 @@ a dataset with `data-dataset`:
 <button data-qm-filter data-dataset="sectors" …>…</button>
 ```
 
+At small breakpoints, navigation between groups can be either **drill-down**
+(push: group list → option list → back) or **accordion** (expanding sections
+in one scroll). Set it per trigger with `data-narrow-nav` (or per dataset via
+`narrow:`), default `drilldown`:
+
+```html
+<button data-qm-filter data-dataset="screener" data-narrow-nav="accordion" …>…</button>
+```
+
 Datasets live in the `DATASETS` registry in `filing-filter.js`
 (`filings` = SEC filing types, `sectors` = GICS industries, `screener` =
 market-screener criteria grouped by type). Each sets its

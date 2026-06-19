@@ -397,6 +397,10 @@
       this.label = ds.label;
       this.searchAll = ds.searchAll;
       this.mono = ds.mono;
+      // narrow-breakpoint navigation: "drilldown" (push) or "accordion"
+      // (expanding sections). Trigger attribute > option > dataset > default.
+      this.narrowNav = options.narrowNav || ds.narrow || "drilldown";
+      this.expanded = new Set(); // open accordion sections
       // flat index for cross-category search
       this.allItems = [];
       this.categories.forEach((c) => c.items.forEach(([code, label]) =>
@@ -576,6 +580,8 @@
       this.el.sheet.setAttribute("data-screen", "1");
       this.el.s1Search.value = "";
       this.el.s2Search.value = "";
+      // accordion starts with the default section open for orientation
+      this.expanded = new Set(this.narrowNav === "accordion" ? [this.activeCat] : []);
 
       // set the presentation mode + content before showing so the open
       // transition starts from the correct closed state
@@ -649,15 +655,20 @@
       const mode = this.mode;
       this.panel.setAttribute("data-mode", mode);
       this.overlay.setAttribute("data-mode", mode);
+      this.panel.setAttribute("data-narrow", this.narrowNav);
       if (mode === "sheet") {
         // Clear inline popover anchoring so the sheet's full-width CSS wins.
         this.panel.style.left = "";
         this.panel.style.top = "";
       }
       if (this.usesSheetView) {
-        // drill-down flow (sheet + narrow-desktop dropdown share this)
+        if (this.narrowNav === "accordion") {
+          // single screen of expanding sections — no push navigation
+          this.mobileScreen = 1;
+          this.el.sheet.setAttribute("data-screen", "1");
+        }
         this._renderScreen1();
-        if (this.mobileScreen === 2 && this.mobileCat) {
+        if (this.narrowNav !== "accordion" && this.mobileScreen === 2 && this.mobileCat) {
           this.el.s2Search.value = "";
           this._renderScreen2(this.mobileCat);
         }
@@ -732,6 +743,8 @@
           const row = this._itemRow(it.catId, it.code, it.label, it.catName);
           this.el.s1List.appendChild(row);
         });
+      } else if (this.narrowNav === "accordion") {
+        this.categories.forEach((c) => this.el.s1List.appendChild(this._accSection(c)));
       } else {
         this.categories.forEach((c) => {
           const sel = this._countInCat(c.id);
@@ -741,7 +754,7 @@
           row.setAttribute("data-row", "");
           row.title = c.name;
           row.setAttribute("aria-label",
-            `${c.name}${sel ? `, ${sel} selected` : ""}, ${c.items.length} filing types`);
+            `${c.name}${sel ? `, ${sel} selected` : ""}, ${c.items.length} options`);
           row.innerHTML =
             `<span class="qm-catrow__name">${esc(c.name)}</span>` +
             (sel ? `<span class="qm-catrow__badge">${sel}</span>` : "") +
@@ -751,6 +764,49 @@
         });
       }
       this._renderMobileFooter();
+    }
+
+    /* ---- Accordion section (expanding-sections narrow mode) ------------- */
+    _accSection(cat) {
+      const sel = this._countInCat(cat.id);
+      const open = this.expanded.has(cat.id);
+      const sec = document.createElement("section");
+      sec.className = "qm-acc";
+      sec.setAttribute("data-acc", cat.id);
+      sec.setAttribute("data-open", String(open));
+
+      const head = document.createElement("button");
+      head.type = "button";
+      head.className = "qm-acc__head";
+      head.setAttribute("data-row", "");
+      head.setAttribute("aria-expanded", String(open));
+      head.title = cat.name;
+      head.setAttribute("aria-label",
+        `${cat.name}${sel ? `, ${sel} selected` : ""}, ${cat.items.length} options`);
+      head.innerHTML =
+        `<span class="qm-acc__chev qm-chev">${ICONS.chevR}</span>` +
+        `<span class="qm-catrow__name">${esc(cat.name)}</span>` +
+        (sel ? `<span class="qm-catrow__badge" data-acc-badge>${sel}</span>` : `<span class="qm-catrow__badge" data-acc-badge hidden></span>`);
+      head.addEventListener("click", () => this._toggleSection(cat.id, sec, head));
+
+      const body = document.createElement("div");
+      body.className = "qm-acc__body";
+      const inner = document.createElement("div");
+      inner.className = "qm-acc__inner";
+      inner.appendChild(this._selectAllRow(cat));
+      cat.items.forEach(([code, label]) =>
+        inner.appendChild(this._itemRow(cat.id, code, label)));
+      body.appendChild(inner);
+
+      sec.append(head, body);
+      return sec;
+    }
+
+    _toggleSection(catId, sec, head) {
+      const open = !this.expanded.has(catId);
+      if (open) this.expanded.add(catId); else this.expanded.delete(catId);
+      sec.setAttribute("data-open", String(open));
+      head.setAttribute("aria-expanded", String(open));
     }
 
     openCategory(catId) {
@@ -855,7 +911,7 @@
       row.setAttribute("role", "checkbox");
       row.setAttribute("aria-checked", state);
       row.setAttribute("data-checked", state);
-      row.setAttribute("aria-label", "Select all filing types in " + cat.name);
+      row.setAttribute("aria-label", "Select all in " + cat.name);
       row.innerHTML =
         `<span class="qm-check" aria-hidden="true"></span>` +
         `<span class="qm-row__label">Select all</span>` +
@@ -888,7 +944,16 @@
       this.applied = new Set(this.staged);
       this._renderSummary();
       if (this.usesSheetView) {
-        if (this.mobileScreen === 2) {
+        if (this.narrowNav === "accordion" && !this.el.s1Search.value.trim()) {
+          // re-sync every open section's rows, select-all, and header badge
+          this.el.s1List.querySelectorAll(".qm-acc").forEach((sec) => {
+            const catId = sec.getAttribute("data-acc");
+            this._syncList(sec, catId);
+            const badge = sec.querySelector("[data-acc-badge]");
+            const sel = this._countInCat(catId);
+            if (badge) { badge.textContent = String(sel); badge.hidden = sel === 0; }
+          });
+        } else if (this.mobileScreen === 2) {
           // re-sync select-all + every row's checked state in current list
           this._syncList(this.el.s2List, this.mobileCat);
         } else if (this.el.s1Search.value.trim()) {
@@ -1069,7 +1134,8 @@
   window.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("[data-qm-filter]").forEach((trigger) => {
       const dataset = trigger.getAttribute("data-dataset") || "filings";
-      trigger._qm = new FilingFilter(trigger, { dataset });
+      const narrowNav = trigger.getAttribute("data-narrow-nav") || undefined;
+      trigger._qm = new FilingFilter(trigger, { dataset, narrowNav });
     });
   });
 })();
