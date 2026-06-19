@@ -354,6 +354,10 @@
     /* ---- Render dispatch ----------------------------------------------- */
     _renderForViewport() {
       if (this.isMobile) {
+        // Clear any inline popover anchoring from a prior desktop open —
+        // otherwise it overrides the sheet's full-width CSS positioning.
+        this.panel.style.left = "";
+        this.panel.style.top = "";
         this._renderScreen1();
         if (this.mobileScreen === 2 && this.mobileCat) {
           this.el.s2Search.value = "";
