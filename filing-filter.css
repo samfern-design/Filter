@@ -358,13 +358,17 @@
 .qm-empty__q { color: var(--qm-text); font-weight: 600; }
 
 /* ===========================================================================
-   MOBILE — bottom sheet drill-down (< 768px)
+   NARROW (< 768px) — drill-down flow.
+   Two skins share the same screens/footer:
+     • data-mode="sheet"     → touch: floating bottom sheet
+     • data-mode="drilldown" → pointer: anchored dropdown (desktop look)
    =========================================================================== */
 @media (max-width: 767px) {
-  .qm-overlay[data-open="true"] { background: var(--qm-scrim); }
+  /* dim the page only behind the touch bottom sheet */
+  .qm-overlay[data-mode="sheet"][data-open="true"] { background: var(--qm-scrim); }
 
-  .qm-panel {
-    /* Floating sheet: a margin on every side, all corners rounded. */
+  /* TOUCH — floating bottom sheet: margin on every side, all corners rounded */
+  .qm-panel[data-mode="sheet"] {
     position: fixed;
     left: 14px;
     right: 14px;
@@ -373,8 +377,7 @@
     width: auto;
     max-width: none;
     /* Definite height so the flex body can size — the screens are
-       absolutely positioned and contribute no intrinsic height. Account for
-       the top gap + bottom gap + safe area. */
+       absolutely positioned and contribute no intrinsic height. */
     height: calc(100vh - 42px);
     height: calc(100dvh - 42px - env(safe-area-inset-bottom));
     max-height: calc(100dvh - 42px - env(safe-area-inset-bottom));
@@ -386,15 +389,21 @@
     transition: transform 240ms ease-out, opacity 1ms;
     opacity: 1;
   }
-  .qm-panel[data-open="true"] { transform: translateY(0); }
-  .qm-panel[data-closing="true"] {
+  .qm-panel[data-mode="sheet"][data-open="true"] { transform: translateY(0); }
+  .qm-panel[data-mode="sheet"][data-closing="true"] {
     transform: translateY(calc(100% + 24px));
     transition: transform 200ms ease-in;
   }
 
+  /* POINTER — anchored dropdown: keeps the base popover skin (absolute,
+     rounded, shadow, fade/scale from JS positioning), just narrower and
+     without the drag handle */
+  .qm-panel[data-mode="drilldown"] { width: 380px; }
+  .qm-panel[data-mode="drilldown"] .qm-handle { display: none; }
+
   .qm-miller { display: none !important; }
-  /* desktop footer is a panel-level sibling — hide it on mobile so the
-     sheet's own footer is the only one shown */
+  /* desktop footer is a panel-level sibling — hide it in the narrow drill-down
+     so the sheet-view's own footer is the only one shown */
   [data-d-footer] { display: none !important; }
   .qm-sheet-view {
     display: flex;

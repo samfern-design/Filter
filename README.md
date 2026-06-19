@@ -4,11 +4,15 @@ A prototype of QuoteMedia's "Add filter" panel for SEC filing types.
 
 - **≥ 768px** — anchored dropdown with the two-column miller layout
   (categories left, filing types right).
-- **< 768px** — full-height bottom sheet with push-style drill-down
+- **< 768px, touch device** — floating bottom sheet with push-style drill-down
   (category list → item list → back) and a persistent footer.
+- **< 768px, pointer device** — the same drill-down flow, but skinned as an
+  anchored dropdown (desktop look) rather than a bottom sheet.
 
-Both layouts share one selection state, so resizing across the breakpoint
-keeps your checks intact.
+The narrow split is by input type (`pointer: coarse`), not just width: phones
+get the sheet, a narrowed desktop window gets the dropdown. All three modes
+share one selection state, so resizing or switching between them keeps your
+checks intact.
 
 ## Run
 

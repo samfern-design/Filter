@@ -144,13 +144,23 @@
       this.activeCat = CATEGORIES[2].id; // desktop active column (Annual Reports)
       this.mobileScreen = 1;
       this.mobileCat = null;
-      this.mq = window.matchMedia("(max-width: 767px)");
+      this.mqNarrow = window.matchMedia("(max-width: 767px)");
+      this.mqTouch = window.matchMedia("(pointer: coarse)");
       this._buildDom();
       this._wire();
       this._renderSummary();
     }
 
-    get isMobile() { return this.mq.matches; }
+    // Presentation mode:
+    //  - "miller"    : wide viewport → two-column dropdown
+    //  - "drilldown" : narrow + pointer device → dropdown with drill-down flow
+    //  - "sheet"     : narrow + touch device → floating bottom sheet
+    get mode() {
+      if (!this.mqNarrow.matches) return "miller";
+      return this.mqTouch.matches ? "sheet" : "drilldown";
+    }
+    // Both narrow modes share the drill-down (screens) rendering.
+    get usesSheetView() { return this.mode !== "miller"; }
 
     /* ---- DOM scaffold (built once) ------------------------------------ */
     _buildDom() {
@@ -266,14 +276,19 @@
       this.el.s1Search.addEventListener("input", () => this._renderScreen1());
       this.el.s2Search.addEventListener("input", () => this._renderScreen2List());
 
-      // Reposition desktop popover on resize/scroll; re-render on breakpoint change.
+      // Reposition anchored popovers on resize/scroll; re-render on mode change.
       this._onResize = () => {
         if (!this.isOpen) return;
         this._renderForViewport();
-        if (!this.isMobile) this._position();
+        if (this.mode !== "sheet") this._position();
       };
       window.addEventListener("resize", this._onResize);
-      window.addEventListener("scroll", () => { if (this.isOpen && !this.isMobile) this._position(); }, true);
+      window.addEventListener("scroll", () => {
+        if (this.isOpen && this.mode !== "sheet") this._position();
+      }, true);
+      // react to viewport-width and input-type (touch vs pointer) changes
+      this.mqNarrow.addEventListener("change", this._onResize);
+      this.mqTouch.addEventListener("change", this._onResize);
 
       this._wireSwipe();
     }
@@ -290,6 +305,11 @@
       this.el.s1Search.value = "";
       this.el.s2Search.value = "";
 
+      // set the presentation mode + content before showing so the open
+      // transition starts from the correct closed state
+      this._renderForViewport();
+      if (this.mode !== "sheet") this._position();
+
       this.overlay.setAttribute("data-open", "true");
       // force reflow so the panel transition runs
       // eslint-disable-next-line no-unused-expressions
@@ -297,12 +317,9 @@
       this.panel.setAttribute("data-open", "true");
       this.trigger.setAttribute("aria-expanded", "true");
 
-      this._renderForViewport();
-      if (!this.isMobile) this._position();
-
       // initial focus
       requestAnimationFrame(() => {
-        if (this.isMobile) this.el.s1Search.focus();
+        if (this.usesSheetView) this.el.s1Search.focus();
         else (this.el.cats.querySelector('[aria-current="true"]') || this.el.cats.firstElementChild)?.focus();
       });
     }
@@ -357,11 +374,16 @@
 
     /* ---- Render dispatch ----------------------------------------------- */
     _renderForViewport() {
-      if (this.isMobile) {
-        // Clear any inline popover anchoring from a prior desktop open —
-        // otherwise it overrides the sheet's full-width CSS positioning.
+      const mode = this.mode;
+      this.panel.setAttribute("data-mode", mode);
+      this.overlay.setAttribute("data-mode", mode);
+      if (mode === "sheet") {
+        // Clear inline popover anchoring so the sheet's full-width CSS wins.
         this.panel.style.left = "";
         this.panel.style.top = "";
+      }
+      if (this.usesSheetView) {
+        // drill-down flow (sheet + narrow-desktop dropdown share this)
         this._renderScreen1();
         if (this.mobileScreen === 2 && this.mobileCat) {
           this.el.s2Search.value = "";
@@ -369,7 +391,7 @@
         }
         this._renderMobileFooter();
       } else {
-        // landed on desktop: keep category context from a mobile drill-down
+        // landed on the wide layout: keep category context from a drill-down
         if (this.mobileScreen === 2 && this.mobileCat) this.activeCat = this.mobileCat;
         this._renderDesktop();
       }
@@ -591,7 +613,7 @@
       // and update the trigger chip immediately (not only on "Search").
       this.applied = new Set(this.staged);
       this._renderSummary();
-      if (this.isMobile) {
+      if (this.usesSheetView) {
         if (this.mobileScreen === 2) {
           // re-sync select-all + every row's checked state in current list
           this._syncList(this.el.s2List, this.mobileCat);
@@ -654,7 +676,7 @@
       this.staged.clear();
       this.applied = new Set(this.staged);
       this._renderSummary();
-      if (this.isMobile) this._renderScreen1();
+      if (this.usesSheetView) this._renderScreen1();
       else this._renderDesktop();
     }
 
@@ -715,7 +737,7 @@
       const clr = this._btn("Clear search", "qm-btn--outline", () => {
         this.el.s1Search.value = "";
         this.el.s2Search.value = "";
-        if (this.isMobile && this.mobileScreen === 2) this._renderScreen2List();
+        if (this.usesSheetView && this.mobileScreen === 2) this._renderScreen2List();
         else this._renderScreen1();
       });
       d.appendChild(clr);
@@ -738,7 +760,7 @@
       let startY = null, dy = 0;
       const handle = this.el.handle;
       const onDown = (e) => {
-        if (!this.isMobile) return;
+        if (this.mode !== "sheet") return; // swipe-to-dismiss is sheet-only
         startY = (e.touches ? e.touches[0].clientY : e.clientY);
         dy = 0;
         this.panel.style.transition = "none";
