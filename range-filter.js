@@ -149,8 +149,6 @@
                   aria-label="Back to presets" hidden>${ICONS.chevL}</button>
           <span class="qm-rf-head__title">${esc(c.title)}</span>
           <span class="qm-rf-head__help" title="${esc(c.help)}" aria-label="${esc(c.help)}">?</span>
-          <button class="qm-icon-btn qm-rf-icon" data-clear type="button"
-                  aria-label="Remove filter">${ICONS.trash}</button>
         </div>
         <div class="qm-rf-stage">
           <div class="qm-rf-track">
@@ -188,7 +186,6 @@
       const $ = (s) => this.panel.querySelector(s);
       this.el = {
         back: $("[data-back]"),
-        clear: $("[data-clear]"),
         search: $("[data-search]"),
         list: $("[data-list]"),
         manual: $("[data-manual]"),
@@ -257,7 +254,6 @@
         if (this.isOpen && e.key === "Escape") { e.preventDefault(); this.close(); }
       });
       this.el.back.addEventListener("click", () => this.goScreen(1));
-      this.el.clear.addEventListener("click", () => { this.value = null; this._renderChip(); this.close(); });
       this.el.manual.addEventListener("click", () => this.goScreen(2));
       this.el.search.addEventListener("input", () => this._renderPresets());
       this.el.apply.addEventListener("click", () => this._applyManual());

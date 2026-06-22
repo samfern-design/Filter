@@ -32,11 +32,6 @@
   transition: transform 160ms ease;
 }
 .qm-rf-chip[aria-expanded="true"] .qm-rf-chip__chev { transform: rotate(180deg); }
-.qm-rf-chip[data-set="true"] {
-  border-color: var(--qm-accent);
-  background: var(--qm-accent-weak);
-  color: var(--qm-accent-press);
-}
 .qm-rf-chip:focus-visible { outline: 2px solid var(--qm-accent); outline-offset: 2px; }
 
 /* ---- Overlay + panel ---------------------------------------------------- */
@@ -151,10 +146,6 @@
   border-radius: var(--qm-radius-sm);
 }
 .qm-rf-row:hover { background: var(--qm-surface-sunk); }
-.qm-rf-row[data-sel="true"] {
-  border-color: var(--qm-accent);
-  background: var(--qm-accent-weak);
-}
 .qm-rf-opt {
   flex: 1 1 auto;
   display: flex;
@@ -245,7 +236,7 @@
   font-size: var(--qm-fs-md);
   color: var(--qm-text-faint);
 }
-.qm-rf-datefield[data-set="true"] { color: var(--qm-text); border-color: var(--qm-accent); }
+.qm-rf-datefield[data-set="true"] { color: var(--qm-text); }
 .qm-rf-datefield > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .qm-rf-datefield svg { flex: 0 0 auto; width: 16px; height: 16px; color: var(--qm-text-faint); }
 .qm-rf-datefield:focus-visible { outline: 2px solid var(--qm-accent); outline-offset: 2px; }
