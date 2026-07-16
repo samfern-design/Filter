@@ -145,6 +145,17 @@
     .pi { font-family: var(--font-sans) !important; font-style: normal; font-weight: var(--weight-semibold); }
     .pi-sort-amount-up-alt::before { content: "\2191"; }   /* ↑ */
     .pi-sort-amount-down::before   { content: "\2193"; }   /* ↓ */
+
+    /* Some environments draw the bare grab/grabbing cursor keywords as a blank
+       (white) pointer while dragging. Supply a visible hand cursor (inline SVG
+       data-URI — allowed under the artifact CSP) with the keyword as fallback,
+       matching the DS DataTable's inline cursors on headers/rows/ghost/body. */
+    [style*="cursor:grabbing"], [style*="cursor: grabbing"] {
+      cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE4IDExLjVWOWEyIDIgMCAwIDAtMi0yIDIgMiAwIDAgMC0yIDIiLz48cGF0aCBkPSJNMTQgMTBWOGEyIDIgMCAwIDAtMi0yIDIgMiAwIDAgMC0yIDJ2MiIvPjxwYXRoIGQ9Ik0xMCA5LjlWOWEyIDIgMCAwIDAtMi0yIDIgMiAwIDAgMC0yIDJ2NSIvPjxwYXRoIGQ9Ik02IDE0YTggOCAwIDAgMCA4IDggOCA4IDAgMCAwIDgtOHYtMmEyIDIgMCAwIDAtMi0yIDIgMiAwIDAgMC0yIDIiLz48cGF0aCBkPSJNNiAxNHYtM2EyIDIgMCAwIDEgMi0yIi8+PC9zdmc+") 8 8, grabbing !important;
+    }
+    [style*="cursor:grab;"], [style*="cursor: grab;"] {
+      cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTE4IDExVjZhMiAyIDAgMCAwLTItMiAyIDIgMCAwIDAtMiAyIi8+PHBhdGggZD0iTTE0IDEwVjRhMiAyIDAgMCAwLTItMiAyIDIgMCAwIDAtMiAydjIiLz48cGF0aCBkPSJNMTAgMTAuNVY2YTIgMiAwIDAgMC0yLTIgMiAyIDAgMCAwLTIgMnY4Ii8+PHBhdGggZD0iTTE4IDhhMiAyIDAgMSAxIDQgMHY2YTggOCAwIDAgMS04IDhoLTJjLTIuOCAwLTQuNS0uODYtNS45OS0yLjM0bC0zLjYtMy42YTIgMiAwIDAgMSAyLjgzLTIuODJMNyAxNSIvPjwvc3ZnPg==") 8 8, grab !important;
+    }
   </style>
 </head>
 <body>
@@ -803,6 +814,7 @@
 
     return (
       <div className="pf-app">
+        <Card className="pf-shell" bodyStyle={{ padding: '0 var(--space-lg) var(--space-lg)' }}>
         <div className="pf-toolbar">
           <Button iconOnly variant="text" severity="plain" size="sm" aria-label="More"><Icon name="kebab" /></Button>
           <div className="pf-portsel"><Select value={portfolio} onChange={setPortfolio} options={['MAIN', 'Retirement', 'Watchlist', 'Dividend income']} /></div>
@@ -821,6 +833,7 @@
         </div>
 
         <div className="pf-panel">{panel()}</div>
+        </Card>
 
         <HoldingsDrawer open={drawer} onClose={() => setDrawer(false)} />
       </div>
