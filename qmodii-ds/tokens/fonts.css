@@ -1,0 +1,5 @@
+/* Qmodii ships Roboto (UI) + Roboto Mono (tabular market figures) from Google Fonts.
+   Roboto is the brand family declared in the Figma tokens (font.Family = "Roboto").
+   Roboto Mono is an INTENTIONAL ADDITION for tabular/numeric alignment in tables and
+   quote widgets — see readme.md. Swap for a self-hosted binary in production. */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap');

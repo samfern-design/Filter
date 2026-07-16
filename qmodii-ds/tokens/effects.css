@@ -1,0 +1,42 @@
+/* ============================================================
+   Qmodii — EFFECTS: shadows, focus ring, motion, disabled
+   Overlay shadows in the Figma set are all soft rgba(0,0,0,.10).
+   Qmodii is a low-elevation, border-first system: most containers use
+   a 1px --border-color rather than a drop shadow. Shadows are reserved
+   for floating overlays (menus, dialogs, drawers, popovers).
+   ============================================================ */
+:root {
+  /* Elevation (overlay layers) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.10);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-overlay: var(--shadow-md);   /* menus / selects / popovers */
+  --shadow-dialog:  var(--shadow-lg);   /* modal dialogs / drawers */
+
+  /* Scrim behind modals */
+  --mask-bg: rgba(0, 0, 0, 0.4);
+
+  /* Focus ring — 1px primary, 2px offset */
+  --focus-ring-width:  1px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color:  var(--primary);
+  --focus-ring: 0 0 0 var(--focus-ring-offset) var(--surface-0),
+                0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--focus-ring-color);
+
+  /* Disabled */
+  --disabled-opacity: 0.6;   /* @kind other */
+
+  /* Motion — quick, functional, no bounce */
+  --duration-fast: 120ms;    /* @kind other */
+  --duration-base: 160ms;    /* @kind other */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);   /* @kind other */
+  --transition: all var(--duration-base) var(--ease);
+
+  /* M3 emphasized motion — overlays (Dialog / Drawer) enter/exit */
+  --motion-enter-duration: 400ms;   /* @kind other */
+  --motion-exit-duration:  200ms;   /* @kind other */
+  --motion-enter-ease: cubic-bezier(0.05, 0.7, 0.1, 1);   /* @kind other */
+  --motion-exit-ease:  cubic-bezier(0.3, 0, 0.8, 0.15);   /* @kind other */
+  --motion-scrim-duration: 150ms;   /* @kind other */
+}

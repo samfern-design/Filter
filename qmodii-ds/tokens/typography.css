@@ -1,0 +1,37 @@
+/* ============================================================
+   Qmodii — TYPOGRAPHY
+   Family: Roboto (per Figma font.Family). Base UI size 14px.
+   Line-heights in the Figma tokens are set equal to font-size (tight,
+   for single-line controls); for multi-line content use the --leading-*
+   aliases below.
+   ============================================================ */
+:root {
+  --font-sans: 'Roboto', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  /* Roboto Mono — INTENTIONAL ADDITION for tabular/numeric alignment
+     (quote tables, price grids). Not in the Figma set; see readme.md. */
+  --font-mono: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Sizes (px, from font tokens) */
+  --text-sm:   12px;   /* font.sm.size — captions, meta, dense tables */
+  --text-base: 14px;   /* font.size    — default UI text */
+  --text-lg:   16px;   /* font.lg.size — card titles, section labels */
+  --text-xl:   18px;   /* form lg / headings */
+  --text-2xl:  22px;   /* page headings */
+  --text-3xl:  28px;   /* display */
+
+  /* Weights */
+  --weight-regular:  400;
+  --weight-medium:   500;   /* card titles, toggle labels */
+  --weight-semibold: 600;   /* group labels, nav headers, active tabs */
+  --weight-bold:     700;   /* tags, emphasis */
+
+  /* Line-heights — fixed px so wrapping text keeps a predictable rhythm.
+     Pair each with its font-size: sm 12→16, base 14→20, lg 16→24. */
+  --leading-sm:   16px;   /* 12px text */
+  --leading-base: 20px;   /* 14px default text — handles 2-line wrapping */
+  --leading-lg:   24px;   /* 16px text */
+
+  --leading-none:   1;      /* single-glyph / icon-only contexts */
+  --leading-tight:  1.25;
+  --leading-normal: 20px;   /* body copy default = --leading-base */
+}

@@ -1,0 +1,504 @@
+/* ============================================================
+   Qmodii — COMPONENT TOKENS  (light)
+   The third tier, mirroring the Figma "components" variable set.
+   Each value resolves up through the semantic aliases (semantic.css)
+   to a primitive (palette.css). Consumers can retheme a single
+   component by overriding just these variables.
+   ============================================================ */
+:root {
+  /* ---------- Button ---------- */
+  --btn-radius: var(--radius-sm);
+  --btn-gap: var(--gap-md);
+  --btn-height: var(--control-height);
+  --btn-height-sm: var(--control-height-sm);
+  --btn-height-lg: var(--control-height-lg);
+
+  --btn-primary-bg:            var(--primary);
+  --btn-primary-fg:            var(--primary-contrast);
+  --btn-primary-hover-bg:      var(--primary-hover);
+  --btn-primary-active-bg:     var(--primary-active);
+  --btn-secondary-bg:          var(--surface-100);
+  --btn-secondary-fg:          var(--text-primary);
+  --btn-secondary-hover-bg:    var(--surface-200);
+  --btn-secondary-active-bg:   var(--surface-200);
+  --btn-negative-bg:           var(--red-700);
+  --btn-negative-fg:           #FFFFFF;
+  --btn-negative-hover-bg:     var(--red-800);
+  --btn-negative-active-bg:    var(--red-800);
+
+  --btn-outlined-primary-fg:       var(--primary);
+  --btn-outlined-primary-border:   var(--qm-blue-200);
+  --btn-outlined-primary-hover-bg: var(--qm-blue-50);
+  --btn-outlined-secondary-fg:     var(--text-primary);
+  --btn-outlined-secondary-border: var(--surface-200);
+  --btn-outlined-secondary-hover-bg: var(--surface-50);
+
+  --btn-text-primary-fg:        var(--primary);
+  --btn-text-primary-hover-bg:  var(--qm-blue-50);
+
+  /* surface variant (tinted fill + subtle border) */
+  --btn-surface-primary-fg:          var(--primary);
+  --btn-surface-primary-bg:          var(--qm-blue-50);
+  --btn-surface-primary-border:      var(--qm-blue-200);
+  --btn-surface-primary-hover-border:var(--qm-blue-300);
+  --btn-surface-primary-active-bg:   var(--qm-blue-100);
+  --btn-surface-secondary-fg:        var(--text-primary);
+  --btn-surface-secondary-bg:        var(--surface-50);
+  --btn-surface-secondary-border:    var(--surface-200);
+  --btn-surface-secondary-active-bg: var(--surface-100);
+  --btn-surface-negative-fg:         var(--red-600);
+  --btn-surface-negative-bg:         var(--red-50);
+  --btn-surface-negative-border:     var(--red-300);
+  --btn-surface-negative-hover-bg:   var(--red-100);
+
+  /* ---------- Form fields (InputText / Select / Password) ---------- */
+  /* Shared --field-* tokens removed — components use their own
+     --input-text-* / --select-field-* tokens (which alias --form-field-*). */
+
+  /* ---------- InputText (component tokens → form-field semantics) ---------- */
+  --input-text-bg:             var(--form-field-bg);
+  --input-text-color:          var(--form-field-color);
+  --input-text-placeholder:    var(--form-field-placeholder);
+  --input-text-border-color:   var(--form-field-border-color);
+  --input-text-hover-border:   var(--form-field-hover-border);
+  --input-text-focus-border:   var(--form-field-focus-border);
+  --input-text-invalid-border: var(--form-field-invalid-border);
+  --input-text-radius:         var(--form-field-border-radius);
+  --input-text-icon-color:     var(--form-field-icon-color);
+  --input-text-disabled-fg:    var(--form-field-disabled-color);
+  --input-text-disabled-bg:    var(--form-field-disabled-bg);
+
+  /* ---------- Select field / trigger (component tokens → form-field semantics) ---------- */
+  --select-field-bg:             var(--form-field-bg);
+  --select-field-color:          var(--form-field-color);
+  --select-field-placeholder:    var(--form-field-placeholder);
+  --select-field-border-color:   var(--form-field-border-color);
+  --select-field-hover-border:   var(--form-field-hover-border);
+  --select-field-focus-border:   var(--form-field-focus-border);
+  --select-field-invalid-border: var(--form-field-invalid-border);
+  --select-field-radius:         var(--form-field-border-radius);
+
+  /* Select overlay */
+  --select-icon-color:     var(--surface-500);       /* #575757 */
+  --select-dropdown-width: 35px;
+  --select-overlay-bg:     var(--overlay-bg);
+  --select-overlay-color:  var(--text-primary);      /* #222222 */
+  --select-overlay-border: var(--overlay-border);
+  --select-overlay-radius: var(--radius-sm);
+  --select-overlay-shadow: var(--shadow-overlay);
+  --select-list-gap:           var(--gap-xs);         /* 2px */
+  --select-option-color:       var(--text-primary);   /* #222222 */
+  --select-option-radius:      var(--radius-sm);
+  --select-option-focus-bg:    var(--surface-50);      /* #F6F6F6 */
+  --select-option-focus-fg:    var(--text-primary);
+  --select-option-selected-bg: var(--primary-subtle);  /* #F2F8FE */
+  --select-option-selected-fg: var(--qm-blue-900);     /* #002C5A */
+  --select-option-selected-focus-bg: var(--primary-subtle);
+  --select-option-selected-focus-fg: var(--qm-blue-950); /* #001831 */
+  --select-checkmark-color:    var(--text-primary);
+  --select-clear-icon-color:   var(--surface-500);
+  --select-group-fg:           var(--text-muted);       /* group / accordion header label */
+  --select-group-bg:           var(--surface-50);        /* accordion header background */
+  --select-group-size:         11px;                     /* @kind spacing */
+  --select-empty-fg:           var(--text-muted);        /* "no results" / loading text */
+
+  /* ---------- List item (reusable menu / list rows) ---------- */
+  --list-item-padding-y:     6px;                         /* @kind spacing */
+  --list-item-padding-x:     var(--space-sm);             /* 8px */
+  --list-item-gap:           var(--gap-md);               /* 8px — icon↔label */
+  --list-item-radius:        var(--radius-sm);
+  --list-item-color:         var(--text-primary);
+  --list-item-sublabel-fg:   var(--text-muted);
+  --list-item-icon-color:    var(--surface-500);
+  --list-item-hover-bg:      var(--surface-50);           /* #F6F6F6 */
+  --list-item-selected-bg:   var(--primary-subtle);       /* #F2F8FE */
+  --list-item-selected-fg:   var(--qm-blue-900);          /* #002C5A */
+  --list-item-selected-icon: var(--primary);              /* #0477D1 */
+  --list-item-disabled-fg:   var(--surface-500);          /* #575757 */
+  --list-item-check-color:   var(--primary);
+
+  /* ---------- Checkbox / Radio ---------- */
+  --check-size: 17.5px;
+  --check-size-sm: 14px;
+  --check-size-lg: 21px;
+  --check-radius: var(--radius-sm);
+  --check-bg: var(--surface-0);
+  --check-border: var(--surface-200);
+  --check-hover-border: var(--surface-300);
+  --check-checked-bg: var(--primary);
+  --check-checked-hover-bg: var(--primary-hover);
+  --check-checked-border: var(--primary);
+  --check-icon-color: #FFFFFF;
+  --check-invalid-border: var(--red-400);
+
+  /* ---------- ToggleSwitch ---------- */
+  --switch-w: 35px;
+  --switch-h: 21px;
+  --switch-handle: 14px;
+  --switch-track-off: var(--surface-300);
+  --switch-track-off-hover: var(--surface-400);
+  --switch-track-on: var(--primary);
+  --switch-track-on-hover: var(--primary-hover);
+  --switch-track-disabled: var(--surface-200);
+  --switch-handle-bg: #FFFFFF;
+
+  /* ---------- ToggleButton (segmented) ---------- */
+  --toggle-track-bg: var(--surface-50);
+  --toggle-radius: var(--radius-sm);
+  --toggle-seg-selected-bg: var(--surface-0);
+  --toggle-seg-selected-fg: var(--surface-900);
+  --toggle-seg-fg: var(--text-secondary);
+  --toggle-seg-hover-fg: var(--surface-700);
+
+  /* ---------- Tag ---------- */
+  --tag-radius: var(--radius-xs);
+  --tag-radius-rounded: var(--radius-xl);
+  --tag-font-size: var(--text-sm);
+  --tag-font-weight: var(--weight-bold);
+  --tag-padding: 2px 6px;
+  --tag-primary-bg:   var(--qm-blue-100);  --tag-primary-fg:   var(--primary);
+  --tag-secondary-bg: var(--surface-100);  --tag-secondary-fg: var(--surface-600);
+  --tag-success-bg:   var(--green-100);    --tag-success-fg:   var(--green-700);
+  --tag-info-bg:      var(--sky-100);      --tag-info-fg:      var(--sky-700);
+  --tag-warn-bg:      rgba(234,179,8,0.12);--tag-warn-fg:      var(--yellow-600);
+  --tag-danger-bg:    var(--red-100);      --tag-danger-fg:    var(--red-700);
+  --tag-contrast-bg:  var(--neutral-950);  --tag-contrast-fg:  #FFFFFF;
+  --tag-buy-bg:  rgba(93,182,120,0.12);    --tag-buy-fg:  var(--buy);
+  --tag-sell-bg: rgba(220,90,89,0.12);     --tag-sell-fg: var(--sell);
+  --tag-call-bg: rgba(93,182,120,0.12);    --tag-call-fg: var(--buy);
+  --tag-put-bg:  rgba(241,70,104,0.12);    --tag-put-fg:  var(--sell);
+
+  /* ---------- Chip ---------- */
+  --chip-height: 28px;
+  --chip-radius: var(--radius-sm);
+  --chip-bg: var(--surface-50);
+  --chip-fg: var(--text-primary);
+  --chip-border: var(--surface-200);
+  --chip-hover-border: var(--surface-300);
+  --chip-selected-bg: var(--primary-subtle);
+  --chip-selected-fg: var(--qm-blue-900);
+  --chip-selected-border: var(--qm-blue-200);
+
+  /* ---------- Message ---------- */
+  --message-radius: var(--radius-sm);
+  --message-info-bg: var(--qm-blue-50);   --message-info-fg: var(--primary);      --message-info-border: var(--qm-blue-200);
+  --message-success-bg: var(--green-50);  --message-success-fg: var(--green-600); --message-success-border: var(--green-200);
+  --message-warn-bg: rgba(254,252,232,0.95); --message-warn-fg: var(--yellow-600); --message-warn-border: rgba(202,138,4,0.35);
+  --message-error-bg: var(--red-50);      --message-error-fg: var(--red-700);     --message-error-border: var(--red-300);
+  --message-secondary-bg: var(--surface-50);  --message-secondary-fg: var(--surface-700);  --message-secondary-border: var(--surface-200);
+  --message-secondary-outlined-fg: var(--surface-500);
+  --message-contrast-bg: var(--surface-900);  --message-contrast-fg: var(--surface-50);    --message-contrast-border: var(--surface-950);
+  --message-contrast-outlined-fg: var(--surface-950);
+
+  /* ---------- Card ---------- */
+  --card-bg: var(--content-bg);
+  --card-border: var(--surface-200);
+  --card-radius: var(--radius-sm);
+  --card-padding: var(--space-md);        /* 12px — body padding */
+  --card-gap: var(--gap-md);              /* 8px — between caption / content / footer */
+  --card-caption-gap: var(--gap-sm);      /* 4px — between title & subtitle */
+  --card-content-padding: 0px;            /* extra padding around content slot @kind spacing */
+  --card-footer-padding-top: var(--gap-md); /* 8px — space above footer @kind spacing */
+  --card-title-size: var(--text-lg);
+  --card-title-weight: var(--weight-medium);
+  --card-title-fg: var(--text-primary);
+  --card-subtitle-fg: var(--text-secondary);
+  --card-fg: var(--text-primary);
+  --card-shadow: var(--shadow-md);        /* only when raised */
+
+  /* ---------- Dialog / Drawer ---------- */
+  --dialog-bg: var(--overlay-bg);
+  --dialog-border: var(--overlay-border);
+  --dialog-radius: var(--radius-sm);
+  --dialog-padding: var(--space-lg);
+  --dialog-shadow: var(--shadow-dialog);
+  --dialog-title-size: var(--text-lg);
+  --dialog-title-weight: var(--weight-semibold);
+  --dialog-mask: var(--mask-bg);
+  --drawer-bg: var(--surface-0);
+  --drawer-border: var(--surface-200);
+  --drawer-header-padding: var(--space-md) var(--space-md);
+
+  /* ---------- Accordion ---------- */
+  --accordion-border: var(--surface-200);
+  --accordion-radius: var(--radius-sm);
+  --accordion-header-fg: var(--text-muted);
+  --accordion-header-active-fg: var(--text-primary);
+  --accordion-header-weight: var(--weight-semibold);
+
+  /* ---------- Tabs ---------- */
+  --tab-border: var(--surface-200);
+  --tab-fg: var(--text-secondary);
+  --tab-active-fg: var(--primary);
+  --tab-active-bar: var(--primary);
+  --tab-active-weight: var(--weight-semibold);
+  --tab-chip-track-bg: transparent;             /* chips are individually bordered — no track */
+  --tab-chip-bg: var(--surface-0);              /* inactive chip fill */
+  --tab-chip-border: var(--surface-200);        /* inactive chip border */
+  --tab-chip-hover-border: var(--surface-300);
+  --tab-chip-selected-bg: var(--primary-subtle);   /* #F2F8FE */
+  --tab-chip-selected-border: var(--qm-blue-200);
+  --tab-chip-selected-fg: var(--primary);
+
+  /* ---------- Divider ---------- */
+  --divider-color: var(--surface-200);
+  --divider-thickness: 1px;                     /* @kind spacing */
+  --divider-margin: var(--space-lg);            /* 16px — gap around a horizontal divider */
+  --divider-content-gap: var(--gap-md);         /* 8px — space around an inline content label */
+  --divider-content-fg: var(--text-muted);
+  --divider-content-size: var(--text-base);     /* 14px */
+
+  /* ---------- DataTable ---------- */
+  --table-border: var(--surface-200);
+  --table-cell-border: var(--surface-100);
+  --table-header-bg: var(--surface-0);
+  --table-header-fg: var(--text-primary);
+  --table-header-size: var(--text-sm);
+  --table-header-pad-y: 4px;                         /* @kind spacing */
+  --table-header-pad-x: 12px;                        /* @kind spacing */
+  --table-header-action-pad-x: 6px;                  /* action-col header @kind spacing */
+  --table-row-striped-bg: var(--surface-50);
+  --table-row-hover-bg: var(--surface-50);
+  --table-row-selected-bg: var(--primary-subtle);
+  --table-row-selected-fg: var(--qm-blue-900);
+  --table-buy-fg: var(--buy);
+  --table-sell-fg: var(--sell);
+  --table-itm-call-bg: rgba(241,70,104,0.059);  /* in-the-money call row/cell tint */
+  --table-itm-put-bg:  rgba(93,182,120,0.059);  /* in-the-money put row/cell tint */
+
+  /* Options-chain price cells (Bid / Ask) — hover + selected states */
+  --chain-cell-radius:        var(--radius-xs);
+  --chain-ask-hover-bg:       rgba(93,182,120,0.16);   /* Ask = green */
+  --chain-ask-selected-bg:    rgba(93,182,120,0.32);
+  --chain-ask-selected-border: var(--buy-fill);
+  --chain-ask-selected-fg:    var(--buy);
+  --chain-bid-hover-bg:       rgba(241,70,104,0.12);   /* Bid = red */
+  --chain-bid-selected-bg:    rgba(241,70,104,0.26);
+  --chain-bid-selected-border: var(--sell-hot);
+  --chain-bid-selected-fg:    var(--sell);
+  --table-header-hover-bg: var(--surface-50);       /* #F6F6F6 */
+  /* column resize */
+  --table-resize-hit: 10px;                          /* handle hit area (inside cell, flush right) */
+  --table-resize-inset: 0px;                         /* flush to the boundary */
+  --table-resize-bar: rgba(4,119,209,0.5);           /* brand blue @ 50% */
+  --table-col-min: 56px;                             /* --col-w-min */
+  --table-col-max: 280px;                            /* --col-w-max */
+  /* column reorder */
+  --table-grip-color: var(--surface-400);            /* #707070 grip dots */
+  --table-drop-indicator: var(--primary);            /* 2px accent bar */
+  --table-drag-source-opacity: 0.4;   /* @kind other */
+  /* shadow cast by a sticky column/header over content scrolling under it */
+  --table-sticky-shadow-x: 6px 0 8px -6px rgba(0, 0, 0, 0.22);
+  --table-sticky-shadow-y: 0 6px 8px -6px rgba(0, 0, 0, 0.22);
+
+  /* ---------- Change (delta value + direction "dorito") ---------- */
+  /* text */
+  --change-up-text:      var(--buy);          /* #2B7F45 */
+  --change-down-text:    var(--sell);         /* #D02A48 */
+  --change-neutral-text: var(--text-primary); /* #222222 — used when text is not coloured */
+  /* dorito (direction triangle) — fill and border kept separate */
+  --change-up-dorito-fill:     var(--buy);       /* #2B7F45 */
+  --change-up-dorito-border:   var(--buy);
+  --change-down-dorito-fill:   var(--sell-fill); /* #DC5A59 */
+  --change-down-dorito-border: var(--sell-fill);
+  --change-dorito-stroke: 1px;                 /* dorito border width @kind spacing */
+  /* sizes */
+  --change-font-md:   var(--text-base);        /* 14px */
+  --change-font-sm:   var(--text-sm);          /* 12px */
+  --change-dorito-md: 9px;                     /* @kind spacing */
+  --change-dorito-sm: 8px;                     /* @kind spacing */
+  --change-gap:       var(--gap-sm);           /* 4px — icon↔value */
+
+  /* ---------- SymbolTag ---------- */
+  --symbol-tag-padding: 4px 8px;               /* 4/8px — roomier than Tag; pairs symbol + delta @kind spacing */
+
+  /* ---------- Paginator ---------- */
+  --paginator-btn-size: 35px;
+  --paginator-btn-radius: var(--radius-full);
+  --paginator-btn-fg: var(--text-muted);
+  --paginator-btn-hover-bg: var(--surface-50);
+  --paginator-btn-selected-bg: var(--primary-subtle);
+  --paginator-btn-selected-fg: var(--qm-blue-900);
+
+  /* ---------- TimeHorizon (bordered chips) ---------- */
+  --th-height: var(--control-height);
+  --th-radius: var(--radius-sm);
+  --th-bg: var(--surface-0);
+  --th-border: var(--surface-200);
+  --th-hover-border: var(--surface-300);
+  --th-fg: var(--text-primary);
+  --th-active-bg: var(--primary-subtle);        /* #F2F8FE */
+  --th-active-border: var(--qm-blue-200);
+  --th-active-fg: var(--primary);
+
+  /* ---------- Menu ---------- */
+  --menu-bg: var(--surface-0);
+  --menu-fg: var(--text-primary);
+  --menu-border: var(--surface-200);
+  --menu-radius: var(--radius-sm);
+  --menu-shadow: var(--shadow-overlay);
+  --menu-list-gap: var(--gap-xs);              /* 2px */
+  --menu-item-fg: var(--text-primary);
+  --menu-item-gap: var(--gap-md);              /* 8px */
+  --menu-item-radius: var(--radius-sm);
+  --menu-item-focus-bg: var(--primary-subtle); /* #F2F8FE */
+  --menu-item-focus-fg: var(--qm-blue-900);    /* #002C5A */
+  --menu-item-icon: var(--surface-500);
+  --menu-submenu-label-fg: var(--text-secondary);
+  --menu-submenu-label-weight: var(--weight-semibold);
+  --menu-separator-border: var(--surface-200);
+
+  /* ---------- Overlay / Popover ---------- */
+  --popover-bg: var(--surface-0);
+  --popover-fg: var(--text-primary);
+  --popover-border: var(--surface-200);
+  --popover-radius: var(--radius-sm);
+  --popover-shadow: var(--shadow-overlay);
+  --popover-gutter: 10px;                       /* distance from anchor */
+  --popover-arrow-offset: 17.5px;
+  --popover-content-padding: var(--space-lg);   /* 16px */
+
+  /* ---------- DatePicker ---------- */
+  --datepicker-overlay-bg: var(--overlay-bg);
+  --datepicker-overlay-border: var(--overlay-border);
+  --datepicker-overlay-radius: var(--radius-sm);
+  --datepicker-overlay-shadow: var(--shadow-overlay);
+  --datepicker-overlay-padding: var(--space-sm);    /* 8px */
+  --datepicker-header-fg: var(--text-primary);
+  --datepicker-weekday-fg: var(--text-muted);
+  --datepicker-day-fg: var(--text-primary);
+  --datepicker-day-radius: var(--radius-sm);
+  --datepicker-day-hover-bg: var(--surface-50);
+  --datepicker-day-selected-bg: var(--primary);
+  --datepicker-day-selected-fg: #FFFFFF;
+  --datepicker-day-today-border: var(--qm-blue-200);
+  --datepicker-day-muted-fg: var(--surface-400);
+  --datepicker-day-disabled-fg: var(--surface-300);
+  --datepicker-nav-fg: var(--text-secondary);
+  --datepicker-nav-hover-bg: var(--surface-50);
+  --datepicker-icon-color: var(--form-field-icon-color);
+  --datepicker-button-bg: var(--surface-50);
+  --datepicker-button-border: var(--form-field-border-color);
+  --datepicker-cell-size: 34px;                     /* @kind spacing */
+
+  /* ---------- Tooltip ---------- */
+  --tooltip-bg: var(--surface-900);              /* dark, per PrimeVue default */
+  --tooltip-fg: var(--surface-0);
+  --tooltip-radius: var(--radius-sm);
+  --tooltip-padding-y: 6px;                       /* @kind spacing */
+  --tooltip-padding-x: 8px;                       /* @kind spacing */
+  --tooltip-font-size: var(--text-sm);           /* 12px */
+  --tooltip-max-width: 220px;                     /* @kind spacing */
+  --tooltip-gutter: 8px;                          /* gap from anchor @kind spacing */
+  --tooltip-arrow-size: 6px;                      /* @kind spacing */
+  --tooltip-shadow: var(--shadow-md);
+
+  /* ---------- Faceted multiselect ---------- */
+  /* Trigger (matches the Select form field) */
+  --qmodii-multiselect-background:            var(--form-field-bg);
+  --qmodii-multiselect-border-color:          var(--form-field-border-color);
+  --qmodii-multiselect-hover-border-color:    var(--form-field-hover-border);
+  --qmodii-multiselect-focus-border-color:    var(--form-field-focus-border);
+  --qmodii-multiselect-border-radius:         var(--radius-sm);
+  --qmodii-multiselect-color:                 var(--form-field-color);
+  --qmodii-multiselect-placeholder-color:     var(--form-field-placeholder);
+  --qmodii-multiselect-label-font-weight:     400;
+  --qmodii-multiselect-padding:               0 8px;
+  --qmodii-multiselect-min-height:            32px;                 /* @kind spacing */
+  --qmodii-multiselect-dropdown-color:        var(--select-icon-color);   /* chevron */
+  --qmodii-multiselect-focus-ring-color:      var(--primary);
+  /* Count badge */
+  --qmodii-multiselect-badge-background:      var(--primary);
+  --qmodii-multiselect-badge-color:           #FFFFFF;
+  /* Overlay / panel */
+  --qmodii-multiselect-overlay-background:    var(--surface-0);
+  --qmodii-multiselect-overlay-border-color:  var(--surface-200);
+  --qmodii-multiselect-overlay-border-radius: var(--radius-sm);
+  --qmodii-multiselect-overlay-shadow:        var(--shadow-overlay);
+  --qmodii-multiselect-scrim-background:      var(--mask-bg);
+  /* Category rail */
+  --qmodii-multiselect-rail-background:               var(--surface-0);
+  --qmodii-multiselect-category-color:                var(--text-primary);
+  --qmodii-multiselect-category-hover-background:     var(--surface-100);
+  --qmodii-multiselect-category-active-background:    var(--primary-subtle);
+  --qmodii-multiselect-category-active-color:         var(--qm-blue-900);   /* same as other active list items */
+  --qmodii-multiselect-category-active-accent-color:  var(--primary);
+  --qmodii-multiselect-category-active-bar-width:     3px;                  /* @kind spacing */
+  --qmodii-multiselect-category-active-bar-radius:    999px;
+  --qmodii-multiselect-category-badge-background:     var(--surface-100);
+  --qmodii-multiselect-category-badge-color:          var(--text-muted);
+  --qmodii-multiselect-category-badge-radius:         var(--radius-sm);
+  /* Option list */
+  --qmodii-multiselect-header-color:            var(--text-primary);
+  --qmodii-multiselect-option-color:            var(--text-primary);
+  --qmodii-multiselect-option-padding:          8px 10px;
+  --qmodii-multiselect-option-gap:              var(--gap-md);
+  --qmodii-multiselect-option-min-height:       32px;               /* @kind spacing */
+  --qmodii-multiselect-option-border-radius:    var(--radius-sm);
+  --qmodii-multiselect-option-hover-background: var(--surface-50);
+  --qmodii-multiselect-option-selected-color:   var(--qm-blue-900);
+  --qmodii-multiselect-option-tag-color:        var(--text-muted);
+  /* Checkbox */
+  --qmodii-multiselect-checkbox-size:                 16px;         /* @kind spacing */
+  --qmodii-multiselect-checkbox-border-color:         var(--surface-300);
+  --qmodii-multiselect-checkbox-border-width:         1px;          /* @kind spacing */
+  --qmodii-multiselect-checkbox-border-radius:        var(--radius-sm);
+  --qmodii-multiselect-checkbox-checked-background:   var(--primary);
+  --qmodii-multiselect-checkbox-checked-border-color: var(--primary);
+  /* Footer */
+  --qmodii-multiselect-footer-background:    var(--surface-0);
+  --qmodii-multiselect-footer-border-color:  var(--surface-200);
+  --qmodii-multiselect-footer-count-color:   var(--text-secondary);
+  /* Search field */
+  --qmodii-multiselect-search-divider-color:       var(--surface-200);
+  --qmodii-multiselect-search-field-background:    var(--surface-0);
+  --qmodii-multiselect-search-field-border-color:  var(--surface-300);
+  --qmodii-multiselect-search-field-border-radius: var(--radius-sm);
+  --qmodii-multiselect-search-placeholder-color:   var(--text-muted);
+  --qmodii-multiselect-search-focus-border-color:  var(--primary);
+
+  /* ============================================================
+     Charts — color + dimension tokens (Figma "Chart" set)
+     ============================================================ */
+  /* Frame */
+  --chart-bg:              var(--surface-0);           /* plot background #FFFFFF */
+  --chart-grid-line:       var(--surface-200);         /* horizontal grid #E3E3E3 */
+  --chart-axis-line:       var(--surface-400);         /* base / zero axis #707070 */
+  --chart-prevclose-line:  #9193AC;                    /* previous-close reference */
+  --chart-tick-color:      var(--text-secondary);      /* axis tick labels #575757 */
+  --chart-tick-size:       var(--text-sm);             /* 12px */
+  --chart-crosshair-line:  var(--surface-300);         /* hover crosshair */
+
+  /* Dimensions */
+  --chart-grid-line-width:    1px;    /* @kind spacing */
+  --chart-axis-line-width:    1px;    /* @kind spacing */
+  --chart-line-width:         2px;    /* @kind spacing */ /* series stroke */
+  --chart-line-width-base:    1.5px;  /* @kind spacing */ /* base/neutral series */
+  --chart-dot-radius:         3px;    /* @kind spacing */ /* data point / last dot */
+  --chart-area-opacity:       0.40;   /* @kind other */ /* area fill top-stop alpha (Figma 40%) */
+  --chart-candle-width:       7px;    /* @kind spacing */ /* candle body */
+  --chart-candle-gap:         4px;    /* @kind spacing */ /* space between candles */
+  --chart-candle-wick-width:  1px;    /* @kind spacing */
+
+  /* Brand area (gradient fill under a primary line) */
+  --chart-area-stroke:     var(--primary);             /* #0477D1 */
+  --chart-area-fill-top:   var(--primary);             /* gradient top → 40% */
+  --chart-area-fill-bottom: rgba(255,255,255,0);       /* gradient bottom → transparent */
+
+  /* Brand line */
+  --chart-line-stroke:     var(--primary);             /* #0477D1 */
+  --chart-line-dot:        var(--primary);
+
+  /* Base line (neutral) */
+  --chart-line-base-stroke: var(--surface-400);        /* #707070 */
+  --chart-line-base-dot:    var(--surface-400);
+
+  /* Candlesticks */
+  --chart-candle-up-border:   var(--green-300);        /* #51A451 */
+  --chart-candle-up-fill:     var(--green-200);        /* #A2D0A2 */
+  --chart-candle-down-border: var(--red-500);          /* #DC5B48 */
+  --chart-candle-down-fill:   var(--red-300);          /* #EC9588 */
+  --chart-candle-up-wick:     var(--chart-candle-up-border);    /* wick = candle border */
+  --chart-candle-down-wick:   var(--chart-candle-down-border);
+  --chart-candle-wick:        var(--surface-800);       /* legacy fallback */
+}

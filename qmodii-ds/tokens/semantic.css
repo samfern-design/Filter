@@ -1,0 +1,171 @@
+/* ============================================================
+   Qmodii — SEMANTIC ALIASES (light theme)
+   The vocabulary product code should use. Every value resolves to a
+   primitive in palette.css. Mirrors the Figma "qmodii/semantic light"
+   and component token sets.
+   ============================================================ */
+:root {
+  /* -- Brand / primary -- */
+  --primary:            var(--qm-blue-700);   /* #0477D1 */
+  --primary-hover:      var(--qm-blue-600);   /* #1D86D8 */
+  --primary-active:     var(--qm-blue-700);
+  --primary-contrast:   #FFFFFF;              /* text/icon on primary — meets 3:1 */
+  --primary-subtle:     var(--qm-blue-50);    /* tinted hover/selected bg */
+  --primary-subtle-2:   var(--qm-blue-100);   /* pressed tint */
+
+  /* -- Surfaces -- */
+  --surface-ground: #F3F5F7;           /* dashboard / app canvas behind a group of cards */
+  --surface-0:    var(--neutral-0);    /* page / card base */
+  --surface-50:   var(--neutral-50);   /* hover row, subtle fill */
+  --surface-100:  var(--neutral-100);  /* secondary button, chips */
+  --surface-200:  var(--neutral-200);  /* borders, dividers */
+  --surface-300:  var(--neutral-300);  /* hover borders, disabled fill */
+  --surface-400:  var(--neutral-400);
+  --surface-500:  var(--neutral-500);
+  --surface-600:  var(--neutral-600);
+  --surface-700:  var(--neutral-700);
+  --surface-800:  var(--neutral-800);
+  --surface-900:  var(--neutral-900);
+  --surface-950:  var(--neutral-950);
+
+  /* -- Text -- */
+  --text-primary:    var(--neutral-800);   /* #222222 */
+  --text-secondary:  var(--neutral-500);   /* #575757 */
+  --text-muted:      var(--neutral-400);   /* #707070 */
+  --text-link:       var(--qm-blue-900);   /* #002C5A — QM's link color */
+  --text-on-primary: #FFFFFF;
+
+  /* -- Status text / accents -- */
+  --text-positive:  var(--green-500);   /* #007600 */
+  --text-negative:  #C71C28;            /* QM negative red */
+
+  /* -- Borders & dividers -- */
+  --border-color:        var(--surface-200);   /* default 1px border */
+  --border-color-hover:  var(--surface-300);
+  --border-color-strong: var(--surface-300);
+
+  /* -- Fills for status surfaces (Message / Tag backgrounds) -- */
+  --info-bg:     var(--qm-blue-50);   --info-fg: var(--qm-blue-700);   --info-border: var(--qm-blue-200);
+  --success-bg:  var(--green-50);     --success-fg: var(--green-600);  --success-border: var(--green-200);
+  --warn-bg:     var(--yellow-100);   --warn-fg: var(--yellow-600);    --warn-border: var(--yellow-600);
+  --danger-bg:   var(--red-50);       --danger-fg: var(--red-700);     --danger-border: var(--red-300);
+
+  /* -- Component surfaces -- */
+  --overlay-bg:     var(--surface-0);
+  --overlay-border: var(--surface-200);
+
+  /* -- Icons -- */
+  --icon-primary:   var(--text-primary);
+  --icon-secondary: var(--text-secondary);
+  --icon-muted:     var(--text-muted);
+
+  /* -- Form fields (semantic `form.field` set) -- */
+  --form-field-bg:            var(--surface-0);
+  --form-field-color:         var(--surface-800);
+  --form-field-border-color:  var(--surface-200);
+  --form-field-border-radius: var(--radius-sm);          /* 4px */
+  --form-field-padding-x:     var(--space-sm);           /* 8px */
+  --form-field-padding-y:     5px;                        /* desired output — centers text in 32px control */
+  --form-field-height:        var(--control-height);      /* 32px */
+  --form-field-gap:           var(--gap-md);              /* 8px */
+  --form-field-placeholder:   var(--surface-500);
+  --form-field-icon-color:    var(--surface-500);
+
+  /* states */
+  --form-field-hover-border:      var(--surface-300);
+  --form-field-focus-border:      var(--primary);
+  --form-field-focus-ring-width:  0px;  /* @kind spacing */
+  --form-field-invalid-border:      var(--red-400);       /* #E57969 */
+  --form-field-invalid-placeholder: var(--red-600);       /* #D4442E */
+  --form-field-disabled-bg:       var(--surface-0);
+  --form-field-disabled-color:    var(--surface-500);
+  --form-field-float-label:       var(--surface-500);
+  --form-field-shadow:            rgba(18, 18, 23, 0.05);
+
+  /* sizes */
+  --form-field-sm-height:     var(--control-height-sm);   /* 28px */
+  --form-field-sm-font:       var(--text-base);           /* 14px */
+  --form-field-sm-padding-x:  10px;
+  --form-field-sm-padding-y:  4px;
+  --form-field-lg-height:     var(--control-height-lg);   /* 38px */
+  --form-field-lg-font:       var(--text-xl);             /* 18px */
+  --form-field-lg-padding-x:  14px;
+  --form-field-lg-padding-y:  7px;
+
+  /* -- Form label + helper text -- */
+  --form-label-color:    var(--surface-800);      /* #222 — label text */
+  --form-label-size:     var(--text-base);         /* 14px */
+  --form-label-weight:   var(--weight-semibold);
+  --form-label-gap:      var(--gap-sm);            /* 4px — label ↔ field ↔ helper */
+  --form-helper-size:    var(--text-sm);           /* 12px */
+  --form-helper-neutral: var(--surface-500);       /* #575757 — neutral hint */
+  --form-helper-error:   var(--red-600);           /* #D4442E */
+  --form-helper-positive: var(--buy);              /* #2B7F45 */
+
+  /* -- Market / financial state (semantic) --
+     The exact hues Qmodii uses for up/down state. Semantic layer — product
+     and component tokens should reference these, not raw palette values. */
+  --buy:        #2B7F45;   /* buy / up text */
+  --buy-fill:   #5DB678;   /* buy fill (used at ~10-40% alpha) */
+  --sell:       #D02A48;   /* sell / down text */
+  --sell-fill:  #DC5A59;   /* sell fill (used at ~10-40% alpha) */
+  --sell-hot:   #F14668;   /* datatable sell cell hover */
+
+  /* -- Text interaction states -- */
+  --text-hover:        var(--surface-800);   /* #222 — hovered text/menu item */
+  --text-hover-muted:  var(--surface-600);
+
+  /* -- Icon size / anchor -- */
+  --icon-size:     16px;
+  --icon-size-sm:  14px;                      /* menu / submenu icons */
+  --anchor-gutter: 2px;
+
+  /* -- Highlight (text selection / search match / selected option) -- */
+  --highlight-bg:        var(--primary-subtle);   /* primary.50 */
+  --highlight-fg:        var(--qm-blue-900);       /* primary.900 */
+  --highlight-focus-bg:  var(--primary-subtle);
+  --highlight-focus-fg:  var(--qm-blue-950);       /* primary.950 */
+
+  /* -- Content surface (generic bordered content region) -- */
+  --content-bg:        var(--surface-0);
+  --content-fg:        var(--text-primary);
+  --content-border:    var(--surface-200);
+  --content-radius:    var(--radius-sm);
+  --content-hover-bg:  var(--surface-50);
+  --content-hover-fg:  var(--text-hover);
+
+  /* -- Overlay panels (select / popover / modal / menu) -- */
+  --overlay-color:     var(--text-primary);
+  --overlay-radius:    var(--radius-sm);
+  --overlay-shadow:    var(--shadow-overlay);
+  --popover-padding:   var(--space-lg);       /* 16px */
+  --modal-padding-sm:  var(--space-sm);        /* 8px */
+  --modal-padding-md:  var(--space-lg);        /* 16px */
+  --modal-padding-lg:  var(--space-xl);        /* 24px */
+
+  /* -- List / menu options -- */
+  --list-gap:                 var(--gap-xs);   /* 2px */
+  --list-option-fg:           var(--text-primary);
+  --list-option-radius:       var(--radius-sm);
+  --list-option-focus-bg:     var(--surface-50);
+  --list-option-focus-fg:     var(--text-hover);
+  --list-option-selected-bg:  var(--highlight-bg);
+  --list-option-selected-fg:  var(--highlight-fg);
+  --list-option-icon:         var(--surface-400);
+  --list-group-fg:            var(--text-secondary);
+  --list-group-weight:        var(--weight-semibold);
+
+  /* -- Navigation items (menu / sidebar) -- */
+  --nav-list-gap:             var(--gap-xs);   /* 2px */
+  --nav-item-gap:             var(--gap-md);   /* 8px */
+  --nav-item-fg:              var(--text-primary);
+  --nav-item-radius:          var(--radius-sm);
+  --nav-item-focus-bg:        var(--surface-50);
+  --nav-item-focus-fg:        var(--text-hover);
+  --nav-item-active-bg:       var(--highlight-bg);
+  --nav-item-active-fg:       var(--highlight-fg);
+  --nav-item-icon:            var(--surface-500);
+  --nav-submenu-label-fg:     var(--text-secondary);
+  --nav-submenu-label-weight: var(--weight-semibold);
+  --nav-submenu-icon:         var(--surface-400);
+}

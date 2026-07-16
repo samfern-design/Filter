@@ -1,0 +1,85 @@
+/* ============================================================
+   Qmodii — PRIMITIVE PALETTE
+   Raw color scales. Do not use directly in product code; reference
+   the semantic aliases in semantic.css instead. Values are lifted
+   verbatim from the Figma "qmodii/primative" + "qmodii/semantic light"
+   variable sets.
+   ============================================================ */
+:root {
+  /* -- QM Blue (brand / primary) -- */
+  --qm-blue-50:  #F2F8FE;
+  --qm-blue-100: #C0DEF7;
+  --qm-blue-200: #A5D0F3;
+  --qm-blue-300: #89C1EF;
+  --qm-blue-400: #53A4E4;
+  --qm-blue-500: #3795DE;
+  --qm-blue-600: #1D86D8;
+  --qm-blue-700: #0477D1;   /* brand color */
+  --qm-blue-800: #00407F;
+  --qm-blue-900: #002C5A;
+  --qm-blue-950: #001831;
+
+  /* -- Neutral (surface / grays) -- */
+  --neutral-0:   #FFFFFF;
+  --neutral-50:  #F6F6F6;
+  --neutral-100: #EEEEEE;
+  --neutral-200: #E3E3E3;
+  --neutral-300: #A7A7A7;
+  --neutral-400: #707070;
+  --neutral-500: #575757;
+  --neutral-600: #444444;
+  --neutral-700: #2F2F2F;
+  --neutral-800: #222222;
+  --neutral-900: #1E1E1E;
+  --neutral-950: #111111;
+
+  /* -- Green (positive / success) -- */
+  --green-50:  #F2F9F2;
+  --green-100: #CAE5CA;
+  --green-200: #A2D0A2;
+  --green-300: #51A451;
+  --green-400: #288D28;
+  --green-500: #007600;
+  --green-600: #006500;
+  --green-700: #005300;
+  --green-800: #004100;
+  --green-900: #002E00;
+  --green-950: #001B00;
+
+  /* -- Red (negative / danger) -- */
+  --red-50:  #FCEBE8;
+  --red-100: #F8CEC7;
+  --red-200: #F2B1A7;
+  --red-300: #EC9588;
+  --red-400: #E57969;
+  --red-500: #DC5B48;
+  --red-600: #D4442E;
+  --red-700: #B33724;
+  --red-800: #922B1B;
+  --red-900: #701F13;
+  --red-950: #4C140C;
+
+  /* -- Amber (warning) -- */
+  --amber-50:  #FFFBEB;
+  --amber-100: #FEF3C7;
+  --amber-200: #FDE68A;
+  --amber-300: #FCD34D;
+  --amber-400: #FBBF24;
+  --amber-500: #F59E0B;
+  --amber-600: #D97706;
+  --amber-700: #B45309;
+  --amber-800: #92400E;
+  --amber-900: #78350F;
+
+  /* -- Yellow (warn text/border in Message) -- */
+  --yellow-100: #FEF9C3;
+  --yellow-500: #EAB308;
+  --yellow-600: #CA8A04;
+
+  /* -- Teal / Cyan (info / accents) -- */
+  --teal-500: #14B8A6;
+  --cyan-500: #06B6D4;
+  --sky-100:  #E0F2FE;   /* tag.info bg */
+  --sky-700:  #0369A1;   /* tag.info fg */
+
+}
