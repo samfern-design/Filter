@@ -139,6 +139,12 @@
     .pf-empty .big { font-size: var(--text-lg); color: var(--text-secondary); margin-bottom: 6px; font-weight: var(--weight-medium); }
 
     .pf-note { margin-bottom: 16px; }
+
+    /* The DS DataTable sort affordance is a PrimeIcons glyph; that webfont isn't
+       bundled (offline), so give the two sort classes real Unicode arrows. */
+    .pi { font-family: var(--font-sans) !important; font-style: normal; font-weight: var(--weight-semibold); }
+    .pi-sort-amount-up-alt::before { content: "\2191"; }   /* ↑ */
+    .pi-sort-amount-down::before   { content: "\2193"; }   /* ↓ */
   </style>
 </head>
 <body>
@@ -438,7 +444,7 @@
   /* ============================== Tab panels =============================== */
   function OverviewPanel({ groupField, stats }) {
     if (!groupField) {
-      return (<DataTable caption="Portfolio overview" columns={OVERVIEW_COLS} data={DATA}
+      return (<DataTable caption="Portfolio overview" striped={false} reorderableRows columns={OVERVIEW_COLS} data={DATA}
         defaultSort={{ field: 'sym', direction: 'asc' }} maxHeight={620} storageKey="pf-overview" />);
     }
     return <GroupedTable rows={DATA} columns={OVERVIEW_COLS} groupField={groupField} stats={stats} />;
@@ -461,7 +467,7 @@
             <Button variant="outlined" severity="secondary" size="sm" leftIcon={<Icon name="pencil" size={14} />} onClick={onEdit}>Edit holdings</Button>
           </div>
         </div>
-        <DataTable caption="Holdings" columns={HOLDINGS_COLS} data={rows}
+        <DataTable caption="Holdings" striped={false} reorderableRows columns={HOLDINGS_COLS} data={rows}
           defaultSort={{ field: 'mktval', direction: 'desc' }} maxHeight={620} storageKey="pf-holdings" />
       </div>
     );
@@ -538,7 +544,7 @@
         <div className="pf-chart-frame" style={{ marginBottom: 20 }}>
           <AreaChart data={series} width={1180} height={300} valueFormat={(v) => '$' + Math.round(v / 1000) + 'k'} />
         </div>
-        <DataTable caption="Per-holding returns" columns={RET_COLS} data={rows} defaultSort={{ field: 'r1y', direction: 'desc' }} maxHeight={520} />
+        <DataTable caption="Per-holding returns" striped={false} reorderableRows columns={RET_COLS} data={rows} defaultSort={{ field: 'r1y', direction: 'desc' }} maxHeight={520} />
       </div>
     );
   }
@@ -573,7 +579,7 @@
           <div className="pf-spacer" />
           <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>Delayed 15m · As of 4:00 PM ET</span>
         </div>
-        <DataTable caption="Trade blotter" columns={COLS} data={TXN} defaultSort={{ field: 'date', direction: 'desc' }} maxHeight={560} />
+        <DataTable caption="Trade blotter" striped={false} reorderableRows columns={COLS} data={TXN} defaultSort={{ field: 'date', direction: 'desc' }} maxHeight={560} />
       </div>
     );
   }
@@ -607,7 +613,7 @@
             <div style={{ marginTop: 4 }}><Change value={+(totalIncome * 0.06).toFixed(2)} percent={6.0} /> <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}> vs last year</span></div>
           </Card>
         </div>
-        <DataTable caption="Dividends" columns={COLS} data={rows} defaultSort={{ field: 'income', direction: 'desc' }} maxHeight={520} />
+        <DataTable caption="Dividends" striped={false} reorderableRows columns={COLS} data={rows} defaultSort={{ field: 'income', direction: 'desc' }} maxHeight={520} />
       </div>
     );
   }
@@ -662,7 +668,7 @@
       { field: 'beta', header: 'Beta', numeric: true, width: 92, render: (v) => v.toFixed(2) },
     ];
     // Range column mixes numeric + custom; render as hand-built for the meter width.
-    return <DataTable caption="Technicals" columns={COLS} data={rows} defaultSort={{ field: 'rsi', direction: 'desc' }} maxHeight={600} />;
+    return <DataTable caption="Technicals" striped={false} reorderableRows columns={COLS} data={rows} defaultSort={{ field: 'rsi', direction: 'desc' }} maxHeight={600} />;
   }
 
   function ProfilePanel() {
@@ -712,33 +718,7 @@
         </div>
         {groupField
           ? <GroupedTable rows={DATA} columns={cols} groupField={groupField} stats={stats} />
-          : <DataTable caption="Custom view" columns={cols} data={DATA} defaultSort={{ field: 'sym', direction: 'asc' }} maxHeight={620} />}
-      </div>
-    );
-  }
-
-  function FeaturesPanel() {
-    const feats = [
-      ['Overview', 'Sortable quote grid with fundamental columns, sector grouping and Sum/Avg/Min/Max/Median stat rows.'],
-      ['Holdings', 'Positions with cost, shares, market value and gain/loss — filterable by gainers, losers and dividends.'],
-      ['Charts', 'A grid of directional performance sparklines with a time-range selector and pagination.'],
-      ['Performance', 'Portfolio value over time plus per-holding period returns.'],
-      ['Dividends & Ownership', 'Projected income, ex/pay dates, and institutional / insider ownership breakdowns.'],
-    ];
-    return (
-      <div style={{ maxWidth: 760 }}>
-        <Card title="About this tool" subtitle="A prototype rebuilt on the Qmodii design system">
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 'var(--leading-lg)' }}>
-            This is a design-system validation prototype of the QMOD portfolio tool. Every control is a real Qmodii component. Switch back to <b>App</b> to explore the live views.
-          </p>
-          <Divider />
-          {feats.map(([k, v], i) => (
-            <div key={k} style={{ padding: '10px 0', borderBottom: i < feats.length - 1 ? '1px solid var(--surface-100)' : 'none' }}>
-              <div style={{ fontWeight: 'var(--weight-medium)', marginBottom: 2 }}>{k}</div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>{v}</div>
-            </div>
-          ))}
-        </Card>
+          : <DataTable caption="Custom view" striped={false} reorderableRows columns={cols} data={DATA} defaultSort={{ field: 'sym', direction: 'asc' }} maxHeight={620} />}
       </div>
     );
   }
@@ -795,11 +775,10 @@
     .map((t) => ({ label: t, value: t }));
 
   function App() {
-    // URL params (?tab=&group=&stats=1&drawer=1&mode=) let any view/state be
+    // URL params (?tab=&group=&stats=1&drawer=1) let any view/state be
     // deep-linked — used for headless verification; harmless in normal use.
     const qp = new URLSearchParams(location.search);
     const [tab, setTab] = useState(TABS.some((t) => t.value === qp.get('tab')) ? qp.get('tab') : 'Overview');
-    const [appMode, setAppMode] = useState(qp.get('mode') === 'Features' ? 'Features' : 'App');
     const [portfolio, setPortfolio] = useState('MAIN');
     const [group, setGroup] = useState(Object.keys(GROUP_FIELD).includes(qp.get('group')) ? qp.get('group') : 'No group');
     const [stats, setStats] = useState(qp.get('stats') === '1' ? { Sum: true, Average: true, Min: true, Max: true, Median: true } : {});
@@ -807,7 +786,6 @@
     const groupField = GROUP_FIELD[group];
 
     const panel = () => {
-      if (appMode === 'Features') return <FeaturesPanel />;
       switch (tab) {
         case 'Overview': return <OverviewPanel groupField={groupField} stats={stats} />;
         case 'Holdings': return <HoldingsPanel onEdit={() => setDrawer(true)} />;
@@ -825,23 +803,6 @@
 
     return (
       <div className="pf-app">
-        <div className="pf-topbar">
-          <div>
-            <div className="pf-breadcrumb">Adnan's Lab <span>/</span> <b>Portfolio</b></div>
-            <div className="pf-titlerow">
-              <h1>Portfolio</h1>
-              <Tooltip content="Track holdings, performance, dividends and ownership across your portfolios."><span className="pf-info"><Icon name="info" size={17} /></span></Tooltip>
-            </div>
-          </div>
-          <div className="pf-topright">
-            <ToggleButton value={appMode} onChange={setAppMode} options={['App', 'Features']} />
-            <div className="pf-iconset">
-              <Button iconOnly variant="outlined" severity="plain" size="sm" aria-label="Layout"><Icon name="grid" /></Button>
-              <Button iconOnly variant="outlined" severity="plain" size="sm" aria-label="Toggle dark mode" title="Dark mode — not implemented (the DS ships light only)"><Icon name="moon" /></Button>
-            </div>
-          </div>
-        </div>
-
         <div className="pf-toolbar">
           <Button iconOnly variant="text" severity="plain" size="sm" aria-label="More"><Icon name="kebab" /></Button>
           <div className="pf-portsel"><Select value={portfolio} onChange={setPortfolio} options={['MAIN', 'Retirement', 'Watchlist', 'Dividend income']} /></div>
@@ -852,7 +813,7 @@
         </div>
 
         <div className="pf-tabsrow">
-          <TabMenu model={TABS} value={tab} onChange={(v) => setTab(v)} variant="underline" />
+          <TabMenu model={TABS} value={tab} onChange={(v) => setTab(v)} variant="chip" />
           <div className="pf-tabsright">
             <div className="pf-group-sel"><Select value={group} onChange={setGroup} size="sm" options={Object.keys(GROUP_FIELD)} /></div>
             <StatsControl stats={stats} setStats={setStats} />
