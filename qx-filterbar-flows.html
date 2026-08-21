@@ -251,16 +251,19 @@ button{font:inherit;color:inherit}
 .qxc[aria-expanded="true"]{background:var(--qx-surface-200);border-color:var(--qx-border-color-hover)}
 .qxc[aria-expanded="true"] .qxc__chev{transform:rotate(180deg)}
 
-/* sentence variant — declared after .qxc so it wins on source order */
+/* sentence variant — declared after .qxc so it wins on source order.
+   Every slot always holds a value, so an applied treatment would say nothing:
+   these read as fields, and only the open state is marked, by a primary border
+   rather than a fill. */
 .sent__t{font-size:13.5px;color:var(--qx-text-secondary);white-space:nowrap;flex:0 0 auto}
 .qxc--inline{
   height:26px;padding:0 6px 0 10px;
-  background:var(--qx-primary-subtle);border-color:var(--qx-state-selected-border);
-  color:var(--qx-brand-800);font-size:13px;
+  background:var(--qx-surface-0);border-color:var(--qx-border-color);
+  color:var(--qx-text-primary);font-size:13px;
 }
-.qxc--inline:hover{background:var(--qx-primary-subtle-2);border-color:var(--qx-brand-200)}
-.qxc--inline .qxc__chev{color:var(--qx-primary)}
-.qxc--inline[aria-expanded="true"]{background:var(--qx-primary-subtle-2)}
+.qxc--inline:hover{background:var(--qx-surface-50);border-color:var(--qx-border-color-hover)}
+.qxc--inline .qxc__chev{color:var(--qx-text-muted)}
+.qxc--inline[aria-expanded="true"]{background:var(--qx-surface-0);border-color:var(--qx-primary)}
 
 .qxc[data-selected="true"]{
   background:var(--qx-state-selected-bg);border-color:var(--qx-state-selected-border);
@@ -1065,6 +1068,7 @@ button{font:inherit;color:inherit}
             <li><b>The matrix answers the parameter question differently.</b> Its four controls are parameters, not filters — they change what is measured rather than narrowing a set — so instead of chips and a trigger it reads as a sentence: <em>Showing average of true range per month in 2022</em>. Every control is in the line, which is why it needs no All filters trigger, and the line wraps like prose rather than withdrawing anything. It is a real alternative to the chip bar for surfaces whose controls are all mandatory, and worth comparing side by side with the chain, where the same kind of parameters are chips.</li>
             <li><b>Analysis carries the sentence.</b> It is a named-metric picker with a description under each option — Total Return, Typical Daily Move, Volatility, % Up Days, Best Day, Worst Day, Total Volume — and each one implies a datapoint and a reduction. Picking Custom grows the sentence two more slots so you can set that pair yourself, which is the only case where the raw vocabulary surfaces. Descriptions in an option list are new to the engine; the DS's Select already supports the label-plus-sublabel template, so this is its filter-popover counterpart.</li>
             <li><b>Choosing what to compare is not filtering.</b> The universe and the compared symbols sit in their own row under the bar, as removable chips with a Compare picker — the reference's second row, and the one place the removable-chip pattern earns its keep. An empty set there means none rather than "no constraint", so clearing the row empties the matrix instead of showing all eight.</li>
+            <li><b>Annual drops a clause.</b> With the years as columns there is nothing for "in 2022" to pick, so the sentence loses it — the same mechanism that hides the datapoint and reduction behind a named metric. A sentence can shorten as well as grow.</li>
             <li><b>Daily means weekday.</b> 252 date columns would not be a matrix, so daily frequency reduces by day of week — the effect a daily seasonality view exists to show. Day-of-month is the other reading; worth confirming which one the tool means.</li>
             <li><b>One control can drive another.</b> Choosing an Analysis sets the datapoint and the reduction behind it; choosing a Universe resets the compared symbols to that universe's members. That coupling had to be added to the engine — the spec assumes filters are independent.</li>
             <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
@@ -1457,8 +1461,10 @@ const PM_FILTERS = [
   { id:'data', label:'Data', kind:'choice', promoted:3, scoped:true, noAll:null,
     options:[['ret1d','1D return'],['ret1w','1W return'],['tr','true range'],
              ['vol','volume vs avg'],['shares','volume (M)']] },
+  /* The popover lists proper option names; the chip shows the sentence fragment. */
   { id:'freq', label:'Frequency', kind:'choice', promoted:4, scoped:true, noAll:null,
-    options:[['day','weekday'],['month','month'],['quarter','quarter']] },
+    options:[['month','Monthly'],['quarter','Quarterly'],['year','Annual'],['day','Daily']],
+    chip:v => ({ month:'month', quarter:'quarter', year:'year', day:'weekday' })[v] },
   { id:'year', label:'Year', kind:'choice', promoted:5, scoped:true, noAll:null,
     options:PM.YEARS.map(y => [String(y), String(y)]) },
   /* Choosing what to compare is a selection, not a filter, so it gets its own
@@ -1484,10 +1490,14 @@ function pmCols() {
   const f = val('freq');
   if (f === 'quarter') return PM.QUARTERS.map(([k, ms]) => ({ key:k, months:ms }));
   if (f === 'day') return PM.WEEKDAYS.map((k, i) => ({ key:k, months:ALL_MONTHS, wd:i }));
+  /* Annual makes the years the columns, which is why the sentence drops its
+     "in <year>" clause: there is nothing left for it to pick. */
+  if (f === 'year') return PM.YEARS.map(y => ({ key:String(y), months:ALL_MONTHS, year:y }));
   return PM.MONTHS.map((k, i) => ({ key:k, months:[i] }));
 }
 function pmCell(sym, col) {
-  const year = Number(val('year')), kind = val('data'), calc = val('calc');
+  const year = col.year != null ? col.year : Number(val('year'));
+  const kind = val('data'), calc = val('calc');
   const obs = col.months.flatMap(mi => {
     const ser = PM.series(sym, year, mi, kind);
     return col.wd == null ? ser : ser.filter((_, i) => i % 5 === col.wd);
@@ -1730,10 +1740,13 @@ const SURFACES = {
     label:'Performance matrix', filters:PM_FILTERS,
     /* Reads as a sentence, so it needs no All filters trigger: every control it
        has is already visible in the line. */
-    sentence:() => val('analysis') === 'custom'
-      ? [{ t:'Showing' }, { id:'analysis' }, { t:'—' }, { id:'calc' }, { t:'of' }, { id:'data' },
-         { t:'per' }, { id:'freq' }, { t:'in' }, { id:'year' }]
-      : [{ t:'Showing' }, { id:'analysis' }, { t:'per' }, { id:'freq' }, { t:'in' }, { id:'year' }],
+    sentence:() => {
+      const parts = [{ t:'Showing' }, { id:'analysis' }];
+      if (val('analysis') === 'custom') parts.push({ t:'—' }, { id:'calc' }, { t:'of' }, { id:'data' });
+      parts.push({ t:'per' }, { id:'freq' });
+      if (val('freq') !== 'year') parts.push({ t:'in' }, { id:'year' });
+      return parts;
+    },
     base:() => PM.UNIVERSES[val('universe') || 'Global indices'],
     unit:n => n === 1 ? 'symbol' : 'symbols',
     below:symbolRowHTML,
@@ -3115,6 +3128,8 @@ const FLOWS = [
       { analysis:'custom', data:'tr', calc:'avg' }); } },
   { id:'pm-daily', t:'Daily', d:'Columns become weekdays', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.freq = 'day'; } },
+  { id:'pm-annual', t:'Annual', d:'Years become the columns', w:1180,
+    run:() => { pmBaseFlow(); state.values.matrix.freq = 'year'; } },
   { id:'pm-quarter', t:'Quarterly', d:'Four columns, same reductions', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.freq = 'quarter'; } },
   { id:'pm-highlight', t:'Highlight range', d:'Sits beside the ramp it drives', w:1180,
