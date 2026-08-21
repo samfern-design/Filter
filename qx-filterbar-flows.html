@@ -200,13 +200,26 @@ button{font:inherit;color:inherit}
 .qxfb[data-overflow="wrap"] .qxfb__right{padding-top:2px}
 .qxfb[data-overflow="wrap"] .qxfb__chips .qxc{flex:0 1 auto;min-width:0}
 .qxfb[data-overflow="wrap"] .qxfb__chips .qxc .qxc__label{min-width:0}
-.qxfb[data-overflow="scroll"] .qxfb__chips{
-  display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;
-  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
-  padding:4px 0;margin:-4px 0;                 /* keep the focus ring unclipped */
+/* scroll: the row itself is the scroller, so the whole line moves together —
+   trigger, chips and Clear. Chevrons overlay the edges and are click targets. */
+.qxfb{position:relative}
+.qxfb[data-overflow="scroll"] .qxfb__row{
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;
 }
-.qxfb[data-overflow="scroll"] .qxfb__chips::-webkit-scrollbar{display:none}
-.qxfb[data-overflow="scroll"] .qxfb__right{padding-left:4px}
+.qxfb[data-overflow="scroll"] .qxfb__row::-webkit-scrollbar{display:none}
+.qxfb__arrow{
+  position:absolute;top:50%;transform:translateY(-50%);width:28px;height:28px;z-index:3;
+  display:grid;place-items:center;background:var(--qx-surface-0);
+  border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  color:var(--qx-text-secondary);cursor:pointer;
+}
+.qxfb__arrow:hover{background:var(--qx-surface-50);border-color:var(--qx-border-color-hover);color:var(--qx-text-primary)}
+.qxfb__arrow:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.qxfb__arrow[hidden]{display:none}
+.qxfb__arrow--l{left:0;border-radius:0 var(--qx-radius-sm) var(--qx-radius-sm) 0;
+  border-left:0;box-shadow:16px 0 14px -9px rgba(0,0,0,.16)}
+.qxfb__arrow--r{right:0;border-radius:var(--qx-radius-sm) 0 0 var(--qx-radius-sm);
+  border-right:0;box-shadow:-16px 0 14px -9px rgba(0,0,0,.16)}
 .qxfb__count{
   font-size:12px;color:var(--qx-text-secondary);white-space:nowrap;
   font-variant-numeric:tabular-nums;
@@ -858,7 +871,6 @@ button{font:inherit;color:inherit}
       <div class="chks">
         <label class="chk"><input type="checkbox" id="cbPro"> Entitled to Pro (ungates Analyst rating)</label>
         <label class="chk"><input type="checkbox" id="cbOptions"> Options asset class (P/E, Div yield, Rating inapplicable)</label>
-        <label class="chk"><input type="checkbox" id="cbCount" checked> Show result count</label>
       </div>
     </div>
 
@@ -944,8 +956,10 @@ button{font:inherit;color:inherit}
         <div class="note">
           <h3>What the prototype resolves</h3>
           <ul>
-            <li><b>Three overflow strategies, one measurement.</b> Switch Overflow to compare what happens to chips that do not fit: withdraw into All filters, wrap to more lines, or scroll on one line. The same fit arithmetic drives all three — only the response differs. Wrap is the one that costs a fixed row height; scroll is the one where nothing is ever withdrawn, so the badge and the panel stay in step with the bar.</li>
+            <li><b>Three overflow strategies, one measurement.</b> Switch Overflow to compare what happens to chips that do not fit: withdraw into All filters, wrap to more lines, or scroll on one line. The same fit arithmetic drives all three — only the response differs. Wrap is the one that costs a fixed row height. Scroll never withdraws anything, so the badge and panel stay in step with the bar — but the whole line moves together, which means the All filters trigger scrolls out of view. The spec pins that trigger precisely because it is the only guaranteed route to the full set, so the chevrons at both edges are carrying that weight now.</li>
+            <li><b>No result count on the bar.</b> The spec asks for a live count adjacent to it; the number now lives in the table footer instead — and on the analyzer, in a footer added for the purpose. The <code>aria-live</code> announcement still fires on every filter change, so the count is still spoken even though it is no longer shown up there.</li>
             <li><b>The badge counts what you set</b>, not what exists. Zero filters, no badge. The spec defines it as the count of filters available elsewhere; that number is still in the telemetry as <code>reachable only in panel</code>, but the bar now answers "how filtered am I" instead of "how much is hidden".</li>
+            <li><b>The end state is the trigger and Clear.</b> Once every chip is in the overflow menu the action group steps out too, so the narrowest row is two controls: the way back into the filters, and the way out of them.</li>
             <li><b>The control row is the only row</b> under menu and scroll. With the applied tray removed, state lives in the chip labels — and in the trigger, which takes the selected treatment whenever a set filter is off the bar.</li>
             <li><b>Gated chips outlast ungated ones.</b> Analyst rating is withdrawn last, after every ungated chip — watch the pills as you narrow.</li>
             <li><b>Actions collapse before filters.</b> On the Actions skin the group folds to one overflow button while all six chips are still showing.</li>
@@ -1431,9 +1445,9 @@ function chainBase(v) {
 const state = {
   tab:'screener', input:'pointer',
   skin:'full', density:'comfortable', sim:'default', promotedCount:6, overflow:'menu',
-  pro:false, options:false, showCount:true,
+  pro:false, options:false,
   values:{ screener:{}, chain:{ window:5, view:'straddle' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } },
-  expiry:'e0', expScroll:0,
+  expiry:'e0', expScroll:0, rowScroll:0,
   panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null,
   width:1180, flow:'default'
 };
@@ -1620,12 +1634,8 @@ function barHTML() {
       <span class="qxc__icon">${I.sliders}</span><span class="qxc__label">All filters</span>
       <span class="qxfb__badge" id="allBadge" ${applied ? '' : 'hidden'}>${applied}</span></button>`;
 
-  const n = rowsNow().length;
   const clear = (activeFilters().length && !readonly)
     ? `<button class="qxfb__clear" type="button" id="barClear">Clear</button>` : '';
-  const count = state.showCount ? `<div class="qxfb__count" id="count">${
-    state.sim === 'loading' ? '<span class="skel"></span>'
-      : `<b>${n.toLocaleString()}</b> ${s.unit(n)}`}</div>` : '';
 
   /* A view toggle is neither a filter nor a page action, so it keeps its own
      slot: it never folds into the action group's overflow. */
@@ -1649,8 +1659,11 @@ function barHTML() {
       data-state="${state.sim}" data-overflow="${state.overflow}">
     <div class="qxfb__row" id="row" role="group" aria-label="Filters">
       ${trigger}<div class="qxfb__chips" id="chips">${chips}</div>
-      <div class="qxfb__right" id="right">${clear}${count}${dispSlot}${actions}</div>
+      <div class="qxfb__right" id="right">${clear}${dispSlot}${actions}</div>
     </div>
+    ${state.overflow === 'scroll' ? `
+      <button class="qxfb__arrow qxfb__arrow--l" type="button" id="rowL" aria-label="Scroll filters left" hidden>${I.chevL}</button>
+      <button class="qxfb__arrow qxfb__arrow--r" type="button" id="rowR" aria-label="Scroll filters right" hidden>${I.chevR2}</button>` : ''}
   </div>`;
 }
 function hiddenCount() {
@@ -1770,7 +1783,8 @@ function analyzerResults() {
           <td class="an-640">${usd(s.inv)}</td>
           <td><span class="prob" data-b="${probBand(s.prob)}">${s.prob}%</span></td>
         </tr>`).join('')}</tbody></table></div>`;
-  return body + disc;
+  return body + `<div class="tbl__foot">Showing ${rows.length} of ${AN.STRATS.length} strategies · ${
+    AN.sym} ${usd(AN.spot)} · IV ${AN.iv.toFixed(2)}% · model estimates</div>` + disc;
 }
 
 /* ---------------------------------------------------------------- popover */
@@ -2026,7 +2040,7 @@ function layout() {
   const right = $('#right'), actions = $('#actions'), badge = $('#allBadge'), trigger = $('#allTrigger');
 
   chipEls.forEach(c => c.classList.remove('is-withdrawn'));
-  if (actions) actions.classList.remove('is-collapsed');
+  if (actions) { actions.classList.remove('is-collapsed'); actions.hidden = false; }
   const clearEl = $('#barClear');
   if (clearEl) clearEl.classList.remove('is-withdrawn');
 
@@ -2079,37 +2093,39 @@ function layout() {
       visible.delete(order[i]); withdrawn.push(order[i]); i++;
     }
     chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
-  } else if (mode === 'scroll' && actions) {
-    // One line still, so the right group has to fit alongside a partial chip.
-    if (triggerW + rightW + GAP + 96 > rowW) {
-      actions.classList.add('is-collapsed');
-      actionsCollapsed = true;
-      rightW = wOf(right);
-    }
   }
+
+  /* Once every chip has gone into the overflow menu, the row is the trigger and
+     Clear — the action group goes too, since it is reachable nowhere else on the
+     bar anyway and its overflow button only adds noise at that width. */
+  const allWithdrawn = mode === 'menu' && promoted.length > 0 && withdrawn.length === promoted.length;
+  if (actions) {
+    actions.hidden = allWithdrawn;
+    if (allWithdrawn) { actionsCollapsed = false; actions.classList.remove('is-collapsed'); }
+  }
+  if (allWithdrawn) rightW = wOf(right);
 
   /* Last resort, once every chip is already withdrawn: drop the inline Clear.
      It is the only control here that is duplicated verbatim in the panel footer,
      so losing it costs nothing — unlike the count or the view toggle. */
   let clearWithdrawn = false;
-  if (clearEl && mode !== 'wrap' && triggerW + wOf(right) + GAP > rowW) {
+  if (clearEl && mode === 'menu' && !allWithdrawn && triggerW + wOf(right) + GAP > rowW) {
     clearEl.classList.add('is-withdrawn');
     clearWithdrawn = true;
     rightW = wOf(right);
   }
 
-  const chipsBox = $('#chips');
   const lines = mode === 'wrap'
     ? new Set(chipEls.map(el => el.offsetTop)).size : 1;
   let inView = chipEls.length;
-  if (mode === 'scroll' && chipsBox) {
-    const l = chipsBox.scrollLeft, r = l + chipsBox.clientWidth;
+  if (mode === 'scroll') {
+    const l = row.scrollLeft, r = l + row.clientWidth;
     inView = chipEls.filter(el => el.offsetLeft >= l - 1 && el.offsetLeft + el.offsetWidth <= r + 1).length;
   }
   telemetry = {
     surface:state.tab, mode, lines, inView,
     rowW:row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
-    budget, consumed:cost(visible), visible:[...visible], withdrawn,
+    budget, consumed:cost(visible), visible:[...visible], withdrawn, allWithdrawn,
     order:promoted.map(f => f.id), widths, gatedIds:promoted.filter(f => isGated(f)).map(f => f.id),
     clearWithdrawn
   };
@@ -2127,11 +2143,32 @@ function layout() {
     + (off.length ? ', ' + off.length + ' of them not shown on the bar' : ''));
 
   const ph = $('#panelHint'); if (ph) ph.textContent = panelHintText();
+  layoutRowScroll(row, mode);
   layoutStrip();
 
   const h = Math.round(row.getBoundingClientRect().height);
   telemetry.rowH = h; heights.add(h);
   renderTelemetry();
+}
+
+/* In scroll mode the row is its own scroller, so its position has to be restored
+   after every re-render and the edge chevrons kept in step with it. */
+function layoutRowScroll(row, mode) {
+  const L = $('#rowL'), R = $('#rowR');
+  if (mode !== 'scroll') { row.style.paddingLeft = ''; row.style.paddingRight = ''; return; }
+  const prev = row.style.scrollBehavior;
+  row.style.scrollBehavior = 'auto';
+  row.scrollLeft = state.rowScroll;
+  row.style.scrollBehavior = prev;
+  const canL = row.scrollLeft > 2;
+  const canR = row.scrollLeft + row.clientWidth < row.scrollWidth - 2;
+  if (L) L.hidden = !canL;
+  if (R) R.hidden = !canR;
+  const cs = getComputedStyle(row);
+  row.style.paddingLeft = canL ? '42px' : '';
+  row.style.paddingRight = canR ? '42px' : '';
+  telemetry.canRowL = canL; telemetry.canRowR = canR;
+  void cs;
 }
 
 /* The expiry strip is navigation, not a filter: it scrolls rather than collapses,
@@ -2206,7 +2243,7 @@ function renderTelemetry() {
     line('container', Math.round(t.rowW) + 'px') +
     line('row padding', '−' + t.padX) +
     line('All filters (reserved)', '−' + t.triggerW) +
-    line(t.actionsCollapsed ? 'count + overflow' : 'count + actions', '−' + t.rightW) +
+    line(t.allWithdrawn ? 'clear only' : t.actionsCollapsed ? 'clear + overflow' : 'clear + actions', '−' + t.rightW) +
     line('gap', '−' + GAP) +
     `<div class="eq">chip budget<b>${t.budget}px</b></div>` +
     line('consumed by ' + t.visible.length + ' chips', t.consumed + 'px') +
@@ -2229,6 +2266,7 @@ function renderTelemetry() {
     line('set, with no chip', (t.appliedOffBar || []).length) +
     (t.mode === 'wrap' ? line('lines used', t.lines) : '') +
     (t.mode === 'scroll' ? line('chips in view', t.inView + ' / ' + t.order.length) : '') +
+    (t.mode === 'scroll' ? line('chevrons', (t.canRowL ? '◀' : '·') + ' ' + (t.canRowR ? '▶' : '·')) : '') +
     (t.tabsTotal ? line('expiry tabs in view', t.tabsVisible + ' / ' + t.tabsTotal) : '') +
     line('re-measures', remeasures);
 
@@ -2248,10 +2286,10 @@ function renderTelemetry() {
           ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => F(id).label).join(' → ')}</code>`
           : `All ${t.visible.length} promoted chips fit — nothing withdrawn`]
       : t.mode === 'scroll'
-        ? [t.inView === t.order.length || t.inView >= 1,
+        ? [true,
            t.inView === t.order.length
-             ? `All ${t.order.length} chips fit — the scroller has nothing to hide`
-             : `<b>${t.inView} of ${t.order.length}</b> chips in view; the rest scroll, with a partial chip at the edge as the signal. Nothing is withdrawn, so the badge stays honest`]
+             ? `All ${t.order.length} chips fit — the chevrons stay hidden`
+             : `<b>${t.inView} of ${t.order.length}</b> chips in view. The whole line scrolls — trigger included — so the pinned-trigger rule is traded for one continuous strip, with chevrons at both edges as the affordance`]
         : [true, t.lines > 1
             ? `Nothing withdrawn — all ${t.order.length} chips stay addressable across ${t.lines} lines`
             : `All ${t.order.length} chips fit on one line`],
@@ -2268,7 +2306,9 @@ function renderTelemetry() {
         ? `<b>${t.appliedTotal} applied</b>, every one of them visible as a chip on the bar`
         : `<b>${t.appliedTotal} applied, ${off.length} with no chip on the bar</b> — <code>${
             off.map(id => F(id).label).join(', ')}</code>. Only the trigger's tint carries it.`],
-    [t.mode !== 'wrap' || t.lines === 1, t.clearWithdrawn
+    t.allWithdrawn
+      ? [true, `Every chip is in the overflow menu — the row is <b>All filters</b> plus <b>Clear</b>, and the action group steps out with them`]
+      : [t.mode !== 'wrap' || t.lines === 1, t.clearWithdrawn
       ? `Inline <b>Clear</b> withdrawn last of all — it is the one control duplicated in the panel footer`
       : t.actionsCollapsed
         ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
@@ -2302,6 +2342,18 @@ product.addEventListener('click', e => {
   // expiry strip — navigation, so it neither collapses nor opens a popover
   const expTab = hit('[data-exp]');
   if (expTab) { state.expiry = expTab.dataset.exp; state.flow = null; render(); return; }
+  if (hit('#rowR') || hit('#rowL')) {
+    const row = $('#row');
+    const dir = hit('#rowR') ? 1 : -1;
+    const target = Math.max(0, Math.min(row.scrollWidth - row.clientWidth,
+      row.scrollLeft + dir * Math.max(180, row.clientWidth * 0.7)));
+    state.rowScroll = target;
+    row.scrollTo({ left:target, behavior:'smooth' });
+    const L = $('#rowL'), R = $('#rowR');
+    if (L) L.hidden = target <= 2;
+    if (R) R.hidden = target + row.clientWidth >= row.scrollWidth - 2;
+    return;
+  }
   if (hit('#expR') || hit('#expL')) {
     const strip = $('#expScroll');
     if (strip) {
@@ -2445,11 +2497,19 @@ product.addEventListener('change', e => {
 
 /* WCAG 2.4.11: a chip reached by Tab inside the scroller must scroll into view. */
 product.addEventListener('focusin', e => {
-  const chip = e.target.closest && e.target.closest('#chips > [data-chip]');
-  if (chip && state.overflow === 'scroll') chip.scrollIntoView({ block:'nearest', inline:'nearest' });
+  if (state.overflow !== 'scroll') return;
+  const el = e.target.closest && e.target.closest('.qxfb__row > *, #chips > *');
+  if (el) el.scrollIntoView({ block:'nearest', inline:'nearest' });
 });
 
 product.addEventListener('scroll', e => {
+  if (e.target.id === 'row') {
+    state.rowScroll = e.target.scrollLeft;
+    const L = $('#rowL'), R = $('#rowR'), st = e.target;
+    if (L) L.hidden = st.scrollLeft <= 2;
+    if (R) R.hidden = st.scrollLeft + st.clientWidth >= st.scrollWidth - 2;
+    return;
+  }
   if (e.target.id === 'expScroll') {
     state.expScroll = e.target.scrollLeft;
     const bl = $('#expL'), br = $('#expR'), st = e.target;
@@ -2531,7 +2591,7 @@ seg('#segSkin', 'skin'); seg('#segDensity', 'density'); seg('#segState', 'sim');
 seg('#segPromoted', 'promotedCount', Number); seg('#segInput', 'input');
 seg('#segOverflow', 'overflow');
 
-const CB = { cbPro:'pro', cbOptions:'options', cbCount:'showCount' };
+const CB = { cbPro:'pro', cbOptions:'options' };
 Object.entries(CB).forEach(([id, key]) => {
   $('#' + id).addEventListener('change', e => { state[key] = e.target.checked; state.flow = null; render(); });
 });
@@ -2561,8 +2621,8 @@ const V = o => {
 };
 const base = () => {
   Object.assign(state, { tab:'screener', input:'pointer', skin:'full', density:'comfortable',
-    sim:'default', promotedCount:6, overflow:'menu', pro:false, options:false, showCount:true,
-    expiry:'e0', expScroll:0,
+    sim:'default', promotedCount:6, overflow:'menu', pro:false, options:false,
+    expiry:'e0', expScroll:0, rowScroll:0,
     panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
   state.values = { screener:{}, chain:{ window:5, view:'straddle' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } };
   drillAnim = null;
