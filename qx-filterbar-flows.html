@@ -250,6 +250,10 @@ button{font:inherit;color:inherit}
 .qxbtn--primary:hover{background:var(--qx-primary-hover);border-color:var(--qx-primary-hover)}
 .qxbtn--text{background:none;border-color:transparent;color:var(--qx-primary)}
 .qxbtn--text:hover{background:var(--qx-primary-subtle);border-color:transparent}
+/* the action group mixes text buttons and icon buttons — one control height,
+   and both kinds fold into the overflow together */
+.qxfb__actions .iconbtn{width:28px;height:28px}
+.qxfb__actions.is-collapsed .iconbtn{display:none}
 .qxfb__actions.is-collapsed .qxbtn:not(.qxbtn--overflow){display:none}
 .qxbtn--overflow{display:none}
 .qxfb__actions.is-collapsed .qxbtn--overflow{display:inline-flex}
@@ -534,46 +538,9 @@ button{font:inherit;color:inherit}
 
 
 /* ==========================================================================
-   Shared controls for the chain / analyzer surfaces — labelled selects,
-   portalled listboxes, sliders, icon buttons.
+   Shared controls — icon buttons for display controls and actions, tooltips,
+   and the sliders that live inside a filter popover.
    ========================================================================== */
-.ctl{
-  display:flex;align-items:flex-end;gap:16px;min-width:0;overflow:hidden;
-  padding:10px 12px;border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-0);
-}
-.ctl__right{display:flex;align-items:center;gap:8px;margin-left:auto;flex:0 0 auto;padding-bottom:1px}
-.fld{display:flex;flex-direction:column;gap:4px;flex:0 0 auto;min-width:0}
-.fld__lbl{font-size:12px;color:var(--qx-text-secondary);line-height:1.2;white-space:nowrap}
-.fld.is-withdrawn,.iconbtn.is-withdrawn{display:none}
-
-.qxsel{
-  display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 8px 0 10px;
-  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
-  font-size:13px;color:var(--qx-text-primary);cursor:pointer;white-space:nowrap;
-  transition:border-color var(--qx-dur-fast) var(--qx-ease);
-}
-.qxsel:hover{border-color:var(--qx-border-color-hover)}
-.qxsel:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
-.qxsel[aria-expanded="true"]{border-color:var(--qx-primary)}
-.qxsel__v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:left}
-.qxsel__chev{color:var(--qx-text-muted);flex:0 0 auto;transition:transform var(--qx-dur-fast) var(--qx-ease)}
-.qxsel[aria-expanded="true"] .qxsel__chev{transform:rotate(180deg)}
-
-.sellist{
-  position:absolute;z-index:60;background:var(--qx-surface-0);border:1px solid var(--qx-border-color);
-  border-radius:var(--qx-radius-sm);box-shadow:var(--qx-shadow-md);padding:4px;
-  max-height:264px;overflow-y:auto;min-width:120px;
-}
-.selopt{
-  display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:6px 10px;
-  background:none;border:0;border-radius:var(--qx-radius-sm);text-align:left;cursor:pointer;
-  font-size:13px;color:var(--qx-text-primary);white-space:nowrap;
-}
-.selopt:hover{background:var(--qx-surface-50)}
-.selopt:focus-visible{outline:2px solid var(--qx-primary);outline-offset:-2px}
-.selopt[aria-selected="true"]{background:var(--qx-state-selected-bg);color:var(--qx-state-selected-fg)}
-.selopt__c{margin-left:auto;font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums}
-
 .iconbtn{
   display:inline-grid;place-items:center;width:32px;height:32px;flex:0 0 auto;position:relative;
   background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
@@ -583,11 +550,6 @@ button{font:inherit;color:inherit}
 .iconbtn:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
 .iconbtn[aria-pressed="true"],.iconbtn[aria-expanded="true"]{
   background:var(--qx-state-selected-bg);border-color:var(--qx-state-selected-border);color:var(--qx-primary);
-}
-.iconbtn__badge{
-  position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 3px;
-  border-radius:var(--qx-radius-full);background:var(--qx-primary);color:#fff;
-  font-size:10px;font-weight:700;line-height:16px;
 }
 .tip{position:relative}
 .tip::after{
@@ -699,6 +661,14 @@ button{font:inherit;color:inherit}
   margin-left:4px;padding:0 3px;border-radius:2px;background:var(--qx-amber-100);
   color:var(--qx-amber-700);font-size:9.5px;font-weight:700;vertical-align:1px;
 }
+.sld__meta{font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums}
+.pop__help{margin:0;padding:8px 12px 10px;border-top:1px solid var(--qx-border-color);
+  font-size:11.5px;color:var(--qx-text-muted);line-height:1.45}
+.setp__help{margin:6px 0 0;font-size:11.5px;color:var(--qx-text-muted);line-height:1.45}
+.gate__note{font-size:11.5px;color:var(--qx-text-muted);margin-bottom:10px}
+.accbody__list{display:flex;flex-direction:column;gap:2px}
+.pop__custom .sld,.drill__custom .sld{align-items:center}
+.pop__custom .rsld,.drill__custom .rsld{flex:1 1 auto;min-width:70px}
 .spot td{padding:0;height:16px;border:0;position:relative}
 .spot td::before{
   content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--qx-neutral-800);
@@ -967,14 +937,14 @@ button{font:inherit;color:inherit}
           <p><b>Component name</b> is still an assumption — this prototype treats the bar and the panel as one component with two skins.</p>
         </div>
         <div class="note">
-          <h3>Chain and analyzer — where they diverge</h3>
+          <h3>What unifying the three settled</h3>
           <ul>
-            <li><b>Labelled selects, not chips.</b> Both surfaces put the caption above the field and carry state inside it. No chip, no tray, no Clear. If QX-FilterBar is meant to cover these tools it needs a second trigger skin; otherwise they stay bespoke and the spec should say so.</li>
-            <li><b>A gear replaces All filters.</b> The chain's route to the full set is an unlabelled icon with a count badge. The spec pins a labelled trigger precisely because it is the only guaranteed route — an icon fails that at a glance.</li>
-            <li><b>No live result count.</b> The chain's count sits in the table footer, the analyzer has none. The spec requires one adjacent to the bar, and it is the compensation for not seeing inside a filter before opening it.</li>
-            <li><b>Expiry is navigation and filter at once.</b> The strip selects one expiry — navigation, which the spec keeps off the bar — while the Expiry select filters which expiries the strip offers. That reading is an assumption from the screenshots; confirm it.</li>
-            <li><b>A control that cannot shrink.</b> The analyzer's sliders have a hard minimum width and the collapse algorithm has no rule for them. This prototype withdraws sliders before selects, into the panel. The spec should decide.</li>
-            <li><b>Purple is not in the palette.</b> Strategy families are colour-coded, but Qmodii ships one green, one red, and reserves slate for chart states. The violet here is a stand-in — a categorical accent ramp is the real gap.</li>
+            <li><b>One component, three filter sets.</b> Every tab runs the same bar — pinned All filters trigger, promoted chips in authored order, the same popovers on pointer and sheet drill-down on touch, one collapse algorithm, one live count. A tab contributes only its filters, its rows and its result surface: 14 filters for the screener, 8 for the chain, 4 for the analyzer.</li>
+            <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
+            <li><b>Expiry stayed navigation.</b> The strip sits above the bar, per the spec's rule that navigation does not belong in it. It scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
+            <li><b>Display controls are not filters.</b> Layout on the chain and Table/Cards on the analyzer sit in the action group and in a Display group in the panel. They never count as applied, and they fold into the overflow before any filter chip.</li>
+            <li><b>One control height across all three.</b> 48px comfortable on every tab, so a sticky-header offset is a constant rather than a per-tool measurement.</li>
+            <li><b>Still open:</b> the strategy accent colour is not in the Qmodii palette, and the chain's <code>Near</code> chip carries 41 options — the point where a searchable single-select starts to be the wrong control.</li>
           </ul>
         </div>
       </section>
@@ -986,6 +956,7 @@ button{font:inherit;color:inherit}
 (() => {
 'use strict';
 const $ = (s, r = document) => r.querySelector(s);
+
 
 /* ---------------------------------------------------------------- icons */
 const I = {
@@ -1012,6 +983,7 @@ const I = {
   warn: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg>'
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
 
 /* ---------------------------------------------------------------- dataset */
 const R = (s,n,ex,sec,mcap,pe,dy,last,chg,vol,beta,si,rating,idx) =>
@@ -1053,946 +1025,8 @@ const SYMBOLS = [
   R('NEXT','NextSource Materials','TSXV','Materials',0.32,null,0,2.14,3.38,0.6,1.86,4.8,'Hold',[])
 ];
 
-/* ---------------------------------------------------------------- filters */
-const money = v => v >= 1000 ? '$' + (v/1000).toFixed(v%1000?1:0) + 'T' : '$' + v + 'B';
-const FILTERS = [
-  { id:'exchange', label:'Exchange', kind:'multi', field:'ex', group:'Profile', promoted:1,
-    options:['NASDAQ','NYSE','TSX','TSXV'] },
-  { id:'sector', label:'Sector', kind:'multi', field:'sec', group:'Profile', promoted:2, search:true,
-    options:['Technology','Financials','Energy','Healthcare','Consumer','Communication','Industrials','Materials','Utilities'] },
-  { id:'mcap', label:'Market cap', kind:'range', field:'mcap', group:'Fundamentals', promoted:3, fmt:money,
-    presets:[{id:'mega',label:'Mega — over $200B',chip:'over $200B',min:200},
-             {id:'large',label:'Large — $10B to $200B',chip:'$10B–$200B',min:10,max:200},
-             {id:'mid',label:'Mid — $2B to $10B',chip:'$2B–$10B',min:2,max:10},
-             {id:'small',label:'Small — under $2B',chip:'under $2B',max:2}] },
-  { id:'pe', label:'P/E', kind:'range', field:'pe', group:'Fundamentals', promoted:4, fmt:v=>String(v),
-    presets:[{id:'value',label:'Under 15',chip:'under 15',max:15},
-             {id:'core',label:'15 to 25',chip:'15–25',min:15,max:25},
-             {id:'growth',label:'25 to 40',chip:'25–40',min:25,max:40},
-             {id:'rich',label:'Over 40',chip:'over 40',min:40}] },
-  { id:'dy', label:'Dividend yield', kind:'range', field:'dy', group:'Fundamentals', promoted:5, fmt:v=>v+'%',
-    presets:[{id:'high',label:'Over 5%',chip:'over 5%',min:5},
-             {id:'mid',label:'3% to 5%',chip:'3%–5%',min:3,max:5},
-             {id:'low',label:'1% to 3%',chip:'1%–3%',min:1,max:3},
-             {id:'nil',label:'Under 1%',chip:'under 1%',max:1}] },
-  { id:'rating', label:'Analyst rating', kind:'multi', field:'rating', group:'Fundamentals', promoted:6, gated:true,
-    options:['Strong buy','Buy','Hold','Sell'] },
-  { id:'price', label:'Price', kind:'range', field:'last', group:'Market', fmt:v=>'$'+v,
-    presets:[{id:'a',label:'Under $25',chip:'under $25',max:25},
-             {id:'b',label:'$25 to $100',chip:'$25–$100',min:25,max:100},
-             {id:'c',label:'Over $100',chip:'over $100',min:100}] },
-  { id:'chg', label:'Day change', kind:'range', field:'chg', group:'Market', fmt:v=>(v>0?'+':'')+v+'%',
-    presets:[{id:'up',label:'Advancing',chip:'advancing',min:0},
-             {id:'down',label:'Declining',chip:'declining',max:0},
-             {id:'big',label:'Up over 1%',chip:'up over 1%',min:1}] },
-  { id:'vol', label:'Volume', kind:'range', field:'vol', group:'Market', fmt:v=>v+'M',
-    presets:[{id:'thin',label:'Under 5M',chip:'under 5M',max:5},
-             {id:'mid',label:'5M to 25M',chip:'5M–25M',min:5,max:25},
-             {id:'heavy',label:'Over 25M',chip:'over 25M',min:25}] },
-  { id:'beta', label:'Beta', kind:'range', field:'beta', group:'Market', fmt:v=>String(v),
-    presets:[{id:'low',label:'Under 0.8 — defensive',chip:'under 0.8',max:0.8},
-             {id:'mkt',label:'0.8 to 1.2 — market',chip:'0.8–1.2',min:0.8,max:1.2},
-             {id:'high',label:'Over 1.2 — aggressive',chip:'over 1.2',min:1.2}] },
-  { id:'si', label:'Short interest', kind:'range', field:'si', group:'Market', fmt:v=>v+'%',
-    presets:[{id:'lo',label:'Under 1%',chip:'under 1%',max:1},
-             {id:'hi',label:'Over 2%',chip:'over 2%',min:2}] },
-  { id:'ctry', label:'Country', kind:'multi', field:'ctry', group:'Profile', options:['United States','Canada'] },
-  { id:'ccy', label:'Currency', kind:'multi', field:'ccy', group:'Profile', options:['USD','CAD'] },
-  { id:'idx', label:'Index membership', kind:'multi', field:'idx', listField:true, group:'Profile',
-    options:['S&P 500','Nasdaq 100','S&P/TSX 60','S&P/TSX Composite'] }
-];
-const F = id => FILTERS.find(f => f.id === id);
-const INAPPLICABLE_OPTIONS = ['pe','dy','rating'];
-const GROUPS = ['Fundamentals','Market','Profile'];
 
-/* ---------------------------------------------------------------- state */
-const TABS = [
-  { id:'screener', label:'Screener' },
-  { id:'chain',    label:'Options chain' },
-  { id:'analyzer', label:'Options analyzer' }
-];
-const state = {
-  tab:'screener', input:'pointer',
-  skin:'full', density:'comfortable', sim:'default', promotedCount:6,
-  pro:false, options:false, showCount:true,
-  values:{}, panelOpen:false, popOpen:null, gateOpen:null, openSelect:null,
-  drill:null, panelOpenFilter:null,
-  width:1180, flow:'default'
-};
-// Animation gates: an overlay animates only on the render that opens it, so
-// expanding a section inside the panel never replays the entry transition.
-let panelEntering = false, drillAnim = null;
-const heights = new Set();
-let roTicks = 0, telemetry = {}, measuredLabels = new Map(), remeasures = 0;
-
-const val = id => state.values[id];
-const setVal = (id, v) => { if (v == null) delete state.values[id]; else state.values[id] = v; };
-const isGated = f => !!f.gated && !state.pro;
-const isDisabled = f => state.options && INAPPLICABLE_OPTIONS.includes(f.id);
-const promotedList = () => FILTERS.filter(f => f.promoted).sort((a,b)=>a.promoted-b.promoted).slice(0, state.promotedCount);
-const hasValue = f => {
-  const v = val(f.id); if (!v) return false;
-  return f.kind === 'multi' ? v.length > 0 : (v.min != null || v.max != null);
-};
-const activeFilters = () => FILTERS.filter(f => hasValue(f) && !isDisabled(f));
-const isTouch = () => state.input === 'touch';
-
-/* ---------------------------------------------------------------- matching */
-function matches(row, f, v) {
-  if (f.kind === 'multi') {
-    if (!v.length) return true;
-    return f.listField ? row[f.field].some(x => v.includes(x)) : v.includes(row[f.field]);
-  }
-  const n = row[f.field];
-  if (n == null) return false;
-  if (v.min != null && n < v.min) return false;
-  if (v.max != null && n > v.max) return false;
-  return true;
-}
-function rowsMatching(exceptId, extra) {
-  return SYMBOLS.filter(row => {
-    for (const f of activeFilters()) {
-      if (f.id === exceptId) continue;
-      if (!matches(row, f, val(f.id))) return false;
-    }
-    if (extra && !matches(row, extra.f, extra.v)) return false;
-    return true;
-  });
-}
-const results = () => rowsMatching(null, null);
-
-/* ---------------------------------------------------------------- labels */
-function chipLabel(f) {
-  if (!hasValue(f)) return f.label;
-  const v = val(f.id);
-  if (f.kind === 'multi')
-    return f.label + ': ' + v[0] + (v.length > 1 ? ' +' + (v.length - 1) : '');
-  if (v.preset) return f.label + ': ' + f.presets.find(p => p.id === v.preset).chip;
-  if (v.min != null && v.max != null) return f.label + ': ' + f.fmt(v.min) + '–' + f.fmt(v.max);
-  if (v.min != null) return f.label + ': over ' + f.fmt(v.min);
-  return f.label + ': under ' + f.fmt(v.max);
-}
-function fullLabel(f) {
-  if (!hasValue(f)) return f.label;
-  const v = val(f.id);
-  if (f.kind === 'multi') return f.label + ', ' + v.join(', ') + ' selected';
-  return chipLabel(f).replace(f.label + ': ', f.label + ', ') + ' selected';
-}
-
-/* ---------------------------------------------------------------- bar DOM */
-function tabsHTML() {
-  return `<div class="tabs" role="tablist" aria-label="Experience">${TABS.map(t => `
-    <button class="tab" type="button" role="tab" data-tab="${t.id}"
-      aria-selected="${state.tab === t.id}">${t.label}${t.soon ? '<span class="tab__soon">SOON</span>' : ''}</button>`).join('')}</div>`;
-}
-function stubHTML(tab) {
-  const need = tab.id === 'chain'
-    ? ['The filter set and its authored order <span>— expiry, strike range, moneyness, open interest, volume, IV, and which of them are promoted.</span>',
-       'The result surface <span>— calls / puts side-by-side or stacked, and which columns are fixed.</span>',
-       'What the bar controls versus what the chain header controls <span>— expiry selection in particular reads as navigation, not filtering.</span>']
-    : ['The analysis inputs <span>— strategy, legs, underlying price range, date range, volatility assumptions.</span>',
-       'The result surface <span>— payoff chart, greeks table, or both.</span>',
-       'Whether inputs belong on a filter bar at all <span>— a strategy builder is a form, and the spec cautions against using the bar as a general toolbar.</span>'];
-  return `<div class="stub">
-    <span class="stub__tag">AWAITING SPEC</span>
-    <h3>${tab.label}</h3>
-    <p>The bar is the same component here — what differs is the filter set, the result surface, and which filters are promoted. Three things to send and this tab gets built:</p>
-    <ol>${need.map(n => `<li>${n}</li>`).join('')}</ol>
-  </div>`;
-}
-
-function barHTML() {
-  const readonly = state.sim === 'readonly';
-  const promoted = promotedList();
-  const chips = promoted.map(f => {
-    const gated = isGated(f), dis = isDisabled(f), sel = hasValue(f) && !dis;
-    const trailing = readonly ? '' : gated ? I.lock : I.chev;
-    return `<button class="qxc" type="button" data-chip="${f.id}"
-      data-selected="${sel}" data-gated="${gated}" data-disabled="${dis}" data-readonly="${readonly}"
-      ${dis ? 'aria-disabled="true"' : ''}
-      ${readonly || dis ? '' : `aria-haspopup="${isTouch() ? 'dialog' : (f.kind === 'multi' ? 'listbox' : 'dialog')}" aria-expanded="${state.popOpen === f.id || (isTouch() && state.panelOpen && state.drill === f.id)}"`}
-      aria-label="${esc(fullLabel(f))}${gated ? ', upgrade required' : ''}${dis ? ', not applicable to options' : ''}">
-      <span class="qxc__label">${esc(chipLabel(f))}</span>${trailing}</button>`;
-  }).join('');
-
-  const hidden = hiddenCount();
-  const trigger = `<button class="qxc qxfb__all" type="button" id="allTrigger"
-      aria-haspopup="dialog" aria-expanded="${state.panelOpen}"
-      aria-label="All filters${hidden ? ', ' + hidden + ' more available' : ''}">
-      <span class="qxc__icon">${I.sliders}</span><span class="qxc__label">All filters</span>
-      <span class="qxfb__badge" id="allBadge" ${hidden ? '' : 'hidden'}>${hidden}</span></button>`;
-
-  const n = results().length;
-  const clear = (activeFilters().length && !readonly)
-    ? `<button class="qxfb__clear" type="button" id="barClear">Clear</button>` : '';
-  const count = state.showCount ? `<div class="qxfb__count" id="count">${
-    state.sim === 'loading' ? '<span class="skel"></span>' : `<b>${n.toLocaleString()}</b> result${n === 1 ? '' : 's'}`
-  }</div>` : '';
-
-  const actions = state.skin === 'actions' ? `<div class="qxfb__actions" id="actions">
-      <button class="qxbtn qxbtn--icon qxbtn--overflow" type="button" aria-label="More actions">${I.dots}</button>
-      <button class="qxbtn" type="button">${I.dl}<span>Export</span></button>
-      <button class="qxbtn" type="button">${I.save}<span>Save</span></button>
-      <button class="qxbtn qxbtn--icon" type="button" aria-label="Add to watchlist">${I.star}</button>
-    </div>` : '';
-
-  return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}" data-state="${state.sim}">
-    <div class="qxfb__row" id="row" role="group" aria-label="Filters">
-      ${trigger}${chips}
-      <div class="qxfb__right" id="right">${clear}${count}${actions}</div>
-    </div>
-  </div>`;
-}
-function hiddenCount() {
-  const promoted = promotedList().map(f => f.id);
-  const withdrawn = telemetry.withdrawn ? telemetry.withdrawn.length : 0;
-  const never = FILTERS.filter(f => !promoted.includes(f.id) && !isDisabled(f)).length;
-  return withdrawn + never;
-}
-// Applied filters with no chip on the bar — the state the removed tray used to carry.
-function appliedOffBar() {
-  const onBar = telemetry.visible || [];
-  return activeFilters().filter(f => !onBar.includes(f.id));
-}
-
-/* ---------------------------------------------------------------- collapse */
-const GAP = 8;
-function layout() {
-  if (state.tab === 'chain') return layoutChain();
-  if (state.tab === 'analyzer') return layoutAnalyzer();
-  const row = $('#row');
-  if (!row) {                                   // a tab with no bar yet
-    telemetry = {};
-    $('#mW').textContent = '—'; $('#mH').textContent = '—'; $('#mT').textContent = roTicks;
-    $('#kvMath').innerHTML = '<div>no filter bar on this tab</div>';
-    $('#pillsChips').innerHTML = '<span class="pill" data-t="out">awaiting spec</span>';
-    $('#kvCounts').innerHTML = '';
-    $('#asserts').innerHTML = '<div class="as"><span class="as__i">' + I.tick +
-      '</span><span>Nothing to measure — send the filter set for this experience and the same assertions run against it.</span></div>';
-    return;
-  }
-  const chipEls = [...row.querySelectorAll('[data-chip]')];
-  const right = $('#right'), actions = $('#actions'), badge = $('#allBadge'), trigger = $('#allTrigger');
-
-  chipEls.forEach(c => c.classList.remove('is-withdrawn'));
-  if (actions) actions.classList.remove('is-collapsed');
-
-  // Reserve the trigger at its worst-case badge so a growing count never reflows.
-  const worst = String(FILTERS.length);
-  const shown = badge.textContent, wasHidden = badge.hidden;
-  badge.hidden = false; badge.textContent = worst;
-  const triggerW = Math.ceil(trigger.getBoundingClientRect().width);
-  badge.textContent = shown; badge.hidden = wasHidden;
-
-  const cs = getComputedStyle(row);
-  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-  const rowW = row.clientWidth - padX;
-
-  const wOf = el => Math.ceil(el.getBoundingClientRect().width);
-  const widths = new Map();
-  chipEls.forEach(el => {
-    const id = el.dataset.chip, key = state.density + '|' + el.querySelector('.qxc__label').textContent;
-    widths.set(id, wOf(el));
-    if (measuredLabels.has(id) && measuredLabels.get(id) !== key) remeasures++;
-    measuredLabels.set(id, key);
-  });
-
-  let rightW = wOf(right);
-  const rightExpandedW = rightW;
-  let actionsCollapsed = false;
-
-  const promoted = promotedList();
-  const budgetFor = rw => rowW - triggerW - rw - GAP;
-  const cost = set => [...set].reduce((a, id) => a + widths.get(id) + GAP, 0);
-
-  let visible = new Set(promoted.map(f => f.id));
-  let budget = budgetFor(rightW);
-
-  // Rule: the action group collapses before any filter chip is withdrawn.
-  if (actions && cost(visible) > budget) {
-    actions.classList.add('is-collapsed');
-    actionsCollapsed = true;
-    rightW = wOf(right);
-    budget = budgetFor(rightW);
-  }
-
-  // Withdraw right-to-left; every ungated chip goes before any gated one.
-  const ungated = promoted.filter(f => !isGated(f)).map(f => f.id).reverse();
-  const gated = promoted.filter(f => isGated(f)).map(f => f.id).reverse();
-  const order = [...ungated, ...gated];
-  const withdrawn = [];
-  let i = 0;
-  while (cost(visible) > budget && i < order.length) {
-    visible.delete(order[i]); withdrawn.push(order[i]); i++;
-  }
-  chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
-
-  telemetry = {
-    rowW: row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
-    budget, consumed: cost(visible), visible: [...visible], withdrawn,
-    order: promoted.map(f => f.id), widths, gatedIds: promoted.filter(f => isGated(f)).map(f => f.id)
-  };
-
-  const hidden = hiddenCount();
-  badge.textContent = hidden;
-  badge.hidden = hidden === 0;
-
-  // With no applied-chip tray, the trigger carries every value that has no chip.
-  const off = appliedOffBar();
-  telemetry.appliedOffBar = off.map(f => f.id);
-  telemetry.appliedTotal = activeFilters().length;
-  trigger.dataset.selected = String(off.length > 0);
-  trigger.setAttribute('aria-label', 'All filters'
-    + (hidden ? ', ' + hidden + ' more available' : '')
-    + (off.length ? ', ' + off.length + ' applied and not shown on the bar' : ''));
-
-  const ph = $('#panelHint'); if (ph) ph.textContent = panelHintText();
-
-  const h = Math.round(row.getBoundingClientRect().height);
-  telemetry.rowH = h; heights.add(h);
-  renderTelemetry();
-}
-
-
-/* ---------------------------------------------------------------- chain / analyzer fit */
-function measureRow(row) {
-  const cs = getComputedStyle(row);
-  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-  return { padX, rowW: row.clientWidth - padX, gap: parseFloat(cs.columnGap) || 16 };
-}
-const wOf = el => Math.ceil(el.getBoundingClientRect().width);
-
-function layoutChain() {
-  const row = $('#row'); if (!row) return;
-  const { padX, rowW, gap } = measureRow(row);
-  const right = $('#right') || row.querySelector('.ctl__right');
-  const fields = [...row.querySelectorAll('.fld')];
-  const rightW = right ? wOf(right) : 0;
-  const consumed = fields.reduce((a, f) => a + wOf(f) + gap, 0);
-
-  // preserve the expiry strip's scroll across re-renders, then set the arrows
-  const strip = $('#expScroll');
-  let tabsVisible = 0, tabsTotal = 0, canL = false, canR = false;
-  if (strip) {
-    const prev = strip.style.scrollBehavior;
-    strip.style.scrollBehavior = 'auto';
-    strip.scrollLeft = chain.expScroll;
-    strip.style.scrollBehavior = prev;
-    const tabs = [...strip.querySelectorAll('.exp')];
-    tabsTotal = tabs.length;
-    const l = strip.scrollLeft, r = l + strip.clientWidth;
-    tabsVisible = tabs.filter(t => t.offsetLeft >= l - 1 && t.offsetLeft + t.offsetWidth <= r + 1).length;
-    canL = strip.scrollLeft > 2;
-    canR = strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2;
-    const bl = $('#expL'), br = $('#expR');
-    if (bl) bl.hidden = !canL;
-    if (br) br.hidden = !canR;
-    if (bl) strip.style.paddingLeft = canL ? '50px' : '12px';
-    if (br) strip.style.paddingRight = canR ? '50px' : '12px';
-  }
-
-  const { rows, total } = chRows();
-  const h = Math.round(row.getBoundingClientRect().height);
-  heights.add(h);
-  telemetry = {
-    surface:'chain', rowW: row.clientWidth, padX, rowH:h, budget: rowW - rightW - gap,
-    consumed, rightW, fields: fields.length, withdrawn:[], visible:[],
-    tabsVisible, tabsTotal, canL, canR,
-    strikes: rows.length, strikesTotal: total, applied: chFiltersApplied()
-  };
-  renderTelemetry();
-}
-
-/* The analyzer is the hard case for "the control row never wraps": two of its
-   four controls are sliders with a hard minimum usable width. Same rule as the
-   chips — measure, then withdraw right-to-left into the settings panel. */
-const AN_ORDER = ['fldDte', 'fldProb', 'fldStrategy', 'fldView'];
-function layoutAnalyzer() {
-  const row = $('#row'); if (!row) return;
-  const fields = AN_ORDER.map(id => $('#' + id)).filter(Boolean);
-  fields.forEach(f => f.classList.remove('is-withdrawn'));
-  const { padX, rowW, gap } = measureRow(row);
-  const right = $('#right');
-  const rightW = right ? wOf(right) : 0;
-  const widths = new Map(fields.map(f => [f.id, wOf(f)]));
-
-  const budget = rowW - rightW - gap;
-  let visible = new Set(fields.map(f => f.id));
-  const cost = () => [...visible].reduce((a, id) => a + widths.get(id) + gap, 0);
-  const withdrawn = [];
-  let i = 0;
-  while (cost() > budget && i < AN_ORDER.length) {
-    const id = AN_ORDER[i++];
-    if (!visible.has(id)) continue;
-    visible.delete(id); withdrawn.push(id);
-  }
-  fields.forEach(f => { if (!visible.has(f.id)) f.classList.add('is-withdrawn'); });
-
-  const badge = $('#anBadge');
-  if (badge) { badge.textContent = withdrawn.length; badge.hidden = withdrawn.length === 0; }
-
-  const h = Math.round(row.getBoundingClientRect().height);
-  heights.add(h);
-  telemetry = {
-    surface:'analyzer', rowW: row.clientWidth, padX, rowH:h, budget, consumed: cost(), rightW,
-    widths, withdrawn, visible:[...visible], order: AN_ORDER,
-    strats: anRows().length, stratsTotal: AN.STRATS.length
-  };
-  renderTelemetry();
-}
-
-/* ---------------------------------------------------------------- table */
-function tableHTML() {
-  const rows = results();
-  const loading = state.sim === 'loading';
-  if (!rows.length && !loading) {
-    return `<div class="empty"><h4>No symbols match these filters.</h4>
-      <p>The narrowest filter is usually the one to widen first.</p>
-      <button class="qxbtn" type="button" id="emptyClear">Clear all filters</button></div>`;
-  }
-  const shown = rows.slice(0, 12);
-  const body = shown.map(r => `<tr>
-      <td class="l sym">${r.s}</td>
-      <td class="l nm c-hide-700">${esc(r.n)}</td>
-      <td class="l c-hide-860">${r.ex}</td>
-      <td class="l c-hide-860">${r.sec}</td>
-      <td>${r.last.toFixed(2)}</td>
-      <td class="${r.chg >= 0 ? 'up' : 'dn'}">${r.chg >= 0 ? '▲' : '▼'} ${Math.abs(r.chg).toFixed(2)}%</td>
-      <td class="c-hide-560">${money(r.mcap)}</td>
-      <td class="c-hide-560">${r.pe == null ? '—' : r.pe.toFixed(1)}</td>
-      <td class="c-hide-700">${r.dy ? r.dy.toFixed(2) + '%' : '—'}</td>
-      <td class="c-hide-860"><span class="rtg" data-r="${r.rating}">${r.rating}</span></td>
-    </tr>`).join('');
-  return `<div class="tblwrap"><table class="tbl">
-    <thead><tr>
-      <th class="l">Symbol</th><th class="l c-hide-700">Name</th><th class="l c-hide-860">Exch</th>
-      <th class="l c-hide-860">Sector</th><th>Last</th><th>Chg %</th>
-      <th class="c-hide-560">Mkt cap</th><th class="c-hide-560">P/E</th>
-      <th class="c-hide-700">Div yield</th><th class="c-hide-860">Rating</th>
-    </tr></thead><tbody>${body}</tbody></table></div>
-    <div class="tbl__foot">Showing ${shown.length} of ${rows.length} matching · delayed 15m</div>`;
-}
-
-/* ---------------------------------------------------------------- popover */
-const pop = { search:'' };
-function optionRows(f, useSearch) {
-  const v = val(f.id) || (f.kind === 'multi' ? [] : {});
-  if (f.kind === 'multi') {
-    const q = useSearch ? pop.search.trim().toLowerCase() : '';
-    return f.options.filter(o => !q || o.toLowerCase().includes(q)).map(o => ({
-      key:o, label:o, count:rowsMatching(f.id, { f, v:[o] }).length,
-      on:(v || []).includes(o), type:'check'
-    }));
-  }
-  return f.presets.map(p => ({
-    key:p.id, label:p.label, count:rowsMatching(f.id, { f, v:{ min:p.min, max:p.max } }).length,
-    on:v.preset === p.id, type:'radio'
-  }));
-}
-function popoverHTML(f) {
-  const rows = optionRows(f, true);
-  const list = rows.length ? rows.map(r => optHTML(f, r)).join('')
-    : `<div class="opt" data-empty="true"><span class="opt__label">No match for “${esc(pop.search)}”</span></div>`;
-  return `<div class="pop" id="pop" role="${f.kind === 'multi' ? 'listbox' : 'dialog'}"
-      ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
-    <div class="pop__head"><span class="pop__title">${esc(f.label)}</span>
-      <span class="pop__hint">matches</span></div>
-    ${f.search ? `<div class="pop__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
-    <div class="pop__list" id="popList">${list}</div>
-    ${f.kind === 'range' ? customHTML(f, 'pop__custom') : ''}
-    <div class="pop__foot">
-      <button class="qxbtn qxbtn--text" type="button" id="popClear">Clear</button>
-      <button class="qxbtn qxbtn--primary" type="button" id="popDone">Done</button>
-    </div></div>`;
-}
-function gateHTML(f) {
-  return `<div class="pop gate" id="pop" role="dialog" aria-label="${esc(f.label)} requires Pro">
-    <span class="gate__tag">PRO</span>
-    <h4>${esc(f.label)} is a Pro filter</h4>
-    <p>Consensus ratings and price targets are part of Qmodii Pro. Your other ${FILTERS.length - 1} filters are unaffected.</p>
-    <p style="font-size:11.5px;color:var(--qx-text-muted);margin-bottom:10px">In this prototype, Compare plans grants the entitlement so you can see the unlocked chip.</p>
-    <div class="gate__row">
-      <button class="qxbtn qxbtn--primary" type="button" id="gateUp">Compare plans</button>
-      <button class="qxbtn" type="button" id="gateNo">Not now</button>
-    </div></div>`;
-}
-function placePopover() {
-  const el = $('#pop'); if (!el) return;
-  const id = state.popOpen || state.gateOpen;
-  const anchor = $(`[data-chip="${id}"]`); if (!anchor) { closePopover(); return; }
-  const p = $('#product').getBoundingClientRect(), a = anchor.getBoundingClientRect();
-  const maxW = Math.min(el.classList.contains('gate') ? 268 : 272, p.width - 20);
-  el.style.width = maxW + 'px';
-  el.style.maxHeight = '';
-  const h = el.getBoundingClientRect().height;
-  let left = a.left - p.left;
-  left = Math.max(10, Math.min(left, p.width - maxW - 10));
-  const below = p.height - (a.bottom - p.top) - 20;
-  const above = (a.top - p.top) - 20;
-  let top;
-  if (h <= below) top = a.bottom - p.top + 10;
-  else if (h <= above) top = a.top - p.top - h - 10;
-  else { top = a.bottom - p.top + 10; el.style.maxHeight = Math.max(180, below) + 'px'; }
-  el.style.left = left + 'px'; el.style.top = top + 'px';
-}
-
-/* One entry point for "the user activated a filter chip". Pointer gets an
-   anchored popover; touch gets the sheet, opened straight at that filter. */
-function openFilter(id) {
-  const f = F(id);
-  if (isDisabled(f) || state.sim === 'readonly') return;
-  if (isGated(f)) {
-    closePopover(true); state.panelOpen = false; state.drill = null; state.gateOpen = id;
-    render();
-    requestAnimationFrame(() => { const g = $('#gateUp'); if (g) g.focus(); });
-    return;
-  }
-  if (isTouch()) { openPanel(id); return; }
-  closePopover(true);
-  state.panelOpen = false;
-  state.popOpen = id; pop.search = '';
-  render();
-  requestAnimationFrame(() => {
-    const el = $('#pop'); if (!el) return;
-    const first = $('#popSearch') || el.querySelector('.opt[role="option"]') || el.querySelector('button');
-    if (first) first.focus();
-  });
-}
-function closePopover(silent) {
-  const id = state.popOpen || state.gateOpen;
-  state.popOpen = null; state.gateOpen = null;
-  if (silent) return;
-  render();
-  const back = $(`[data-chip="${id}"]`);
-  if (back && !back.classList.contains('is-withdrawn')) back.focus();
-  else { const t = $('#allTrigger'); if (t) t.focus(); }
-}
-
-/* ---------------------------------------------------------------- panel */
-function panelRows() {
-  return GROUPS.map(g => {
-    const fs = FILTERS.filter(f => f.group === g);
-    if (!fs.length) return '';
-    return { g, fs };
-  }).filter(Boolean);
-}
-function filterState(f) {
-  if (isDisabled(f)) return 'n/a for options';
-  return hasValue(f) ? chipLabel(f).replace(f.label + ': ', '') : 'Any';
-}
-
-/* Pointer: sections expand in place. Only the panel's first render animates. */
-function accordionHTML() {
-  return panelRows().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
-    fs.map(f => {
-      const gated = isGated(f), dis = isDisabled(f);
-      const open = state.panelOpenFilter === f.id;
-      const body = open && !dis && !gated ? `<div class="accbody" role="listbox"${f.kind === 'multi' ? ' aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">${
-        optionRows(f, false).map(r => optHTML(f, r)).join('')
-      }${f.kind === 'range' ? customHTML(f, 'pop__custom') : ''}</div>` : '';
-      return `<button class="acc" type="button" data-pfilter="${f.id}" data-disabled="${dis}"
-          ${dis ? 'aria-disabled="true"' : ''} aria-expanded="${open}">
-          ${I.chevR}<span>${esc(f.label)}</span>${gated ? I.lock : ''}
-          <span class="acc__state" data-on="${hasValue(f) && !dis}">${esc(filterState(f))}</span>
-        </button>${body}`;
-    }).join('')
-  }</div>`).join('');
-}
-
-/* Touch: one level of filters, one level of options, a Back that returns. */
-function drillListHTML() {
-  return `<div class="drill${drillAnim === 'back' ? ' drill--back is-entering' : ''}">${
-    panelRows().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
-      fs.map(f => {
-        const dis = isDisabled(f);
-        return `<button class="drill__row" type="button" data-drill="${f.id}" data-disabled="${dis}"
-          ${dis ? 'aria-disabled="true"' : ''}>
-          <span>${esc(f.label)}</span>${isGated(f) ? I.lock : ''}
-          <span class="drill__state" data-on="${hasValue(f) && !dis}">${esc(filterState(f))}</span>
-          ${dis ? '' : I.chevR}</button>`;
-      }).join('')
-    }</div>`).join('')
-  }</div>`;
-}
-function drillOptionsHTML(f) {
-  return `<div class="drill${drillAnim === 'in' ? ' is-entering' : ''}" role="listbox"
-      ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
-    ${f.search ? `<div class="drill__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
-    ${optionRows(f, true).map(r => optHTML(f, r)).join('')}
-    ${f.kind === 'range' ? customHTML(f, 'drill__custom') : ''}</div>`;
-}
-function optHTML(f, r) {
-  return `<button class="opt" type="button" role="option" aria-selected="${r.on}"
-    data-popt="${f.id}" data-opt="${esc(r.key)}" data-empty="${r.count === 0}">
-    ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>` : `<span class="opt__radio"></span>`}
-    <span class="opt__label">${esc(r.label)}</span><span class="opt__count">${r.count}</span></button>`;
-}
-function customHTML(f, cls) {
-  const v = val(f.id);
-  return `<div class="${cls}"><div class="lbl">Custom range</div>
-    <div class="range">
-      <input type="number" id="rMin" placeholder="Min" value="${v && !v.preset && v.min != null ? v.min : ''}" aria-label="Minimum ${esc(f.label)}">
-      <span>to</span>
-      <input type="number" id="rMax" placeholder="Max" value="${v && !v.preset && v.max != null ? v.max : ''}" aria-label="Maximum ${esc(f.label)}">
-    </div></div>`;
-}
-
-function panelHintText() {
-  const applied = activeFilters().length;
-  return `${FILTERS.length} filters · ${hiddenCount()} not on the bar`
-    + (applied ? ` · ${applied} applied` : '');
-}
-function panelHTML() {
-  const touch = isTouch();
-  const enter = panelEntering ? ' is-entering' : '';
-
-  if (state.tab !== 'screener') {                       // chain / analyzer settings
-    const chainTab = state.tab === 'chain';
-    const n = chainTab ? chRows().rows.length : anRows().length;
-    return `<div class="scrim" id="scrim"></div>
-      <div class="panel${enter}" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
-           role="dialog" aria-modal="true" aria-label="${chainTab ? 'Chain settings' : 'Constraints'}">
-        <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
-        <div class="panel__head"><span class="panel__title">${chainTab ? 'Chain settings' : 'Constraints'}</span>
-          <span class="pop__hint" id="panelHint">${chainTab
-            ? `${chFiltersApplied()} of 5 applied` : `${anRows().length} of ${AN.STRATS.length} strategies`}</span>
-          <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close settings">${I.x}</button>
-        </div>
-        <div class="panel__body">${chainTab ? chainSettingsHTML() : analyzerSettingsHTML()}</div>
-        <div class="panel__foot">
-          <button class="qxbtn qxbtn--text" type="button" id="panelReset">Reset</button>
-          <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${n.toLocaleString()} ${
-            chainTab ? (n === 1 ? 'strike' : 'strikes') : (n === 1 ? 'strategy' : 'strategies')}</button>
-        </div></div>`;
-  }
-
-  const drilled = touch && state.drill ? F(state.drill) : null;
-  const n = results().length;
-
-  const head = drilled
-    ? `<div class="panel__head">
-         <button class="panel__back" type="button" id="panelBack">${I.chevL}<span>All filters</span></button>
-         <span class="panel__title" style="margin-left:8px">${esc(drilled.label)}</span>
-         <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
-       </div>`
-    : `<div class="panel__head"><span class="panel__title">All filters</span>
-         <span class="pop__hint" id="panelHint">${panelHintText()}</span>
-         <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
-       </div>`;
-
-  const body = touch ? (drilled ? drillOptionsHTML(drilled) : drillListHTML()) : accordionHTML();
-
-  return `<div class="scrim" id="scrim"></div>
-    <div class="panel${enter}" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
-         role="dialog" aria-modal="true" aria-label="All filters">
-      <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
-      ${head}
-      <div class="panel__body">${body}</div>
-      <div class="panel__foot">
-        <button class="qxbtn qxbtn--text" type="button" id="panelClear">Clear all</button>
-        <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${n.toLocaleString()} result${n === 1 ? '' : 's'}</button>
-      </div>
-    </div>`;
-}
-function openPanel(drillTo) {
-  const wasOpen = state.panelOpen, cameFrom = state.drill;
-  closePopover(true);
-  panelEntering = !wasOpen;
-  drillAnim = drillTo ? 'in' : (cameFrom ? 'back' : null);
-  state.panelOpen = true;
-  state.drill = drillTo || null;
-  if (drillTo) { pop.search = ''; state.panelOpenFilter = drillTo; }
-  render();
-  requestAnimationFrame(() => {
-    // Never leave focus on a node this render destroyed.
-    const el = drillTo ? $('#panelBack')
-      : cameFrom ? ($(`[data-drill="${cameFrom}"]`) || $('#panelX'))
-      : (wasOpen ? null : $('#panelX'));
-    if (el) el.focus();
-  });
-}
-function closePanel() {
-  state.panelOpen = false; state.drill = null; panelEntering = false; drillAnim = null;
-  render();
-  const t = $('#allTrigger'); if (t) t.focus();
-}
-
-/* ---------------------------------------------------------------- select component */
-/* One custom listbox serves the bar selects and the panel fields. The list is
-   rendered in the product's overlay layer, not inside the field, so it escapes
-   the settings panel's own scroll container — see the Near dropdown in the specs. */
-const SELECTS = {};
-function selTrigger(id, value, opts, minW) {
-  SELECTS[id] = opts;
-  const cur = opts.find(o => String(o[0]) === String(value));
-  const open = state.openSelect === id;
-  return `<button class="qxsel" type="button" data-sel="${id}" role="combobox"
-    aria-haspopup="listbox" aria-expanded="${open}"
-    ${minW ? `style="min-width:${minW}px"` : ''}>
-    <span class="qxsel__v">${esc(cur ? cur[1] : String(value))}</span>
-    <svg class="qxsel__chev" width="14" height="14" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>`;
-}
-function selListHTML() {
-  const id = state.openSelect; if (!id) return '';
-  const opts = SELECTS[id] || [];
-  const value = selGet(id);
-  return `<div class="sellist" id="sellist" role="listbox" aria-label="Options">${
-    opts.map(o => `<button class="selopt" type="button" role="option" data-selopt="${esc(String(o[0]))}"
-      aria-selected="${String(o[0]) === String(value)}">${esc(o[1])}</button>`).join('')
-  }</div>`;
-}
-function selGet(id) {
-  const [ns, key] = id.split('.');
-  return ns === 'ch' ? chain[key] : an[key];
-}
-function selSet(id, raw) {
-  const [ns, key] = id.split('.');
-  const opts = SELECTS[id] || [];
-  const match = opts.find(o => String(o[0]) === raw);
-  const v = match ? match[0] : raw;
-  if (ns === 'ch') {
-    chain[key] = v;
-    if (key === 'expiryType') { const e = chExpiries()[0]; chain.expiry = e ? e.id : null; }
-  } else { an[key] = v; }
-}
-function placeSelList() {
-  const el = $('#sellist'); if (!el) return;
-  const btn = $(`[data-sel="${state.openSelect}"]`); if (!btn) { state.openSelect = null; return; }
-  const p = $('#product').getBoundingClientRect(), a = btn.getBoundingClientRect();
-  el.style.minWidth = Math.max(120, Math.round(a.width)) + 'px';
-  const r = el.getBoundingClientRect();
-  let left = Math.max(8, Math.min(a.left - p.left, p.width - r.width - 8));
-  const below = p.height - (a.bottom - p.top) - 12;
-  let top;
-  if (r.height <= below) top = a.bottom - p.top + 4;
-  else if (r.height <= (a.top - p.top) - 12) top = a.top - p.top - r.height - 4;
-  else { top = a.bottom - p.top + 4; el.style.maxHeight = Math.max(140, below) + 'px'; }
-  el.style.left = left + 'px'; el.style.top = top + 'px';
-}
-function openSelect(id) {
-  state.openSelect = state.openSelect === id ? null : id;
-  render();
-  if (state.openSelect) requestAnimationFrame(() => {
-    const l = $('#sellist'); if (!l) return;
-    (l.querySelector('[aria-selected="true"]') || l.querySelector('.selopt'))?.focus();
-  });
-}
-function closeSelect(refocus) {
-  const id = state.openSelect;
-  state.openSelect = null;
-  render();
-  if (refocus && id) { const b = $(`[data-sel="${id}"]`); if (b) b.focus(); }
-}
-
-/* ---------------------------------------------------------------- options analyzer */
-const AN = (() => {
-  const spot = 483.04;
-  const EXP = [['August 26, 2026',5],['August 28, 2026',7],['August 31, 2026',10],['September 4, 2026',14],
-               ['September 18, 2026',28],['September 25, 2026',35],['October 2, 2026',42],['October 16, 2026',56],
-               ['November 20, 2026',91],['January 15, 2027',147]];
-  const FAM = {
-    'Covered Call':      { view:'Neutral', acc:'income', glyph:'payoffFlat',   legs:'stock+call' },
-    'Short Put':         { view:'Bullish', acc:'bull',   glyph:'payoffDown',   legs:'put' },
-    'Put Credit Spread': { view:'Bullish', acc:'bull',   glyph:'payoffSpread', legs:'put2' },
-    'Call Credit Spread':{ view:'Bearish', acc:'bear',   glyph:'payoffSpread', legs:'call2' },
-    'Iron Condor':       { view:'Neutral', acc:'income', glyph:'payoffSpread', legs:'condor' },
-    'Long Call':         { view:'Bullish', acc:'bull',   glyph:'payoffFlat',   legs:'call', debit:true },
-    'Long Put':          { view:'Bearish', acc:'bear',   glyph:'payoffDown',   legs:'put',  debit:true }
-  };
-  const noise = (a, b) => { const x = Math.sin(a * 91.7 + b * 47.3) * 21841.13; return x - Math.floor(x); };
-  const r2 = v => Math.round(v * 100) / 100;
-  const out = [];
-  let n = 0;
-  Object.entries(FAM).forEach(([name, fam], fi) => {
-    for (let i = 0; i < 7; i++) {
-      n++;
-      const [date, dte] = EXP[(fi * 3 + i) % EXP.length];
-      const otm = 2 + i * 1.6 + fi * 0.7;                       // % out of the money
-      const dir = fam.view === 'Bearish' ? 1 : -1;
-      const k1 = Math.round((spot * (1 + dir * -otm / 100)) / 2.5) * 2.5;
-      const k2 = Math.round((k1 + (fam.view === 'Bearish' ? 5 : -5)) / 2.5) * 2.5;
-      // Credit strategies profit from time; debit strategies need the move, so
-      // their probability of profit is structurally low. Same model, two bands.
-      const prob = fam.debit
-        ? Math.max(18, Math.round(46 - otm * 1.1 - dte * 0.02 + noise(fi, i) * 8))
-        : Math.min(96, Math.round(62 + otm * 1.9 - dte * 0.035 + noise(fi, i) * 7));
-      const width = Math.abs(k1 - k2);
-      let credit = spot * 0.0016 * (1 + dte / 35) * Math.exp(-otm / 14) * (0.8 + noise(i, fi) * 0.6);
-      if (fam.legs === 'put2' || fam.legs === 'call2' || fam.legs === 'condor')
-        credit = Math.min(credit, width * 0.35);        // a spread cannot collect more than its width
-      credit = r2(Math.max(0.05, credit));
-      const prem = Math.round(credit * 100);
-      let inv;
-      if (fam.legs === 'stock+call') inv = spot;
-      else if (fam.debit) inv = r2(credit);                       // a debit is the whole cost
-      else if (fam.legs === 'put') inv = r2(k1 * 0.135 + noise(i, fi) * 8);
-      else inv = r2(width - credit);
-      out.push({ id:'s' + n, name, fam, date, dte, k1, k2, prob, prem, inv:Math.max(1, inv), credit });
-    }
-  });
-  return { sym:'MSFT', name:'Microsoft Corporation', spot, iv:26.03, regime:'LOW VOLATILITY',
-           STRATS:out.sort((a, b) => b.prob - a.prob || a.dte - b.dte),
-           FAMS:Object.keys(FAM) };
-})();
-
-const an = {
-  marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90,
-  view:'table', settingsOpen:false
-};
-const AN_OPTS = {
-  marketView:[['Any','Any'],['Bullish','Bullish'],['Neutral','Neutral'],['Bearish','Bearish']],
-  strategy:[['All','All'], ...AN.FAMS.map(f => [f, f])]
-};
-function anRows() {
-  return AN.STRATS.filter(s =>
-    (an.marketView === 'Any' || s.fam.view === an.marketView) &&
-    (an.strategy === 'All' || s.name === an.strategy) &&
-    s.prob >= an.minProb && s.dte >= an.dteMin && s.dte <= an.dteMax);
-}
-const probBand = p => p >= 90 ? 'hi' : p >= 80 ? 'mid' : 'lo';
-const usd = v => '$' + v.toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
-
-function legsHTML(s) {
-  const L = [];
-  const kind = s.name.includes('Call') && s.fam.legs !== 'stock+call' ? 'CALL'
-            : s.fam.legs === 'stock+call' ? 'CALL' : s.name.includes('Put') ? 'PUT' : 'CALL';
-  const leg = (side, date, k, tag) => `<div class="leg"><span class="side" data-s="${side}">${side}</span>
-    ${date ? `<span class="leg__d">${date}</span>` : ''}<span class="leg__k">${k}</span>
-    <span class="kind">${tag}</span></div>`;
-  if (s.fam.legs === 'stock+call') {
-    L.push(leg('BUY', '', (AN.spot - 0.005).toFixed(3), 'STOCK'));
-    L.push(leg('SELL', s.date, s.k1, 'CALL'));
-  } else if (s.fam.legs === 'put' && s.name === 'Short Put') {
-    L.push(leg('SELL', s.date, s.k1, 'PUT'));
-  } else if (s.fam.legs === 'put' && s.name === 'Long Put') {
-    L.push(leg('BUY', s.date, s.k1, 'PUT'));
-  } else if (s.fam.legs === 'call') {
-    L.push(leg('BUY', s.date, s.k1, 'CALL'));
-  } else if (s.fam.legs === 'put2') {
-    L.push(leg('SELL', s.date, s.k1, 'PUT'));
-    L.push(leg('BUY', s.date, s.k2, 'PUT'));
-  } else if (s.fam.legs === 'call2') {
-    L.push(leg('SELL', s.date, s.k1, 'CALL'));
-    L.push(leg('BUY', s.date, s.k2, 'CALL'));
-  } else {
-    L.push(leg('SELL', s.date, s.k1, 'PUT'));
-    L.push(leg('BUY', s.date, s.k2, 'PUT'));
-    L.push(leg('SELL', s.date, s.k1 + 40, 'CALL'));
-    L.push(leg('BUY', s.date, s.k2 + 50, 'CALL'));
-  }
-  return `<div class="legs">${L.join('')}</div>`;
-}
-
-function analyzerHTML() {
-  const rows = anRows();
-  const sliders = `
-    <label class="fld" id="fldProb"><span class="fld__lbl">Min Probability</span>
-      <div class="sld">
-        <input type="range" id="anProb" min="50" max="99" value="${an.minProb}"
-          aria-label="Minimum probability of profit"
-          style="--sw:150px;--trk:linear-gradient(to right,var(--qx-primary) ${(an.minProb - 50) / 49 * 100}%,var(--qx-surface-200) ${(an.minProb - 50) / 49 * 100}%)">
-        <input class="sld__box" id="anProbBox" type="text" value="${an.minProb}%" aria-label="Minimum probability value">
-      </div></label>
-    <label class="fld" id="fldDte"><span class="fld__lbl">Days to Exp</span>
-      <div class="sld">
-        <input class="sld__box" id="anDteMin" type="text" value="${an.dteMin}" aria-label="Minimum days to expiry">
-        <div class="rsld" style="--sw:140px">
-          <div class="rsld__trk"></div>
-          <div class="rsld__fill" style="left:${an.dteMin / 365 * 100}%;right:${100 - an.dteMax / 365 * 100}%"></div>
-          <input type="range" id="anDteA" min="0" max="365" value="${an.dteMin}" aria-label="Days to expiry, from">
-          <input type="range" id="anDteB" min="0" max="365" value="${an.dteMax}" aria-label="Days to expiry, to">
-        </div>
-        <input class="sld__box" id="anDteMax" type="text" value="${an.dteMax}" aria-label="Maximum days to expiry">
-      </div></label>`;
-
-  const ctl = `<div class="ctl" id="row">
-    <label class="fld" id="fldView"><span class="fld__lbl">Market View</span>
-      ${selTrigger('an.marketView', an.marketView, AN_OPTS.marketView, 96)}</label>
-    ${sliders}
-    <label class="fld" id="fldStrategy"><span class="fld__lbl">Strategy</span>
-      ${selTrigger('an.strategy', an.strategy, AN_OPTS.strategy, 104)}</label>
-    <div class="ctl__right" id="right">
-      <button class="iconbtn tip" type="button" id="anGear" data-tip="Constraints"
-        aria-haspopup="dialog" aria-expanded="${state.panelOpen}" aria-label="Constraints">
-        ${I.gear}<span class="iconbtn__badge" id="anBadge" hidden>0</span></button>
-      <button class="iconbtn tip" type="button" id="anView"
-        data-tip="${an.view === 'table' ? 'Card view' : 'Table view'}" aria-pressed="${an.view === 'cards'}"
-        aria-label="${an.view === 'table' ? 'Switch to card view' : 'Switch to table view'}">
-        ${an.view === 'table' ? I.grid : I.rows}</button>
-    </div></div>`;
-
-  const strip = `<div class="uline">
-    <div class="uline__id"><span class="uline__sym">${AN.sym}</span><span class="uline__nm">${AN.name}</span></div>
-    <div class="uline__m"><span class="uline__k">Price</span><span class="uline__v">${usd(AN.spot)}</span></div>
-    <div class="uline__m"><span class="uline__k">IV</span><span class="uline__v">${AN.iv.toFixed(2)}%</span></div>
-    <div class="uline__m"><span class="uline__k">Vol Regime</span><span class="regime">${AN.regime}</span></div>
-  </div>`;
-
-  const body = !rows.length
-    ? `<div class="empty"><h4>No strategies clear these constraints.</h4>
-        <p>Lowering minimum probability or widening days to expiry is the usual fix.</p>
-        <button class="qxbtn" type="button" id="anReset">Reset constraints</button></div>`
-    : an.view === 'cards'
-      ? `<div class="cards scroller">${rows.map(s => `<article class="card" style="--acc:var(--qx-strat-${s.fam.acc})">
-          <div class="card__h"><span class="strat__nm">${s.name}</span>
-            <span class="prob" data-b="${probBand(s.prob)}" style="margin-left:auto">${s.prob}%</span></div>
-          ${legsHTML(s)}
-          <div class="card__m">
-            <span><span class="card__k">Premium</span><span class="card__v">$${s.prem.toFixed(2)}</span></span>
-            <span><span class="card__k">Investment</span><span class="card__v">${usd(s.inv)}</span></span>
-          </div></article>`).join('')}</div>`
-      : `<div class="tblwrap scroller"><table class="strat">
-          <thead><tr><th class="l">Strategy</th><th class="l">Trade</th><th>Premium</th>
-            <th class="an-640">Investment</th><th>Probability</th></tr></thead>
-          <tbody>${rows.map(s => `<tr style="--acc:var(--qx-strat-${s.fam.acc})">
-            <td><span class="strat__nm">${s.name}
-              <button class="glyph" type="button" aria-label="${s.name} payoff shape">${I[s.fam.glyph]}</button>
-              <button class="glyph glyph--info" type="button" aria-label="What is a ${s.name}?">${I.help}</button>
-            </span></td>
-            <td class="l">${legsHTML(s)}</td>
-            <td>$${s.prem.toFixed(2)}</td>
-            <td class="an-640">${usd(s.inv)}</td>
-            <td><span class="prob" data-b="${probBand(s.prob)}">${s.prob}%</span></td>
-          </tr>`).join('')}</tbody></table></div>`;
-
-  return ctl + strip + body + `<div class="disc">
-      <p>Results are model-based and derived from external data sources. ‘Probability of profit’ is an
-      estimate only and not a guarantee. Actual results may differ, and losses may be significant.
-      This tool does not provide investment advice.</p>
-      <a href="#" onclick="return false">View term definitions</a></div>`;
-}
-
-function analyzerSettingsHTML() {
-  return `<div class="setp">
-    <div class="setp__sec"><div class="setp__lbl">Probability</div>
-      <label class="fld"><span class="fld__lbl">Minimum probability of profit</span>
-        <div class="sld">
-          <input type="range" id="anProb" min="50" max="99" value="${an.minProb}" aria-label="Minimum probability of profit"
-            style="--sw:100%;--trk:linear-gradient(to right,var(--qx-primary) ${(an.minProb - 50) / 49 * 100}%,var(--qx-surface-200) ${(an.minProb - 50) / 49 * 100}%)">
-          <input class="sld__box" id="anProbBox" type="text" value="${an.minProb}%" aria-label="Minimum probability value">
-        </div></label></div>
-    <div class="setp__sec"><div class="setp__lbl">Days to expiry</div>
-      <div class="sld">
-        <input class="sld__box" id="anDteMin" type="text" value="${an.dteMin}" aria-label="Minimum days to expiry">
-        <div class="rsld" style="--sw:100%;flex:1">
-          <div class="rsld__trk"></div>
-          <div class="rsld__fill" style="left:${an.dteMin / 365 * 100}%;right:${100 - an.dteMax / 365 * 100}%"></div>
-          <input type="range" id="anDteA" min="0" max="365" value="${an.dteMin}" aria-label="Days to expiry, from">
-          <input type="range" id="anDteB" min="0" max="365" value="${an.dteMax}" aria-label="Days to expiry, to">
-        </div>
-        <input class="sld__box" id="anDteMax" type="text" value="${an.dteMax}" aria-label="Maximum days to expiry">
-      </div></div>
-    <div class="setp__sec"><div class="setp__lbl">Strategy</div>
-      <div class="fgrid">
-        <label class="fld fld--full"><span class="fld__lbl">Market View</span>${selTrigger('an.marketView', an.marketView, AN_OPTS.marketView)}</label>
-        <label class="fld fld--full"><span class="fld__lbl">Strategy</span>${selTrigger('an.strategy', an.strategy, AN_OPTS.strategy)}</label>
-      </div></div></div>`;
-}
-
-/* ---------------------------------------------------------------- options chain */
-/* Static as-of data: DTE is measured from Aug 21 2026, so nothing here is
-   clock-driven — the numbers read the same whenever the prototype is opened. */
+/* ---------------------------------------------------------------- options chain data */
 const CH = (() => {
   const spot = 311.51, dayMove = 6.02;
   const EXPIRIES = [
@@ -2046,110 +1080,6 @@ const CH = (() => {
   return { sym:'ADBE', name:'Adobe Inc.', spot, dayMove, chgPct:1.96, EXPIRIES, STRIKES, rows };
 })();
 
-const chain = {
-  expiryType:'All', expiry:'e0', window:5,
-  near:'spot', nearPct:'all', minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all',
-  view:'side', settingsOpen:false, expScroll:0
-};
-const CH_OPTS = {
-  expiryType:[['All','All'],['Weekly','Weekly'],['Monthly','Monthly'],['Quarterly','Quarterly'],['LEAPS','LEAPS']],
-  window:[[5,'±5'],[10,'±10'],[20,'±20'],['all','All']],
-  view:[['side','Side-by-Side'],['stack','Stacked'],['calls','Calls'],['puts','Puts']],
-  nearPct:[['all','All'],[2,'2%'],[5,'5%'],[10,'10%'],[15,'15%'],[20,'20%'],[25,'25%'],['custom','Custom…']],
-  minVol:[['all','All'],[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
-  minOi:[['all','All'],[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
-  maxSpread:[['all','All'],[5,'Tight (< 5%)'],[15,'Normal (< 15%)'],[30,'Wide (< 30%)'],['custom','Custom…']],
-  deliverables:[['all','All'],['std','Standard only'],['ns','Non-standard only']]
-};
-const chExpiries = () => CH.EXPIRIES.filter(e => chain.expiryType === 'All' || e.type === chain.expiryType);
-const chExpiry = () => chExpiries().find(e => e.id === chain.expiry) || chExpiries()[0];
-const chAnchor = () => chain.near === 'spot' ? CH.spot : Number(chain.near);
-const chNearLabel = () => chain.near === 'spot' ? `Spot (${CH.spot})` : String(chain.near);
-
-/* Strike window first (a count around the anchor), then the value filters. */
-function chRows() {
-  const e = chExpiry(); if (!e) return { rows:[], total:0, windowed:0 };
-  const all = CH.rows[e.id];
-  const anchor = chAnchor();
-  let win = all;
-  if (chain.window !== 'all') {
-    let nearest = 0;
-    all.forEach((r, i) => { if (Math.abs(r.k - anchor) < Math.abs(all[nearest].k - anchor)) nearest = i; });
-    const below = all.filter(r => r.k <= anchor).slice(-chain.window);
-    const above = all.filter(r => r.k > anchor).slice(0, chain.window);
-    win = [...below, ...above];
-  }
-  const pass = win.filter(r => {
-    if (chain.nearPct !== 'all' && chain.nearPct !== 'custom'
-        && Math.abs((r.k - anchor) / anchor) * 100 > chain.nearPct) return false;
-    if (chain.minVol !== 'all' && Math.max(r.call.vol, r.put.vol) < chain.minVol) return false;
-    if (chain.minOi !== 'all' && Math.max(r.call.oi, r.put.oi) < chain.minOi) return false;
-    if (chain.maxSpread !== 'all' && chain.maxSpread !== 'custom') {
-      const cp = r.call.spr / r.call.last * 100, pp = r.put.spr / r.put.last * 100;
-      if (Math.min(cp, pp) > chain.maxSpread) return false;
-    }
-    if (chain.deliverables === 'std' && r.ns) return false;
-    if (chain.deliverables === 'ns' && !r.ns) return false;
-    return true;
-  });
-  return { rows:pass, total:all.length, windowed:win.length };
-}
-const chFiltersApplied = () => ['nearPct','minVol','minOi','maxSpread','deliverables']
-  .filter(k => chain[k] !== 'all').length;
-
-const num = v => v.toLocaleString();
-const px = v => v.toFixed(2);
-const pct = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
-
-function chainHTML() {
-  const { rows, total } = chRows();
-  const e = chExpiry();
-  const maxC = Math.max(1, ...rows.map(r => r.call.vol));
-  const maxP = Math.max(1, ...rows.map(r => r.put.vol));
-  const applied = chFiltersApplied();
-
-  const ctl = `<div class="ctl" id="row">
-    <label class="fld"><span class="fld__lbl">Expiry</span>
-      ${selTrigger('ch.expiryType', chain.expiryType, CH_OPTS.expiryType, 96)}</label>
-    <label class="fld"><span class="fld__lbl">Strikes</span>
-      ${selTrigger('ch.window', chain.window, CH_OPTS.window, 92)}</label>
-    <div class="ctl__right">
-      <button class="iconbtn tip" type="button" id="chGear" data-tip="Chain settings"
-        aria-haspopup="dialog" aria-expanded="${state.panelOpen}" aria-label="Chain settings${applied ? ', ' + applied + ' applied' : ''}">
-        ${I.gear}${applied ? `<span class="iconbtn__badge">${applied}</span>` : ''}</button>
-    </div></div>`;
-
-  const strip = `<div class="exps">
-    <div class="exps__scroll" id="expScroll" role="tablist" aria-label="Expiry">
-      ${chExpiries().map(x => `<button class="exp" type="button" role="tab" data-exp="${x.id}"
-        aria-selected="${e && x.id === e.id}">
-        <span>${x.date}</span><span class="exp__dte">${x.dte} DTE</span></button>`).join('')}
-    </div>
-    <button class="exps__arrow exps__arrow--l" type="button" id="expL" aria-label="Earlier expiries" hidden>${I.chevL}</button>
-    <button class="exps__arrow exps__arrow--r" type="button" id="expR" aria-label="Later expiries" hidden>${I.chevR2}</button>
-  </div>`;
-
-  const body = rows.length
-    ? (chain.view === 'side' ? chainSide(rows, maxC, maxP)
-      : chain.view === 'stack' ? chainOne(rows, 'call', maxC) + chainOne(rows, 'put', maxP)
-      : chainOne(rows, chain.view === 'calls' ? 'call' : 'put', chain.view === 'calls' ? maxC : maxP))
-    : `<div class="empty"><h4>No strikes match these settings.</h4>
-        <p>The liquidity filters are the usual cause — ${applied} applied.</p>
-        <button class="qxbtn" type="button" id="chReset">Reset chain settings</button></div>`;
-
-  return ctl + strip + `<div class="tblwrap scroller">${body}</div>
-    <div class="tbl__foot">Showing ${rows.length} of ${total} strikes${
-      applied ? ` · ${applied} setting${applied === 1 ? '' : 's'} applied` : ''
-    } · ${e ? e.date + ' · ' + e.dte + ' DTE' : ''} · ${CH.sym} ${px(CH.spot)}
-      <span class="up">▲ ${CH.chgPct.toFixed(2)}%</span> · delayed 15m, as of Aug 21 2026</div>`;
-}
-
-const volCell = (v, maxVol, side) => {
-  const w = Math.round(v / maxVol * 100);
-  return `<td class="vol vol--${side === 'call' ? 'c' : 'p'}" style="--v:${w < 3 ? 0 : w}%;--vb:var(--qx-${side === 'call' ? 'up' : 'down'}-200)">${num(v)}</td>`;
-};
-const chgCls = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'mut';
-
 function chainSide(rows, maxC, maxP) {
   const spotIdx = rows.findIndex(r => r.k > CH.spot);
   const body = rows.map((r, i) => {
@@ -2190,7 +1120,7 @@ function chainSide(rows, maxC, maxP) {
     </thead><tbody>${body}</tbody></table>`;
 }
 
-function chainOne(rows, side, maxVol) {
+function chainOne(rows, side, maxVol, stacked) {
   const spotIdx = rows.findIndex(r => r.k > CH.spot);
   const label = side === 'call' ? 'Calls' : 'Puts';
   const body = rows.map((r, i) => {
@@ -2212,7 +1142,7 @@ function chainOne(rows, side, maxVol) {
       ? `<tr class="spot"><td colspan="9"><span class="spot__pill" style="--px:34px">${px(CH.spot)}</span></td></tr>` + row
       : row;
   }).join('');
-  return (chain.view === 'stack' ? `<div class="stacked__h">${label}</div>` : '') +
+  return (stacked ? `<div class="stacked__h">${label}</div>` : '') +
     `<table class="chain">
       <thead><tr class="cols">
         <th class="k">Strike</th><th><span>Bid</span></th><th><span>Ask</span></th><th><span>Last</span></th>
@@ -2221,29 +1151,955 @@ function chainOne(rows, side, maxVol) {
       </tr></thead><tbody>${body}</tbody></table>`;
 }
 
-function chainSettingsHTML() {
-  const f = (id, label, value, opts, full) =>
-    `<label class="fld${full ? ' fld--full' : ''}"><span class="fld__lbl">${label}</span>
-      ${selTrigger(id, value, opts)}</label>`;
-  const nearOpts = [['spot', `Spot (${CH.spot})`], ...CH.STRIKES.map(k => [String(k), String(k)])];
-  return `<div class="setp">
-    <div class="setp__sec"><div class="setp__lbl">View</div>
-      <div class="fgrid">${f('ch.view', 'Layout', chain.view, CH_OPTS.view, true)}</div></div>
-    <div class="setp__sec"><div class="setp__lbl">Strikes</div>
-      <div class="fgrid">
-        ${f('ch.nearPct', 'Near Money %', chain.nearPct, CH_OPTS.nearPct)}
-        ${f('ch.near', 'Near', chain.near, nearOpts)}
-      </div></div>
-    <div class="setp__sec"><div class="setp__lbl">Liquidity</div>
-      <div class="fgrid">
-        ${f('ch.minVol', 'Min Volume', chain.minVol, CH_OPTS.minVol)}
-        ${f('ch.minOi', 'Min Open Interest', chain.minOi, CH_OPTS.minOi)}
-        ${f('ch.maxSpread', 'Max Spread', chain.maxSpread, CH_OPTS.maxSpread)}
-      </div></div>
-    <div class="setp__sec"><div class="setp__lbl">Contract</div>
-      <div class="fgrid">${f('ch.deliverables', 'Deliverables', chain.deliverables, CH_OPTS.deliverables, true)}</div>
-      <p class="setp__help">Non-standard (adjusted) contracts come from splits or mergers and are usually illiquid.</p>
+/* ---------------------------------------------------------------- options analyzer data */
+const AN = (() => {
+  const spot = 483.04;
+  const EXP = [['August 26, 2026',5],['August 28, 2026',7],['August 31, 2026',10],['September 4, 2026',14],
+               ['September 18, 2026',28],['September 25, 2026',35],['October 2, 2026',42],['October 16, 2026',56],
+               ['November 20, 2026',91],['January 15, 2027',147]];
+  const FAM = {
+    'Covered Call':      { view:'Neutral', acc:'income', glyph:'payoffFlat',   legs:'stock+call' },
+    'Short Put':         { view:'Bullish', acc:'bull',   glyph:'payoffDown',   legs:'put' },
+    'Put Credit Spread': { view:'Bullish', acc:'bull',   glyph:'payoffSpread', legs:'put2' },
+    'Call Credit Spread':{ view:'Bearish', acc:'bear',   glyph:'payoffSpread', legs:'call2' },
+    'Iron Condor':       { view:'Neutral', acc:'income', glyph:'payoffSpread', legs:'condor' },
+    'Long Call':         { view:'Bullish', acc:'bull',   glyph:'payoffFlat',   legs:'call', debit:true },
+    'Long Put':          { view:'Bearish', acc:'bear',   glyph:'payoffDown',   legs:'put',  debit:true }
+  };
+  const noise = (a, b) => { const x = Math.sin(a * 91.7 + b * 47.3) * 21841.13; return x - Math.floor(x); };
+  const r2 = v => Math.round(v * 100) / 100;
+  const out = [];
+  let n = 0;
+  Object.entries(FAM).forEach(([name, fam], fi) => {
+    for (let i = 0; i < 7; i++) {
+      n++;
+      const [date, dte] = EXP[(fi * 3 + i) % EXP.length];
+      const otm = 2 + i * 1.6 + fi * 0.7;                       // % out of the money
+      const dir = fam.view === 'Bearish' ? 1 : -1;
+      const k1 = Math.round((spot * (1 + dir * -otm / 100)) / 2.5) * 2.5;
+      const k2 = Math.round((k1 + (fam.view === 'Bearish' ? 5 : -5)) / 2.5) * 2.5;
+      // Credit strategies profit from time; debit strategies need the move, so
+      // their probability of profit is structurally low. Same model, two bands.
+      const prob = fam.debit
+        ? Math.max(18, Math.round(46 - otm * 1.1 - dte * 0.02 + noise(fi, i) * 8))
+        : Math.min(96, Math.round(62 + otm * 1.9 - dte * 0.035 + noise(fi, i) * 7));
+      const width = Math.abs(k1 - k2);
+      let credit = spot * 0.0016 * (1 + dte / 35) * Math.exp(-otm / 14) * (0.8 + noise(i, fi) * 0.6);
+      if (fam.legs === 'put2' || fam.legs === 'call2' || fam.legs === 'condor')
+        credit = Math.min(credit, width * 0.35);        // a spread cannot collect more than its width
+      credit = r2(Math.max(0.05, credit));
+      const prem = Math.round(credit * 100);
+      let inv;
+      if (fam.legs === 'stock+call') inv = spot;
+      else if (fam.debit) inv = r2(credit);                       // a debit is the whole cost
+      else if (fam.legs === 'put') inv = r2(k1 * 0.135 + noise(i, fi) * 8);
+      else inv = r2(width - credit);
+      out.push({ id:'s' + n, name, fam, date, dte, k1, k2, prob, prem, inv:Math.max(1, inv), credit });
+    }
+  });
+  return { sym:'MSFT', name:'Microsoft Corporation', spot, iv:26.03, regime:'LOW VOLATILITY',
+           STRATS:out.sort((a, b) => b.prob - a.prob || a.dte - b.dte),
+           FAMS:Object.keys(FAM) };
+})();
+
+function legsHTML(s) {
+  const L = [];
+  const kind = s.name.includes('Call') && s.fam.legs !== 'stock+call' ? 'CALL'
+            : s.fam.legs === 'stock+call' ? 'CALL' : s.name.includes('Put') ? 'PUT' : 'CALL';
+  const leg = (side, date, k, tag) => `<div class="leg"><span class="side" data-s="${side}">${side}</span>
+    ${date ? `<span class="leg__d">${date}</span>` : ''}<span class="leg__k">${k}</span>
+    <span class="kind">${tag}</span></div>`;
+  if (s.fam.legs === 'stock+call') {
+    L.push(leg('BUY', '', (AN.spot - 0.005).toFixed(3), 'STOCK'));
+    L.push(leg('SELL', s.date, s.k1, 'CALL'));
+  } else if (s.fam.legs === 'put' && s.name === 'Short Put') {
+    L.push(leg('SELL', s.date, s.k1, 'PUT'));
+  } else if (s.fam.legs === 'put' && s.name === 'Long Put') {
+    L.push(leg('BUY', s.date, s.k1, 'PUT'));
+  } else if (s.fam.legs === 'call') {
+    L.push(leg('BUY', s.date, s.k1, 'CALL'));
+  } else if (s.fam.legs === 'put2') {
+    L.push(leg('SELL', s.date, s.k1, 'PUT'));
+    L.push(leg('BUY', s.date, s.k2, 'PUT'));
+  } else if (s.fam.legs === 'call2') {
+    L.push(leg('SELL', s.date, s.k1, 'CALL'));
+    L.push(leg('BUY', s.date, s.k2, 'CALL'));
+  } else {
+    L.push(leg('SELL', s.date, s.k1, 'PUT'));
+    L.push(leg('BUY', s.date, s.k2, 'PUT'));
+    L.push(leg('SELL', s.date, s.k1 + 40, 'CALL'));
+    L.push(leg('BUY', s.date, s.k2 + 50, 'CALL'));
+  }
+  return `<div class="legs">${L.join('')}</div>`;
+}
+
+/* ---------------------------------------------------------------- surfaces */
+/* One filter engine drives all three tabs. A surface supplies its filter set,
+   its candidate rows, its result renderer, and any display-only controls; the
+   bar, popovers, panel, collapse algorithm and telemetry are shared. */
+
+const money = v => v >= 1000 ? '$' + (v / 1000).toFixed(v % 1000 ? 1 : 0) + 'T' : '$' + v + 'B';
+const num = v => v.toLocaleString();
+const px = v => v.toFixed(2);
+const pct = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+const usd = v => '$' + v.toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
+const probBand = p => p >= 90 ? 'hi' : p >= 80 ? 'mid' : 'lo';
+
+/* ---- screener ---------------------------------------------------------- */
+const SCREENER_FILTERS = [
+  { id:'exchange', label:'Exchange', kind:'multi', field:'ex', group:'Profile', promoted:1,
+    options:['NASDAQ','NYSE','TSX','TSXV'] },
+  { id:'sector', label:'Sector', kind:'multi', field:'sec', group:'Profile', promoted:2, search:true,
+    options:['Technology','Financials','Energy','Healthcare','Consumer','Communication','Industrials','Materials','Utilities'] },
+  { id:'mcap', label:'Market cap', kind:'range', field:'mcap', group:'Fundamentals', promoted:3, fmt:money,
+    presets:[{id:'mega',label:'Mega — over $200B',chip:'over $200B',min:200},
+             {id:'large',label:'Large — $10B to $200B',chip:'$10B–$200B',min:10,max:200},
+             {id:'mid',label:'Mid — $2B to $10B',chip:'$2B–$10B',min:2,max:10},
+             {id:'small',label:'Small — under $2B',chip:'under $2B',max:2}] },
+  { id:'pe', label:'P/E', kind:'range', field:'pe', group:'Fundamentals', promoted:4, fmt:v=>String(v),
+    presets:[{id:'value',label:'Under 15',chip:'under 15',max:15},
+             {id:'core',label:'15 to 25',chip:'15–25',min:15,max:25},
+             {id:'growth',label:'25 to 40',chip:'25–40',min:25,max:40},
+             {id:'rich',label:'Over 40',chip:'over 40',min:40}] },
+  { id:'dy', label:'Dividend yield', kind:'range', field:'dy', group:'Fundamentals', promoted:5, fmt:v=>v+'%',
+    presets:[{id:'high',label:'Over 5%',chip:'over 5%',min:5},
+             {id:'mid',label:'3% to 5%',chip:'3%–5%',min:3,max:5},
+             {id:'low',label:'1% to 3%',chip:'1%–3%',min:1,max:3},
+             {id:'nil',label:'Under 1%',chip:'under 1%',max:1}] },
+  { id:'rating', label:'Analyst rating', kind:'multi', field:'rating', group:'Fundamentals', promoted:6, gated:true,
+    options:['Strong buy','Buy','Hold','Sell'] },
+  { id:'price', label:'Price', kind:'range', field:'last', group:'Market', fmt:v=>'$'+v,
+    presets:[{id:'a',label:'Under $25',chip:'under $25',max:25},
+             {id:'b',label:'$25 to $100',chip:'$25–$100',min:25,max:100},
+             {id:'c',label:'Over $100',chip:'over $100',min:100}] },
+  { id:'chg', label:'Day change', kind:'range', field:'chg', group:'Market', fmt:v=>(v>0?'+':'')+v+'%',
+    presets:[{id:'up',label:'Advancing',chip:'advancing',min:0},
+             {id:'down',label:'Declining',chip:'declining',max:0},
+             {id:'big',label:'Up over 1%',chip:'up over 1%',min:1}] },
+  { id:'vol', label:'Volume', kind:'range', field:'vol', group:'Market', fmt:v=>v+'M',
+    presets:[{id:'thin',label:'Under 5M',chip:'under 5M',max:5},
+             {id:'mid',label:'5M to 25M',chip:'5M–25M',min:5,max:25},
+             {id:'heavy',label:'Over 25M',chip:'over 25M',min:25}] },
+  { id:'beta', label:'Beta', kind:'range', field:'beta', group:'Market', fmt:v=>String(v),
+    presets:[{id:'low',label:'Under 0.8 — defensive',chip:'under 0.8',max:0.8},
+             {id:'mkt',label:'0.8 to 1.2 — market',chip:'0.8–1.2',min:0.8,max:1.2},
+             {id:'high',label:'Over 1.2 — aggressive',chip:'over 1.2',min:1.2}] },
+  { id:'si', label:'Short interest', kind:'range', field:'si', group:'Market', fmt:v=>v+'%',
+    presets:[{id:'lo',label:'Under 1%',chip:'under 1%',max:1},
+             {id:'hi',label:'Over 2%',chip:'over 2%',min:2}] },
+  { id:'ctry', label:'Country', kind:'multi', field:'ctry', group:'Profile', options:['United States','Canada'] },
+  { id:'ccy', label:'Currency', kind:'multi', field:'ccy', group:'Profile', options:['USD','CAD'] },
+  { id:'idx', label:'Index membership', kind:'multi', field:'idx', listField:true, group:'Profile',
+    options:['S&P 500','Nasdaq 100','S&P/TSX 60','S&P/TSX Composite'] }
+];
+
+/* ---- options chain ------------------------------------------------------ */
+/* Expiry type, strike window and anchor re-scope the row set rather than
+   testing rows, so they are marked `scoped` and applied in base(). */
+const CHAIN_FILTERS = [
+  { id:'expiryType', label:'Expiry', kind:'choice', group:'Expiry', promoted:1, scoped:true,
+    options:[['Weekly','Weekly'],['Monthly','Monthly'],['Quarterly','Quarterly'],['LEAPS','LEAPS']],
+    count:key => CH.EXPIRIES.filter(e => key === 'all' || e.type === key).length,
+    countUnit:'expiries' },
+  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:2, scoped:true, noAll:'All strikes',
+    options:[[5,'±5 strikes'],[10,'±10 strikes'],[20,'±20 strikes']] },
+  { id:'near', label:'Near', kind:'choice', group:'Strikes', promoted:3, scoped:true, search:true,
+    noAll:'Spot (311.51)',
+    options:() => CH.STRIKES.map(k => [String(k), String(k)]) },
+  { id:'nearPct', label:'Near money', kind:'choice', group:'Strikes', promoted:4,
+    options:[[2,'Within 2%'],[5,'Within 5%'],[10,'Within 10%'],[15,'Within 15%'],[20,'Within 20%'],[25,'Within 25%']],
+    chip:v => 'within ' + v + '%',
+    test:(r,v) => Math.abs(r.m) * 100 <= v },
+  { id:'minVol', label:'Min volume', kind:'choice', group:'Liquidity', promoted:5,
+    options:[[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
+    chip:v => 'over ' + num(v),
+    test:(r,v) => Math.max(r.call.vol, r.put.vol) >= v },
+  { id:'maxSpread', label:'Max spread', kind:'choice', group:'Liquidity', promoted:6,
+    options:[[5,'Tight (under 5%)'],[15,'Normal (under 15%)'],[30,'Wide (under 30%)']],
+    chip:v => v === 5 ? 'tight' : v === 15 ? 'normal' : 'wide',
+    test:(r,v) => Math.min(r.call.spr / r.call.last, r.put.spr / r.put.last) * 100 <= v },
+  { id:'minOi', label:'Min open interest', kind:'choice', group:'Liquidity',
+    options:[[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
+    chip:v => 'over ' + num(v),
+    test:(r,v) => Math.max(r.call.oi, r.put.oi) >= v },
+  { id:'deliverables', label:'Deliverables', kind:'choice', group:'Contract',
+    options:[['std','Standard only'],['ns','Non-standard only']],
+    help:'Non-standard (adjusted) contracts come from splits or mergers and are usually illiquid.',
+    test:(r,v) => v === 'std' ? !r.ns : !!r.ns }
+];
+
+/* ---- options analyzer --------------------------------------------------- */
+const AN_FILTERS = [
+  { id:'marketView', label:'Market view', kind:'choice', group:'Outlook', promoted:1,
+    options:[['Bullish','Bullish'],['Neutral','Neutral'],['Bearish','Bearish']],
+    test:(r,v) => r.fam.view === v },
+  { id:'strategy', label:'Strategy', kind:'multi', group:'Outlook', promoted:2,
+    options:() => AN.FAMS,
+    test:(r,v) => v.includes(r.name) },
+  { id:'minProb', label:'Min probability', kind:'slider', group:'Constraints', promoted:3,
+    min:50, max:99, step:1, fmt:v => v + '%', boundLabel:'At least',
+    test:(r,v) => r.prob >= (v.min == null ? 0 : v.min) },
+  { id:'dte', label:'Days to exp', kind:'slider', dual:true, group:'Constraints', promoted:4,
+    min:0, max:365, step:1, fmt:v => String(v), field:'dte' }
+];
+
+const SURFACES = {
+  screener: {
+    label:'Screener', filters:SCREENER_FILTERS,
+    groups:['Fundamentals','Market','Profile'],
+    inapplicable:['pe','dy','rating'],
+    base:() => SYMBOLS,
+    unit:n => n === 1 ? 'result' : 'results',
+    results:screenerResults,
+    actions:() => state.skin === 'actions'
+      ? [{ i:'dl', t:'Export' }, { i:'save', t:'Save' }, { i:'star', aria:'Add to watchlist' }] : []
+  },
+  chain: {
+    label:'Options chain', filters:CHAIN_FILTERS,
+    groups:['Expiry','Strikes','Liquidity','Contract'],
+    base:chainBase,
+    unit:n => n === 1 ? 'strike' : 'strikes',
+    above:expiryStripHTML,
+    results:chainResults,
+    display:[{ id:'layout', label:'Layout', kind:'choice', display:true, icon:'grid', noAll:null,
+               options:[['side','Side-by-side'],['stack','Stacked'],['calls','Calls only'],['puts','Puts only']] }],
+    actions:() => [{ i:'dl', t:'Export' }]
+  },
+  analyzer: {
+    label:'Options analyzer', filters:AN_FILTERS,
+    groups:['Outlook','Constraints'],
+    base:() => AN.STRATS,
+    unit:n => n === 1 ? 'strategy' : 'strategies',
+    below:underlyingHTML,
+    results:analyzerResults,
+    display:[{ id:'view', label:'View', kind:'choice', display:true, toggle:true, noAll:null,
+               options:[['table','Table'],['cards','Cards']] }],
+    actions:() => [{ i:'dl', t:'Export' }]
+  }
+};
+const TABS = ['screener', 'chain', 'analyzer'].map(id => ({ id, label:SURFACES[id].label }));
+
+/* The chain's selected expiry must always sit inside the filtered expiry list. */
+function chExpiries(v) {
+  const t = v ? v('expiryType') : val('expiryType');
+  return CH.EXPIRIES.filter(e => t == null || e.type === t);
+}
+function chExpiry(v) {
+  const list = chExpiries(v);
+  return list.find(e => e.id === state.expiry) || list[0];
+}
+function chainBase(v) {
+  const e = chExpiry(v); if (!e) return [];
+  const all = CH.rows[e.id];
+  const nearV = v('near');
+  const anchor = nearV == null ? CH.spot : Number(nearV);
+  const w = v('window');
+  if (w == null) return all;
+  const below = all.filter(r => r.k <= anchor).slice(-w);
+  const above = all.filter(r => r.k > anchor).slice(0, w);
+  return [...below, ...above];
+}
+
+/* ---------------------------------------------------------------- state */
+const state = {
+  tab:'screener', input:'pointer',
+  skin:'full', density:'comfortable', sim:'default', promotedCount:6,
+  pro:false, options:false, showCount:true,
+  values:{ screener:{}, chain:{ window:5 }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } },
+  expiry:'e0', expScroll:0,
+  panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null,
+  width:1180, flow:'default'
+};
+// Entry animations are one-shot: expanding a section must not replay them.
+let panelEntering = false, drillAnim = null;
+const heights = new Set();
+let roTicks = 0, telemetry = {}, measuredLabels = new Map(), remeasures = 0;
+
+const surf = () => SURFACES[state.tab];
+const allControls = () => [...surf().filters, ...(surf().display || [])];
+const F = id => allControls().find(f => f.id === id);
+const vals = () => state.values[state.tab];
+const val = id => vals()[id];
+const setVal = (id, v) => { if (v == null) delete vals()[id]; else vals()[id] = v; };
+const optsOf = f => typeof f.options === 'function' ? f.options() : (f.options || []);
+const pairs = f => optsOf(f).map(o => Array.isArray(o) ? o : [o, o]);
+
+const isGated = f => !!f.gated && !state.pro;
+const isDisabled = f => state.options && (surf().inapplicable || []).includes(f.id);
+const promotedList = () => surf().filters.filter(f => f.promoted)
+  .sort((a, b) => a.promoted - b.promoted).slice(0, state.promotedCount);
+const isTouch = () => state.input === 'touch';
+
+function hasValue(f) {
+  const v = val(f.id);
+  if (v == null) return false;
+  if (f.kind === 'multi') return v.length > 0;
+  if (f.kind === 'choice') return true;
+  return v.min != null || v.max != null;               // range + slider
+}
+const activeFilters = () => surf().filters.filter(f => hasValue(f) && !isDisabled(f));
+
+/* ---------------------------------------------------------------- matching */
+function testRow(f, row, v) {
+  if (f.test) return f.test(row, v);
+  if (f.kind === 'multi') {
+    const x = row[f.field];
+    return f.listField ? x.some(k => v.includes(k)) : v.includes(x);
+  }
+  if (f.kind === 'choice') return true;                 // scoped, or carries its own test
+  const x = row[f.field];
+  if (x == null) return false;
+  if (v.min != null && x < v.min) return false;
+  if (v.max != null && x > v.max) return false;
+  return true;
+}
+/* One row pipeline. `exceptId` drops a filter (for facet counts) and `extra`
+   substitutes a candidate value for it. */
+function rowsFor(exceptId, extra) {
+  const s = surf();
+  const get = id => {
+    if (extra && extra.f.id === id) return extra.v;
+    if (id === exceptId) return null;
+    const f = F(id), v = vals()[id];
+    if (!f || v == null) return null;
+    if (isDisabled(f)) return null;
+    if (f.kind === 'multi' && !v.length) return null;
+    return v;
+  };
+  let rows = s.base(get);
+  for (const f of s.filters) {
+    if (f.scoped || f.display) continue;
+    const v = get(f.id);
+    if (v == null) continue;
+    rows = rows.filter(r => testRow(f, r, v));
+  }
+  return rows;
+}
+const rowsNow = () => rowsFor(null, null);
+
+/* ---------------------------------------------------------------- labels */
+function optLabel(f, key) {
+  const p = pairs(f).find(o => String(o[0]) === String(key));
+  return p ? p[1] : String(key);
+}
+function valueText(f) {
+  const v = val(f.id);
+  if (f.kind === 'multi') return v[0] + (v.length > 1 ? ' +' + (v.length - 1) : '');
+  if (f.kind === 'choice') return f.chip ? f.chip(v) : optLabel(f, v);
+  if (f.kind === 'slider') {
+    const fm = f.fmt || String;
+    if (v.min != null && v.max != null) return v.min === f.min && v.max === f.max
+      ? 'any' : fm(v.min) + '–' + fm(v.max);
+    return v.min != null ? 'over ' + fm(v.min) : 'under ' + fm(v.max);
+  }
+  if (v.preset) return f.presets.find(p => p.id === v.preset).chip;
+  const fm = f.fmt || String;
+  if (v.min != null && v.max != null) return fm(v.min) + '–' + fm(v.max);
+  return v.min != null ? 'over ' + fm(v.min) : 'under ' + fm(v.max);
+}
+const chipLabel = f => hasValue(f) ? f.label + ': ' + valueText(f) : f.label;
+function fullLabel(f) {
+  if (!hasValue(f)) return f.label;
+  const v = val(f.id);
+  if (f.kind === 'multi') return f.label + ', ' + v.join(', ') + ' selected';
+  return f.label + ', ' + valueText(f) + ' selected';
+}
+/* Display controls read their own current option, never "applied". */
+const dispVal = f => val(f.id) != null ? val(f.id) : pairs(f)[0][0];
+
+/* ---------------------------------------------------------------- options */
+function optionRows(f, useSearch) {
+  const v = val(f.id);
+  if (f.kind === 'multi') {
+    const q = useSearch ? pop.search.trim().toLowerCase() : '';
+    return pairs(f).filter(o => !q || String(o[1]).toLowerCase().includes(q)).map(o => ({
+      key:o[0], label:o[1], on:(v || []).includes(o[0]), type:'check',
+      count:rowsFor(f.id, { f, v:[o[0]] }).length
+    }));
+  }
+  if (f.kind === 'choice') {
+    const q = useSearch ? pop.search.trim().toLowerCase() : '';
+    const rows = [];
+    if (f.noAll !== null) rows.push({
+      key:'__all', label:f.noAll || 'All', on:v == null, type:'radio',
+      count:f.count ? f.count('all') : rowsFor(f.id, null).length
+    });
+    pairs(f).filter(o => !q || String(o[1]).toLowerCase().includes(q)).forEach(o => rows.push({
+      key:o[0], label:o[1], on:String(v) === String(o[0]), type:'radio',
+      count:f.count ? f.count(o[0]) : rowsFor(f.id, { f, v:o[0] }).length
+    }));
+    return rows;
+  }
+  if (f.kind === 'slider') return [];
+  return f.presets.map(p => ({
+    key:p.id, label:p.label, on:v && v.preset === p.id, type:'radio',
+    count:rowsFor(f.id, { f, v:{ min:p.min, max:p.max } }).length
+  }));
+}
+
+/* ---------------------------------------------------------------- mutations */
+function toggleMulti(f, key) {
+  const cur = (val(f.id) || []).slice();
+  const i = cur.findIndex(x => String(x) === String(key));
+  if (i >= 0) cur.splice(i, 1); else cur.push(key);
+  setVal(f.id, cur.length ? cur : null);
+}
+function chooseOne(f, key) {
+  if (key === '__all') { setVal(f.id, null); return; }
+  const p = pairs(f).find(o => String(o[0]) === String(key));
+  const v = p ? p[0] : key;
+  setVal(f.id, (!f.display && String(val(f.id)) === String(v)) ? null : v);
+}
+function setPreset(f, id) {
+  const cur = val(f.id);
+  if (cur && cur.preset === id) { setVal(f.id, null); return; }
+  const p = f.presets.find(x => x.id === id);
+  setVal(f.id, { preset:id, min:p.min, max:p.max });
+}
+function setSlider(f, which, n) {
+  const cur = val(f.id) || {};
+  let lo = cur.min == null ? f.min : cur.min;
+  let hi = cur.max == null ? f.max : cur.max;
+  if (which === 'min') lo = Math.max(f.min, Math.min(n, f.dual ? hi : f.max));
+  else hi = Math.min(f.max, Math.max(n, lo));
+  setVal(f.id, f.dual ? { min:lo, max:hi } : { min:lo });
+}
+function clearAll() {
+  surf().filters.forEach(f => delete vals()[f.id]);
+}
+
+/* ---------------------------------------------------------------- bar DOM */
+function tabsHTML() {
+  return `<div class="tabs" role="tablist" aria-label="Experience">${TABS.map(t => `
+    <button class="tab" type="button" role="tab" data-tab="${t.id}"
+      aria-selected="${state.tab === t.id}">${t.label}</button>`).join('')}</div>`;
+}
+
+function barHTML() {
+  const s = surf();
+  const readonly = state.sim === 'readonly';
+  const chips = promotedList().map(f => {
+    const gated = isGated(f), dis = isDisabled(f), sel = hasValue(f) && !dis;
+    const open = state.popOpen === f.id || (isTouch() && state.panelOpen && state.drill === f.id);
+    const trailing = readonly ? '' : gated ? I.lock : I.chev;
+    return `<button class="qxc" type="button" data-chip="${f.id}"
+      data-selected="${sel}" data-gated="${gated}" data-disabled="${dis}" data-readonly="${readonly}"
+      ${dis ? 'aria-disabled="true"' : ''}
+      ${readonly || dis ? '' : `aria-haspopup="${f.kind === 'multi' ? 'listbox' : 'dialog'}" aria-expanded="${open}"`}
+      aria-label="${esc(fullLabel(f))}${gated ? ', upgrade required' : ''}${dis ? ', not applicable to options' : ''}">
+      <span class="qxc__label">${esc(chipLabel(f))}</span>${trailing}</button>`;
+  }).join('');
+
+  const hidden = hiddenCount();
+  const trigger = `<button class="qxc qxfb__all" type="button" id="allTrigger"
+      aria-haspopup="dialog" aria-expanded="${state.panelOpen}"
+      aria-label="All filters${hidden ? ', ' + hidden + ' more available' : ''}">
+      <span class="qxc__icon">${I.sliders}</span><span class="qxc__label">All filters</span>
+      <span class="qxfb__badge" id="allBadge" ${hidden ? '' : 'hidden'}>${hidden}</span></button>`;
+
+  const n = rowsNow().length;
+  const clear = (activeFilters().length && !readonly)
+    ? `<button class="qxfb__clear" type="button" id="barClear">Clear</button>` : '';
+  const count = state.showCount ? `<div class="qxfb__count" id="count">${
+    state.sim === 'loading' ? '<span class="skel"></span>'
+      : `<b>${n.toLocaleString()}</b> ${s.unit(n)}`}</div>` : '';
+
+  const disp = (s.display || []).map(d => {
+    const cur = dispVal(d);
+    if (d.toggle) {
+      const other = pairs(d).find(o => String(o[0]) !== String(cur));
+      return `<button class="iconbtn tip" type="button" data-disptoggle="${d.id}"
+        data-tip="${esc(other[1])} view" aria-pressed="${String(cur) !== String(pairs(d)[0][0])}"
+        aria-label="Switch to ${esc(other[1])} view">${cur === 'cards' ? I.rows : I.grid}</button>`;
+    }
+    return `<button class="iconbtn tip" type="button" data-chip="${d.id}"
+      data-tip="${esc(d.label)}: ${esc(optLabel(d, cur))}" aria-haspopup="dialog"
+      aria-expanded="${state.popOpen === d.id}"
+      aria-label="${esc(d.label)}, ${esc(optLabel(d, cur))}">${I[d.icon || 'grid']}</button>`;
+  }).join('');
+
+  const acts = s.actions ? s.actions() : [];
+  const actions = (acts.length || disp) ? `<div class="qxfb__actions" id="actions">
+      <button class="qxbtn qxbtn--icon qxbtn--overflow" type="button" aria-label="More actions">${I.dots}</button>
+      ${disp}${acts.map(a => `<button class="qxbtn${a.t ? '' : ' qxbtn--icon'}" type="button"
+        ${a.aria ? `aria-label="${esc(a.aria)}"` : ''}>${I[a.i]}${a.t ? `<span>${a.t}</span>` : ''}</button>`).join('')}
+    </div>` : '';
+
+  return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}" data-state="${state.sim}">
+    <div class="qxfb__row" id="row" role="group" aria-label="Filters">
+      ${trigger}${chips}
+      <div class="qxfb__right" id="right">${clear}${count}${actions}</div>
+    </div>
+  </div>`;
+}
+function hiddenCount() {
+  const promoted = promotedList().map(f => f.id);
+  const withdrawn = telemetry.withdrawn ? telemetry.withdrawn.length : 0;
+  const never = surf().filters.filter(f => !promoted.includes(f.id) && !isDisabled(f)).length;
+  return withdrawn + never;
+}
+function appliedOffBar() {
+  const onBar = telemetry.visible || [];
+  return activeFilters().filter(f => !onBar.includes(f.id));
+}
+
+/* ---------------------------------------------------------------- results */
+function screenerResults() {
+  const rows = rowsNow();
+  const loading = state.sim === 'loading';
+  if (!rows.length && !loading) return emptyHTML('No symbols match these filters.',
+    'The narrowest filter is usually the one to widen first.');
+  const shown = rows.slice(0, 12);
+  return `<div class="tblwrap"><table class="tbl">
+    <thead><tr>
+      <th class="l">Symbol</th><th class="l c-hide-700">Name</th><th class="l c-hide-860">Exch</th>
+      <th class="l c-hide-860">Sector</th><th>Last</th><th>Chg %</th>
+      <th class="c-hide-560">Mkt cap</th><th class="c-hide-560">P/E</th>
+      <th class="c-hide-700">Div yield</th><th class="c-hide-860">Rating</th>
+    </tr></thead><tbody>${shown.map(r => `<tr>
+      <td class="l sym">${r.s}</td>
+      <td class="l nm c-hide-700">${esc(r.n)}</td>
+      <td class="l c-hide-860">${r.ex}</td>
+      <td class="l c-hide-860">${r.sec}</td>
+      <td>${px(r.last)}</td>
+      <td class="${r.chg >= 0 ? 'up' : 'dn'}">${r.chg >= 0 ? '▲' : '▼'} ${Math.abs(r.chg).toFixed(2)}%</td>
+      <td class="c-hide-560">${money(r.mcap)}</td>
+      <td class="c-hide-560">${r.pe == null ? '—' : r.pe.toFixed(1)}</td>
+      <td class="c-hide-700">${r.dy ? r.dy.toFixed(2) + '%' : '—'}</td>
+      <td class="c-hide-860"><span class="rtg" data-r="${r.rating}">${r.rating}</span></td>
+    </tr>`).join('')}</tbody></table></div>
+    <div class="tbl__foot">Showing ${shown.length} of ${rows.length} matching · delayed 15m</div>`;
+}
+const emptyHTML = (h, p) => `<div class="empty"><h4>${h}</h4><p>${p}</p>
+  <button class="qxbtn" type="button" id="emptyClear">Clear all filters</button></div>`;
+
+/* ---- chain -------------------------------------------------------------- */
+function expiryStripHTML() {
+  const e = chExpiry();
+  return `<div class="exps">
+    <div class="exps__scroll" id="expScroll" role="tablist" aria-label="Expiry">
+      ${chExpiries().map(x => `<button class="exp" type="button" role="tab" data-exp="${x.id}"
+        aria-selected="${e && x.id === e.id}">
+        <span>${x.date}</span><span class="exp__dte">${x.dte} DTE</span></button>`).join('')}
+    </div>
+    <button class="exps__arrow exps__arrow--l" type="button" id="expL" aria-label="Earlier expiries" hidden>${I.chevL}</button>
+    <button class="exps__arrow exps__arrow--r" type="button" id="expR" aria-label="Later expiries" hidden>${I.chevR2}</button>
+  </div>`;
+}
+const volCell = (v, maxVol, side) => {
+  const w = Math.round(v / maxVol * 100);
+  return `<td class="vol vol--${side === 'call' ? 'c' : 'p'}" style="--v:${w < 3 ? 0 : w}%;--vb:var(--qx-${side === 'call' ? 'up' : 'down'}-200)">${num(v)}</td>`;
+};
+const chgCls = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'mut';
+function chainResults() {
+  const rows = rowsNow();
+  const e = chExpiry();
+  const layout = dispVal(F('layout'));
+  if (!rows.length) return emptyHTML('No strikes match these filters.',
+    'The liquidity filters are the usual cause.');
+  const maxC = Math.max(1, ...rows.map(r => r.call.vol));
+  const maxP = Math.max(1, ...rows.map(r => r.put.vol));
+  const body = layout === 'side' ? chainSide(rows, maxC, maxP)
+    : layout === 'stack' ? chainOne(rows, 'call', maxC, true) + chainOne(rows, 'put', maxP, true)
+    : chainOne(rows, layout === 'calls' ? 'call' : 'put', layout === 'calls' ? maxC : maxP);
+  return `<div class="tblwrap scroller">${body}</div>
+    <div class="tbl__foot">Showing ${rows.length} of ${CH.STRIKES.length} strikes · ${
+      e ? e.date + ' · ' + e.dte + ' DTE' : ''} · ${CH.sym} ${px(CH.spot)}
+      <span class="up">▲ ${CH.chgPct.toFixed(2)}%</span> · delayed 15m, as of Aug 21 2026</div>`;
+}
+
+/* ---- analyzer ----------------------------------------------------------- */
+function underlyingHTML() {
+  return `<div class="uline">
+    <div class="uline__id"><span class="uline__sym">${AN.sym}</span><span class="uline__nm">${AN.name}</span></div>
+    <div class="uline__m"><span class="uline__k">Price</span><span class="uline__v">${usd(AN.spot)}</span></div>
+    <div class="uline__m"><span class="uline__k">IV</span><span class="uline__v">${AN.iv.toFixed(2)}%</span></div>
+    <div class="uline__m"><span class="uline__k">Vol Regime</span><span class="regime">${AN.regime}</span></div>
+  </div>`;
+}
+function analyzerResults() {
+  const rows = rowsNow();
+  const view = dispVal(F('view'));
+  const disc = `<div class="disc">
+      <p>Results are model-based and derived from external data sources. ‘Probability of profit’ is an
+      estimate only and not a guarantee. Actual results may differ, and losses may be significant.
+      This tool does not provide investment advice.</p>
+      <a href="#" onclick="return false">View term definitions</a></div>`;
+  if (!rows.length) return emptyHTML('No strategies clear these constraints.',
+    'Lowering minimum probability or widening days to expiry is the usual fix.') + disc;
+  const body = view === 'cards'
+    ? `<div class="cards scroller">${rows.map(s => `<article class="card" style="--acc:var(--qx-strat-${s.fam.acc})">
+        <div class="card__h"><span class="strat__nm">${s.name}</span>
+          <span class="prob" data-b="${probBand(s.prob)}" style="margin-left:auto">${s.prob}%</span></div>
+        ${legsHTML(s)}
+        <div class="card__m">
+          <span><span class="card__k">Premium</span><span class="card__v">$${s.prem.toFixed(2)}</span></span>
+          <span><span class="card__k">Investment</span><span class="card__v">${usd(s.inv)}</span></span>
+        </div></article>`).join('')}</div>`
+    : `<div class="tblwrap scroller"><table class="strat">
+        <thead><tr><th class="l">Strategy</th><th class="l">Trade</th><th>Premium</th>
+          <th class="an-640">Investment</th><th>Probability</th></tr></thead>
+        <tbody>${rows.map(s => `<tr style="--acc:var(--qx-strat-${s.fam.acc})">
+          <td><span class="strat__nm">${s.name}
+            <button class="glyph" type="button" aria-label="${s.name} payoff shape">${I[s.fam.glyph]}</button>
+            <button class="glyph glyph--info" type="button" aria-label="What is a ${s.name}?">${I.help}</button>
+          </span></td>
+          <td class="l">${legsHTML(s)}</td>
+          <td>$${s.prem.toFixed(2)}</td>
+          <td class="an-640">${usd(s.inv)}</td>
+          <td><span class="prob" data-b="${probBand(s.prob)}">${s.prob}%</span></td>
+        </tr>`).join('')}</tbody></table></div>`;
+  return body + disc;
+}
+
+/* ---------------------------------------------------------------- popover */
+const pop = { search:'' };
+
+function optHTML(f, r, ns) {
+  const attr = ns ? `data-popt="${f.id}"` : '';
+  return `<button class="opt" type="button" role="option" aria-selected="${r.on}" ${attr}
+    data-opt="${esc(String(r.key))}" data-empty="${r.count === 0}">
+    ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>`
+                         : `<span class="opt__radio"></span>`}
+    <span class="opt__label">${esc(r.label)}</span><span class="opt__count">${r.count}</span></button>`;
+}
+function customHTML(f, cls) {
+  const v = val(f.id);
+  return `<div class="${cls}"><div class="lbl">Custom range</div>
+    <div class="range">
+      <input type="number" data-rng="${f.id}:min" placeholder="Min" value="${v && !v.preset && v.min != null ? v.min : ''}" aria-label="Minimum ${esc(f.label)}">
+      <span>to</span>
+      <input type="number" data-rng="${f.id}:max" placeholder="Max" value="${v && !v.preset && v.max != null ? v.max : ''}" aria-label="Maximum ${esc(f.label)}">
     </div></div>`;
+}
+/* A slider is the one control that cannot become a list of options, so its
+   popover carries the control itself plus a live match count. */
+function sliderHTML(f, cls) {
+  const v = val(f.id) || {};
+  const lo = v.min == null ? f.min : v.min;
+  const hi = v.max == null ? f.max : v.max;
+  const fmt = f.fmt || String;
+  const p = x => (x - f.min) / (f.max - f.min) * 100;
+  const n = rowsNow().length;
+  const box = (w, x) => `<input class="sld__box" type="text" data-sldbox="${f.id}:${w}"
+    value="${esc(fmt(x))}" aria-label="${w === 'min' ? 'Minimum' : 'Maximum'} ${esc(f.label)}">`;
+  const rng = (w, x) => `<input type="range" data-sld="${f.id}:${w}" min="${f.min}" max="${f.max}"
+    step="${f.step || 1}" value="${x}" aria-label="${esc(f.label)}, ${w === 'min' ? 'from' : 'to'}">`;
+  const body = f.dual
+    ? `<div class="sld">${box('min', lo)}
+        <div class="rsld" style="--sw:100%;flex:1">
+          <div class="rsld__trk"></div>
+          <div class="rsld__fill" style="left:${p(lo)}%;right:${100 - p(hi)}%"></div>
+          ${rng('min', lo)}${rng('max', hi)}
+        </div>${box('max', hi)}</div>`
+    : `<div class="sld"><input type="range" data-sld="${f.id}:min" min="${f.min}" max="${f.max}"
+          step="${f.step || 1}" value="${lo}" aria-label="${esc(f.label)}"
+          style="--sw:100%;flex:1;--trk:linear-gradient(to right,var(--qx-primary) ${p(lo)}%,var(--qx-surface-200) ${p(lo)}%)">
+        ${box('min', lo)}</div>`;
+  return `<div class="${cls}">
+    <div class="lbl">${f.boundLabel || (f.dual ? 'Between' : 'At least')}</div>
+    ${body}
+    <div class="sld__meta">${n.toLocaleString()} ${surf().unit(n)} match</div></div>`;
+}
+
+function popoverHTML(f) {
+  const rows = optionRows(f, true);
+  const isSlider = f.kind === 'slider';
+  const list = isSlider ? '' : rows.length
+    ? `<div class="pop__list" id="popList">${rows.map(r => optHTML(f, r)).join('')}</div>`
+    : `<div class="pop__list"><div class="opt" data-empty="true"><span class="opt__label">No match for “${esc(pop.search)}”</span></div></div>`;
+  return `<div class="pop" id="pop" role="${f.kind === 'multi' ? 'listbox' : 'dialog'}"
+      ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
+    <div class="pop__head"><span class="pop__title">${esc(f.label)}</span>
+      <span class="pop__hint">${isSlider ? '' : 'matches'}</span></div>
+    ${f.search ? `<div class="pop__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
+    ${list}
+    ${isSlider ? sliderHTML(f, 'pop__custom') : (f.kind === 'range' ? customHTML(f, 'pop__custom') : '')}
+    ${f.help ? `<p class="pop__help">${f.help}</p>` : ''}
+    <div class="pop__foot">
+      ${f.display ? '' : `<button class="qxbtn qxbtn--text" type="button" id="popClear">Clear</button>`}
+      <button class="qxbtn qxbtn--primary" type="button" id="popDone">Done</button>
+    </div></div>`;
+}
+function gateHTML(f) {
+  return `<div class="pop gate" id="pop" role="dialog" aria-label="${esc(f.label)} requires Pro">
+    <span class="gate__tag">PRO</span>
+    <h4>${esc(f.label)} is a Pro filter</h4>
+    <p>Consensus ratings and price targets are part of Qmodii Pro. Your other
+      ${surf().filters.length - 1} filters are unaffected.</p>
+    <p class="gate__note">In this prototype, Compare plans grants the entitlement so you can see the unlocked chip.</p>
+    <div class="gate__row">
+      <button class="qxbtn qxbtn--primary" type="button" id="gateUp">Compare plans</button>
+      <button class="qxbtn" type="button" id="gateNo">Not now</button>
+    </div></div>`;
+}
+function placePopover() {
+  const el = $('#pop'); if (!el) return;
+  const id = state.popOpen || state.gateOpen;
+  const anchor = $(`[data-chip="${id}"]`); if (!anchor) { closePopover(); return; }
+  const p = $('#product').getBoundingClientRect(), a = anchor.getBoundingClientRect();
+  const maxW = Math.min(el.classList.contains('gate') ? 268 : 284, p.width - 20);
+  el.style.width = maxW + 'px';
+  el.style.maxHeight = '';
+  const h = el.getBoundingClientRect().height;
+  let left = Math.max(10, Math.min(a.left - p.left, p.width - maxW - 10));
+  const below = p.height - (a.bottom - p.top) - 20;
+  const above = (a.top - p.top) - 20;
+  let top;
+  if (h <= below) top = a.bottom - p.top + 10;
+  else if (h <= above) top = a.top - p.top - h - 10;
+  else { top = a.bottom - p.top + 10; el.style.maxHeight = Math.max(180, below) + 'px'; }
+  el.style.left = left + 'px'; el.style.top = top + 'px';
+}
+function openFilter(id) {
+  const f = F(id);
+  if (!f || isDisabled(f) || state.sim === 'readonly') return;
+  if (isGated(f)) {
+    closePopover(true); state.panelOpen = false; state.drill = null; state.gateOpen = id;
+    render();
+    requestAnimationFrame(() => { const g = $('#gateUp'); if (g) g.focus(); });
+    return;
+  }
+  if (isTouch()) { openPanel(id); return; }
+  closePopover(true);
+  state.panelOpen = false;
+  state.popOpen = id; pop.search = '';
+  render();
+  requestAnimationFrame(() => {
+    const el = $('#pop'); if (!el) return;
+    const first = $('#popSearch') || el.querySelector('.opt[role="option"]')
+      || el.querySelector('[data-sld]') || el.querySelector('button');
+    if (first) first.focus();
+  });
+}
+function closePopover(silent) {
+  const id = state.popOpen || state.gateOpen;
+  state.popOpen = null; state.gateOpen = null;
+  if (silent) return;
+  render();
+  const back = $(`[data-chip="${id}"]`);
+  if (back && !back.classList.contains('is-withdrawn')) back.focus();
+  else { const t = $('#allTrigger'); if (t) t.focus(); }
+}
+
+/* ---------------------------------------------------------------- panel */
+function filterState(f) {
+  if (isDisabled(f)) return 'n/a for options';
+  return hasValue(f) ? valueText(f) : 'Any';
+}
+function panelGroups() {
+  const s = surf();
+  const out = s.groups.map(g => ({ g, fs:s.filters.filter(f => f.group === g) })).filter(x => x.fs.length);
+  if (s.display && s.display.length) out.push({ g:'Display', fs:s.display });
+  return out;
+}
+function controlBodyHTML(f, ns) {
+  const rows = optionRows(f, false);
+  return `${rows.length ? `<div class="accbody__list" role="listbox"${f.kind === 'multi' ? ' aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">${rows.map(r => optHTML(f, r, ns)).join('')}</div>` : ''}
+    ${f.kind === 'slider' ? sliderHTML(f, 'drill__custom') : ''}
+    ${f.kind === 'range' ? customHTML(f, 'drill__custom') : ''}
+    ${f.help ? `<p class="setp__help">${f.help}</p>` : ''}`;
+}
+/* Pointer: sections expand in place. */
+function accordionHTML() {
+  return panelGroups().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
+    fs.map(f => {
+      const gated = isGated(f), dis = isDisabled(f);
+      const open = state.panelOpenFilter === f.id;
+      const body = open && !dis && !gated
+        ? `<div class="accbody">${controlBodyHTML(f, true)}</div>` : '';
+      const st = f.display ? optLabel(f, dispVal(f)) : filterState(f);
+      return `<button class="acc" type="button" data-pfilter="${f.id}" data-disabled="${dis}"
+          ${dis ? 'aria-disabled="true"' : ''} aria-expanded="${open}">
+          ${I.chevR}<span>${esc(f.label)}</span>${gated ? I.lock : ''}
+          <span class="acc__state" data-on="${(f.display || hasValue(f)) && !dis}">${esc(st)}</span>
+        </button>${body}`;
+    }).join('')
+  }</div>`).join('');
+}
+/* Touch: a filter list, then one filter's options, with a Back that returns. */
+function drillListHTML() {
+  return `<div class="drill${drillAnim === 'back' ? ' drill--back is-entering' : ''}">${
+    panelGroups().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
+      fs.map(f => {
+        const dis = isDisabled(f);
+        const st = f.display ? optLabel(f, dispVal(f)) : filterState(f);
+        return `<button class="drill__row" type="button" data-drill="${f.id}" data-disabled="${dis}"
+          ${dis ? 'aria-disabled="true"' : ''}>
+          <span>${esc(f.label)}</span>${isGated(f) ? I.lock : ''}
+          <span class="drill__state" data-on="${(f.display || hasValue(f)) && !dis}">${esc(st)}</span>
+          ${dis ? '' : I.chevR}</button>`;
+      }).join('')
+    }</div>`).join('')
+  }</div>`;
+}
+function drillOptionsHTML(f) {
+  return `<div class="drill${drillAnim === 'in' ? ' is-entering' : ''}">
+    ${f.search ? `<div class="drill__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
+    ${controlBodyHTML(f, true)}</div>`;
+}
+
+function panelHintText() {
+  const applied = activeFilters().length;
+  return `${surf().filters.length} filters · ${hiddenCount()} not on the bar`
+    + (applied ? ` · ${applied} applied` : '');
+}
+function panelHTML() {
+  const touch = isTouch();
+  const drilled = touch && state.drill ? F(state.drill) : null;
+  const n = rowsNow().length;
+  const enter = panelEntering ? ' is-entering' : '';
+  const head = drilled
+    ? `<div class="panel__head">
+         <button class="panel__back" type="button" id="panelBack">${I.chevL}<span>All filters</span></button>
+         <span class="panel__title" style="margin-left:8px">${esc(drilled.label)}</span>
+         <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
+       </div>`
+    : `<div class="panel__head"><span class="panel__title">All filters</span>
+         <span class="pop__hint" id="panelHint">${panelHintText()}</span>
+         <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
+       </div>`;
+  const body = touch ? (drilled ? drillOptionsHTML(drilled) : drillListHTML()) : accordionHTML();
+  return `<div class="scrim" id="scrim"></div>
+    <div class="panel${enter}" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
+         role="dialog" aria-modal="true" aria-label="All filters">
+      <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
+      ${head}
+      <div class="panel__body">${body}</div>
+      <div class="panel__foot">
+        <button class="qxbtn qxbtn--text" type="button" id="panelClear">Clear all</button>
+        <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${
+          n.toLocaleString()} ${surf().unit(n)}</button>
+      </div></div>`;
+}
+function openPanel(drillTo) {
+  const wasOpen = state.panelOpen, cameFrom = state.drill;
+  closePopover(true);
+  panelEntering = !wasOpen;
+  drillAnim = drillTo ? 'in' : (cameFrom ? 'back' : null);
+  state.panelOpen = true;
+  state.drill = drillTo || null;
+  if (drillTo) { pop.search = ''; state.panelOpenFilter = drillTo; }
+  render();
+  requestAnimationFrame(() => {
+    const el = drillTo ? $('#panelBack')
+      : cameFrom ? ($(`[data-drill="${cameFrom}"]`) || $('#panelX'))
+      : (wasOpen ? null : $('#panelX'));
+    if (el) el.focus();
+  });
+}
+function closePanel() {
+  state.panelOpen = false; state.drill = null; panelEntering = false; drillAnim = null;
+  render();
+  const t = $('#allTrigger'); if (t) t.focus();
+}
+
+/* ---------------------------------------------------------------- collapse */
+const GAP = 8;
+function layout() {
+  const row = $('#row'); if (!row) return;
+  const chipEls = [...row.querySelectorAll('.qxfb__row > [data-chip]')];
+  const right = $('#right'), actions = $('#actions'), badge = $('#allBadge'), trigger = $('#allTrigger');
+
+  chipEls.forEach(c => c.classList.remove('is-withdrawn'));
+  if (actions) actions.classList.remove('is-collapsed');
+
+  // Reserve the trigger at its worst-case badge so a growing count never reflows.
+  const worst = String(surf().filters.length);
+  const shown = badge.textContent, wasHidden = badge.hidden;
+  badge.hidden = false; badge.textContent = worst;
+  const triggerW = Math.ceil(trigger.getBoundingClientRect().width);
+  badge.textContent = shown; badge.hidden = wasHidden;
+
+  const cs = getComputedStyle(row);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  const rowW = row.clientWidth - padX;
+  const wOf = el => Math.ceil(el.getBoundingClientRect().width);
+
+  const widths = new Map();
+  chipEls.forEach(el => {
+    const id = el.dataset.chip, key = state.density + '|' + el.querySelector('.qxc__label').textContent;
+    widths.set(id, wOf(el));
+    if (measuredLabels.has(id) && measuredLabels.get(id) !== key) remeasures++;
+    measuredLabels.set(id, key);
+  });
+
+  let rightW = wOf(right);
+  const rightExpandedW = rightW;
+  let actionsCollapsed = false;
+
+  const promoted = promotedList();
+  const budgetFor = rw => rowW - triggerW - rw - GAP;
+  const cost = set => [...set].reduce((a, id) => a + widths.get(id) + GAP, 0);
+  let visible = new Set(promoted.map(f => f.id));
+  let budget = budgetFor(rightW);
+
+  // The action group collapses before any filter chip is withdrawn.
+  if (actions && cost(visible) > budget) {
+    actions.classList.add('is-collapsed');
+    actionsCollapsed = true;
+    rightW = wOf(right);
+    budget = budgetFor(rightW);
+  }
+
+  // Withdraw right-to-left; every ungated chip goes before any gated one.
+  const ungated = promoted.filter(f => !isGated(f)).map(f => f.id).reverse();
+  const gated = promoted.filter(f => isGated(f)).map(f => f.id).reverse();
+  const order = [...ungated, ...gated];
+  const withdrawn = [];
+  let i = 0;
+  while (cost(visible) > budget && i < order.length) {
+    visible.delete(order[i]); withdrawn.push(order[i]); i++;
+  }
+  chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
+
+  telemetry = {
+    surface:state.tab, rowW:row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
+    budget, consumed:cost(visible), visible:[...visible], withdrawn,
+    order:promoted.map(f => f.id), widths, gatedIds:promoted.filter(f => isGated(f)).map(f => f.id)
+  };
+
+  const hidden = hiddenCount();
+  badge.textContent = hidden;
+  badge.hidden = hidden === 0;
+
+  const off = appliedOffBar();
+  telemetry.appliedOffBar = off.map(f => f.id);
+  telemetry.appliedTotal = activeFilters().length;
+  trigger.dataset.selected = String(off.length > 0);
+  trigger.setAttribute('aria-label', 'All filters'
+    + (hidden ? ', ' + hidden + ' more available' : '')
+    + (off.length ? ', ' + off.length + ' applied and not shown on the bar' : ''));
+
+  const ph = $('#panelHint'); if (ph) ph.textContent = panelHintText();
+  layoutStrip();
+
+  const h = Math.round(row.getBoundingClientRect().height);
+  telemetry.rowH = h; heights.add(h);
+  renderTelemetry();
+}
+
+/* The expiry strip is navigation, not a filter: it scrolls rather than collapses,
+   and its position has to survive a re-render. */
+function layoutStrip() {
+  const strip = $('#expScroll');
+  if (!strip) { telemetry.tabsTotal = 0; return; }
+  const prev = strip.style.scrollBehavior;
+  strip.style.scrollBehavior = 'auto';
+  strip.scrollLeft = state.expScroll;
+  strip.style.scrollBehavior = prev;
+  const tabs = [...strip.querySelectorAll('.exp')];
+  const l = strip.scrollLeft, r = l + strip.clientWidth;
+  const canL = strip.scrollLeft > 2;
+  const canR = strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2;
+  const bl = $('#expL'), br = $('#expR');
+  if (bl) bl.hidden = !canL;
+  if (br) br.hidden = !canR;
+  strip.style.paddingLeft = canL ? '50px' : '12px';
+  strip.style.paddingRight = canR ? '50px' : '12px';
+  telemetry.tabsTotal = tabs.length;
+  telemetry.tabsVisible = tabs.filter(t => t.offsetLeft >= l - 1 && t.offsetLeft + t.offsetWidth <= r + 1).length;
+  telemetry.canL = canL; telemetry.canR = canR;
 }
 
 /* ---------------------------------------------------------------- render */
@@ -2251,35 +2107,32 @@ let announceTimer = null, lastAnnounced = -1;
 function announce() {
   clearTimeout(announceTimer);
   announceTimer = setTimeout(() => {
-    const n = results().length;
+    const n = rowsNow().length;
     if (n === lastAnnounced) return;
     lastAnnounced = n;
-    $('#live').textContent = n.toLocaleString() + ' result' + (n === 1 ? '' : 's');
+    $('#live').textContent = n.toLocaleString() + ' ' + surf().unit(n);
   }, 320);
 }
 function render() {
   const p = $('#product');
-  const tab = TABS.find(t => t.id === state.tab);
+  const s = surf();
   const openId = state.popOpen || state.gateOpen;
   p.className = 'qx-root product' + (state.sim === 'loading' ? ' is-loading' : '');
   p.dataset.input = state.input;
   p.innerHTML = `<div class="tool">
       <div class="tool__head"><span class="tool__icon">${I.sliders}</span>
-        <span class="tool__title">${tab.label}</span>
+        <span class="tool__title">${s.label}</span>
         <span class="tool__meta">${state.sim === 'readonly' ? 'Shared view — read-only' : 'North America'}</span></div>
       ${tabsHTML()}
-      ${state.tab === 'screener' ? barHTML() + tableHTML()
-        : state.tab === 'chain' ? chainHTML()
-        : state.tab === 'analyzer' ? analyzerHTML() : stubHTML(tab)}
+      ${s.above ? s.above() : ''}
+      ${barHTML()}
+      ${s.below ? s.below() : ''}
+      ${s.results()}
     </div>
     ${openId ? (state.gateOpen ? gateHTML(F(openId)) : popoverHTML(F(openId))) : ''}
-    ${state.panelOpen ? panelHTML() : ''}
-    ${selListHTML()}`;
+    ${state.panelOpen ? panelHTML() : ''}`;
   layout();
   if (openId) placePopover();
-  if (state.openSelect) placeSelList();
-  // Entry animations are one-shot: the next render (a section expanding, an
-  // option toggling) must not replay them.
   panelEntering = false; drillAnim = null;
   announce();
   syncControls();
@@ -2288,7 +2141,6 @@ function render() {
 /* ---------------------------------------------------------------- telemetry */
 function renderTelemetry() {
   const t = telemetry;
-  if (t.surface === 'chain' || t.surface === 'analyzer') return renderTelemetryAlt(t);
   $('#mW').textContent = Math.round(t.rowW) + 'px';
   $('#mH').textContent = t.rowH + 'px';
   $('#mT').textContent = roTicks;
@@ -2298,7 +2150,7 @@ function renderTelemetry() {
     line('container', Math.round(t.rowW) + 'px') +
     line('row padding', '−' + t.padX) +
     line('All filters (reserved)', '−' + t.triggerW) +
-    line(state.skin === 'actions' ? (t.actionsCollapsed ? 'count + overflow' : 'count + actions') : 'result count', '−' + t.rightW) +
+    line(t.actionsCollapsed ? 'count + overflow' : 'count + actions', '−' + t.rightW) +
     line('gap', '−' + GAP) +
     `<div class="eq">chip budget<b>${t.budget}px</b></div>` +
     line('consumed by ' + t.visible.length + ' chips', t.consumed + 'px') +
@@ -2311,195 +2163,93 @@ function renderTelemetry() {
       <span class="op">${t.widths.get(id)}</span></span>`;
   }).join('') || '<span class="pill" data-t="out">no promoted chips</span>';
 
-  const promotedIds = t.order;
-  const never = FILTERS.filter(f => !promotedIds.includes(f.id) && !isDisabled(f)).length;
+  const never = surf().filters.filter(f => !t.order.includes(f.id) && !isDisabled(f)).length;
   $('#kvCounts').innerHTML =
     line('withdrawn', t.withdrawn.length) +
     line('never promoted', never) +
     `<div class="eq">All filters badge<b>${t.withdrawn.length + never}</b></div>` +
     line('applied', t.appliedTotal || 0) +
     line('applied, no chip', (t.appliedOffBar || []).length) +
+    (t.tabsTotal ? line('expiry tabs in view', t.tabsVisible + ' / ' + t.tabsTotal) : '') +
     line('re-measures', remeasures);
 
-  const as = [];
-  const heightStable = heights.size === 1;
-  as.push([heightStable, `Control row is one line at every width — <b>${t.rowH}px</b>, ${heightStable ? 'unchanged since load' : heights.size + ' heights seen (density change)'}`]);
-  as.push([true, t.withdrawn.length
-    ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => F(id).label).join(' → ')}</code>`
-    : `All ${t.visible.length} promoted chips fit — nothing withdrawn`]);
+  const stable = heights.size === 1;
+  const off = t.appliedOffBar || [];
   const gatedOut = t.gatedIds.filter(id => t.withdrawn.includes(id));
   const ungatedIn = t.order.filter(id => !t.gatedIds.includes(id) && !t.withdrawn.includes(id));
-  as.push([!(gatedOut.length && ungatedIn.length),
-    t.gatedIds.length === 0 ? 'No gated filters at this entitlement'
-    : gatedOut.length ? `Gated chip withdrawn only after all ungated ones — <b>${ungatedIn.length} ungated remain</b>`
-    : `Gated chip <b>${t.gatedIds.map(id => F(id).label).join(', ')}</b> held on the bar`]);
-  const off = t.appliedOffBar || [];
-  as.push([off.length === 0, t.appliedTotal === 0
-    ? 'No filters applied — trigger is at rest'
-    : off.length === 0
-      ? `<b>${t.appliedTotal} applied</b>, every one of them visible as a chip on the bar`
-      : `<b>${t.appliedTotal} applied, ${off.length} with no chip on the bar</b> — <code>${off.map(id => F(id).label).join(', ')}</code>. Only the trigger's tint carries it.`]);
-  as.push([true, state.skin === 'actions'
-    ? (t.actionsCollapsed ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
-                          : 'Action group intact — it collapses before any filter chip')
-    : `All filters trigger reserved at <code>${t.triggerW}px</code> with a worst-case badge`]);
-  $('#asserts').innerHTML = as.map(([ok, txt]) =>
-    `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
-}
-
-
-/* Same fit arithmetic, reported for the two non-chip surfaces. */
-function renderTelemetryAlt(t) {
-  $('#mW').textContent = Math.round(t.rowW) + 'px';
-  $('#mH').textContent = t.rowH + 'px';
-  $('#mT').textContent = roTicks;
-  const line = (k, v, op) => `<div><span class="op">${op || ''}</span>${k}<b>${v}</b></div>`;
-  $('#kvMath').innerHTML =
-    line('container', Math.round(t.rowW) + 'px') +
-    line('row padding', '−' + t.padX) +
-    line(t.surface === 'chain' ? 'settings + gap' : 'gear + view toggle', '−' + t.rightW) +
-    `<div class="eq">control budget<b>${t.budget}px</b></div>` +
-    line('consumed', t.consumed + 'px') +
-    line('headroom', (t.budget - t.consumed) + 'px');
-
-  if (t.surface === 'chain') {
-    $('#pillsChips').innerHTML =
-      `<span class="pill" data-t="in">expiry select</span><span class="pill" data-t="in">strikes select</span>` +
-      `<span class="pill" data-t="in">settings gear</span>`;
-    $('#kvCounts').innerHTML =
-      line('expiry tabs', t.tabsTotal) +
-      line('tabs in view', t.tabsVisible) +
-      `<div class="eq">strikes shown<b>${t.strikes} / ${t.strikesTotal}</b></div>` +
-      line('settings applied', t.applied);
-    const stable = heights.size === 1;
-    const as = [
-      [stable, `Control row is one line — <b>${t.rowH}px</b>, two selects plus the gear${stable ? ', unchanged at every width' : ', ' + heights.size + ' heights seen'}`],
-      [t.tabsVisible < t.tabsTotal ? t.canR || t.canL : true,
-        t.tabsVisible < t.tabsTotal
-          ? `Expiry strip scrolls: <b>${t.tabsVisible} of ${t.tabsTotal}</b> tabs in view, arrow shown on the ${t.canR ? 'right' : 'left'}`
-          : `All <b>${t.tabsTotal}</b> expiry tabs fit — no scroll affordance needed`],
-      [true, `Strike window and the liquidity filters compose: <code>${t.strikes} of ${t.strikesTotal}</code> strikes on this expiry`],
-      [t.applied === 0 || true, t.applied
-        ? `<b>${t.applied} setting${t.applied === 1 ? '' : 's'}</b> applied — the gear badge is the only signal, there are no chips here`
-        : 'No settings applied — the gear carries no badge'],
-      [false, `The chain shows <b>no live result count</b> in the control row. The spec requires one adjacent to the bar; here it sits in the table footer instead.`]
-    ];
-    $('#asserts').innerHTML = as.map(([ok, txt]) =>
-      `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
-    return;
-  }
-
-  const label = { fldView:'Market View', fldProb:'Min Probability', fldDte:'Days to Exp', fldStrategy:'Strategy' };
-  $('#pillsChips').innerHTML = ['fldView', 'fldProb', 'fldDte', 'fldStrategy'].map(id => {
-    const out = t.withdrawn.includes(id);
-    return `<span class="pill" data-t="${out ? 'out' : 'in'}">${label[id]}
-      <span class="op">${t.widths.get(id) || '—'}</span></span>`;
-  }).join('');
-  $('#kvCounts').innerHTML =
-    line('withdrawn', t.withdrawn.length) +
-    `<div class="eq">gear badge<b>${t.withdrawn.length}</b></div>` +
-    line('strategies', t.strats + ' / ' + t.stratsTotal);
-  const stable = heights.size === 1;
   const as = [
-    [stable, `Control row is one line — <b>${t.rowH}px</b>${stable ? ', unchanged whether the sliders are shown or withdrawn' : ', ' + heights.size + ' heights seen'}`],
+    [stable, `Control row is one line at every width — <b>${t.rowH}px</b>, ${
+      stable ? 'unchanged on this tab' : heights.size + ' heights seen'}`],
     [true, t.withdrawn.length
-      ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => label[id]).join(' → ')}</code> — each one still reachable in the panel`
-      : `All four controls fit — nothing withdrawn`],
-    [true, `Sliders have a hard minimum width, so they are withdrawn <b>before</b> the two selects — the reverse of the chip case, where authored order decides`],
-    [true, `<b>${t.strats} of ${t.stratsTotal}</b> strategies clear the constraints`],
-    [false, `The spec has no rule for a control that cannot shrink. This withdrawal order is the prototype's proposal, not the spec's.`]
+      ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => F(id).label).join(' → ')}</code>`
+      : `All ${t.visible.length} promoted chips fit — nothing withdrawn`],
+    [!(gatedOut.length && ungatedIn.length), t.gatedIds.length === 0
+      ? (t.tabsTotal
+        ? `Expiry is navigation, not a chip: <b>${t.tabsVisible} of ${t.tabsTotal}</b> tabs in view, the strip scrolls`
+        : 'No gated filters at this entitlement')
+      : gatedOut.length
+        ? `Gated chip withdrawn only after all ungated ones — <b>${ungatedIn.length} ungated remain</b>`
+        : `Gated chip <b>${t.gatedIds.map(id => F(id).label).join(', ')}</b> held on the bar`],
+    [off.length === 0, t.appliedTotal === 0
+      ? 'No filters applied — trigger is at rest'
+      : off.length === 0
+        ? `<b>${t.appliedTotal} applied</b>, every one of them visible as a chip on the bar`
+        : `<b>${t.appliedTotal} applied, ${off.length} with no chip on the bar</b> — <code>${
+            off.map(id => F(id).label).join(', ')}</code>. Only the trigger's tint carries it.`],
+    [true, t.actionsCollapsed
+      ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
+      : `All filters trigger reserved at <code>${t.triggerW}px</code> with a worst-case badge`]
   ];
   $('#asserts').innerHTML = as.map(([ok, txt]) =>
-    `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
+    `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${
+      ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
 }
-
-/* ---------------------------------------------------------------- mutations */
-function toggleMulti(f, key) {
-  const cur = (val(f.id) || []).slice();
-  const i = cur.indexOf(key);
-  if (i >= 0) cur.splice(i, 1); else cur.push(key);
-  setVal(f.id, cur.length ? cur : null);
-}
-function setPreset(f, id) {
-  const cur = val(f.id);
-  if (cur && cur.preset === id) { setVal(f.id, null); return; }
-  const p = f.presets.find(x => x.id === id);
-  setVal(f.id, { preset: id, min: p.min, max: p.max });
-}
-function clearAll() { state.values = {}; }
 
 /* ---------------------------------------------------------------- events */
 const product = $('#product');
 
 product.addEventListener('click', e => {
-  const t = e.target;
-  const hit = s => t.closest(s);
-
-  // ---- shared custom select ----
-  const selBtn = hit('[data-sel]');
-  if (selBtn) { openSelect(selBtn.dataset.sel); return; }
-  const selOpt = hit('[data-selopt]');
-  if (selOpt) {
-    const id = state.openSelect;
-    selSet(id, selOpt.dataset.selopt);
-    state.openSelect = null; state.flow = null;
-    render();
-    const back = $(`[data-sel="${id}"]`); if (back) back.focus();
-    return;
-  }
-  if (state.openSelect && !hit('#sellist')) { closeSelect(false); if (!hit('[data-sel]')) return; }
-
-  // ---- options chain ----
-  if (hit('#chGear') || hit('#anGear')) {
-    if (state.panelOpen) closePanel(); else openPanel(null);
-    return;
-  }
-  const expTab = hit('[data-exp]');
-  if (expTab) { chain.expiry = expTab.dataset.exp; state.flow = null; render(); return; }
-  if (hit('#expR') || hit('#expL')) {
-    const strip = $('#expScroll');
-    if (strip) {
-      const dir = hit('#expR') ? 1 : -1;
-      const target = Math.max(0, Math.min(strip.scrollWidth - strip.clientWidth,
-        strip.scrollLeft + dir * Math.max(200, strip.clientWidth * 0.7)));
-      chain.expScroll = target;                    // commit the target, not the animating value
-      strip.scrollTo({ left: target, behavior: 'smooth' });
-      const bl = $('#expL'), br = $('#expR');
-      if (bl) bl.hidden = target <= 2;
-      if (br) br.hidden = target + strip.clientWidth >= strip.scrollWidth - 2;
-    }
-    return;
-  }
-  if (hit('#chReset')) {
-    Object.assign(chain, { nearPct:'all', minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all' });
-    state.flow = null; render(); return;
-  }
-
-  // ---- options analyzer ----
-  if (hit('#anView')) { an.view = an.view === 'table' ? 'cards' : 'table'; state.flow = null; render(); return; }
-  if (hit('#anReset')) { Object.assign(an, { marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90 }); state.flow = null; render(); return; }
-  if (hit('#panelReset')) {
-    if (state.tab === 'chain') Object.assign(chain, { nearPct:'all', minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all', near:'spot' });
-    else Object.assign(an, { marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90 });
-    state.flow = null; render(); return;
-  }
-  if (hit('.glyph')) return;                     // payoff / explain affordances are inert here
+  const hit = sel => e.target.closest(sel);
 
   const tab = hit('[data-tab]');
   if (tab) {
     if (state.tab === tab.dataset.tab) return;
     state.tab = tab.dataset.tab;
-    heights.clear();
-    state.panelOpen = false; state.drill = null; state.openSelect = null; closePopover(true);
+    heights.clear(); measuredLabels.clear();
+    state.panelOpen = false; state.drill = null; closePopover(true);
     state.flow = null; render(); return;
   }
 
   if (hit('#scrim') || hit('#panelX') || hit('#panelDone')) { closePanel(); return; }
   if (hit('#panelClear')) { clearAll(); render(); return; }
   if (hit('#panelBack')) { openPanel(null); return; }
-  if (hit('#allTrigger')) {
-    if (state.panelOpen) closePanel(); else openPanel(null);
+  if (hit('#allTrigger')) { state.panelOpen ? closePanel() : openPanel(null); return; }
+
+  // expiry strip — navigation, so it neither collapses nor opens a popover
+  const expTab = hit('[data-exp]');
+  if (expTab) { state.expiry = expTab.dataset.exp; state.flow = null; render(); return; }
+  if (hit('#expR') || hit('#expL')) {
+    const strip = $('#expScroll');
+    if (strip) {
+      const dir = hit('#expR') ? 1 : -1;
+      const target = Math.max(0, Math.min(strip.scrollWidth - strip.clientWidth,
+        strip.scrollLeft + dir * Math.max(200, strip.clientWidth * 0.7)));
+      state.expScroll = target;
+      strip.scrollTo({ left:target, behavior:'smooth' });
+      const bl = $('#expL'), br = $('#expR');
+      if (bl) bl.hidden = target <= 2;
+      if (br) br.hidden = target + strip.clientWidth >= strip.scrollWidth - 2;
+    }
     return;
+  }
+
+  // display toggle (two options — no popover needed)
+  const dt = hit('[data-disptoggle]');
+  if (dt) {
+    const f = F(dt.dataset.disptoggle);
+    const opts = pairs(f).map(o => String(o[0]));
+    const next = opts[(opts.indexOf(String(dispVal(f))) + 1) % opts.length];
+    setVal(f.id, next); state.flow = null; render(); return;
   }
 
   const drill = hit('[data-drill]');
@@ -2521,12 +2271,12 @@ product.addEventListener('click', e => {
     return;
   }
 
+  // an option inside the panel
   const popt = hit('[data-popt]');
   if (popt) {
-    const f = F(popt.dataset.popt), key = popt.dataset.opt;
-    f.kind === 'multi' ? toggleMulti(f, key) : setPreset(f, key);
+    applyOption(F(popt.dataset.popt), popt.dataset.opt);
     render();
-    const again = $(`[data-popt="${f.id}"][data-opt="${CSS.escape(key)}"]`);
+    const again = $(`[data-popt="${popt.dataset.popt}"][data-opt="${CSS.escape(popt.dataset.opt)}"]`);
     if (again) again.focus();
     return;
   }
@@ -2541,12 +2291,14 @@ product.addEventListener('click', e => {
     return;
   }
 
+  // an option inside the popover
   const opt = hit('#pop .opt[data-opt]');
   if (opt) {
-    const f = F(state.popOpen), key = opt.dataset.opt;
-    f.kind === 'multi' ? toggleMulti(f, key) : setPreset(f, key);
+    const f = F(state.popOpen);
+    applyOption(f, opt.dataset.opt);
+    if (f.display) { closePopover(); return; }
     render();
-    const again = $(`#pop .opt[data-opt="${CSS.escape(key)}"]`);
+    const again = $(`#pop .opt[data-opt="${CSS.escape(opt.dataset.opt)}"]`);
     if (again) again.focus();
     return;
   }
@@ -2557,75 +2309,78 @@ product.addEventListener('click', e => {
 
   if (hit('#barClear') || hit('#emptyClear')) {
     clearAll(); render();
-    const t2 = $('#allTrigger'); if (t2) t2.focus();
-    return;
+    const t = $('#allTrigger'); if (t) t.focus(); return;
   }
+  if (hit('.glyph')) return;                    // payoff / explain affordances are inert here
 });
 
+function applyOption(f, key) {
+  if (f.kind === 'multi') toggleMulti(f, key);
+  else if (f.kind === 'choice') chooseOne(f, key);
+  else setPreset(f, key);
+  state.flow = null;
+}
+
 product.addEventListener('input', e => {
-  const id = e.target.id;
-  if (id === 'anProb' || id === 'anDteA' || id === 'anDteB') {
-    const v = Number(e.target.value);
-    if (id === 'anProb') an.minProb = v;
-    if (id === 'anDteA') an.dteMin = Math.min(v, an.dteMax);
-    if (id === 'anDteB') an.dteMax = Math.max(v, an.dteMin);
-    state.flow = null; render();
-    const again = $('#' + id); if (again) again.focus();
-    return;
-  }
-  if (id === 'popSearch') {
-    pop.search = e.target.value;
-    const caret = e.target.selectionStart;
+  const t = e.target;
+  if (t.id === 'popSearch') {
+    pop.search = t.value;
+    const caret = t.selectionStart;
     render();
     const s2 = $('#popSearch');
     if (s2) { s2.focus(); s2.setSelectionRange(caret, caret); }
     return;
   }
-  if (id === 'anProbBox' || id === 'anDteMin' || id === 'anDteMax') return;   // committed on change
-  if (id === 'rMin' || id === 'rMax') {
-    const f = F(state.popOpen || state.drill || state.panelOpenFilter); if (!f) return;
-    const min = $('#rMin').value === '' ? null : Number($('#rMin').value);
-    const max = $('#rMax').value === '' ? null : Number($('#rMax').value);
-    const which = e.target.id;
-    setVal(f.id, (min == null && max == null) ? null : { min, max });
-    const caret = e.target.selectionStart;
+  if (t.dataset.sld) {                                  // slider drag
+    const [fid, which] = t.dataset.sld.split(':');
+    setSlider(F(fid), which, Number(t.value));
+    state.flow = null;
     render();
-    const again = $('#' + which);
+    const again = document.querySelector(`[data-sld="${fid}:${which}"]`);
+    if (again) again.focus();
+    return;
+  }
+  if (t.dataset.rng) {                                  // custom range on a preset filter
+    const [fid, which] = t.dataset.rng.split(':');
+    const f = F(fid);
+    const g = w => {
+      const el = document.querySelector(`[data-rng="${fid}:${w}"]`);
+      return !el || el.value === '' ? null : Number(el.value);
+    };
+    const min = g('min'), max = g('max');
+    setVal(fid, (min == null && max == null) ? null : { min, max });
+    state.flow = null;
+    const caret = t.selectionStart;
+    render();
+    const again = document.querySelector(`[data-rng="${fid}:${which}"]`);
     if (again) { again.focus(); try { again.setSelectionRange(caret, caret); } catch (_) {} }
   }
 });
 
-/* The three number boxes commit on change, not per keystroke, so a partially
-   typed value never re-filters the list. */
+/* The slider number boxes commit on change or Enter, never per keystroke. */
 product.addEventListener('change', e => {
-  const id = e.target.id;
-  if (id !== 'anProbBox' && id !== 'anDteMin' && id !== 'anDteMax') return;
+  const key = e.target.dataset.sldbox; if (!key) return;
+  const [fid, which] = key.split(':');
   const n = parseFloat(String(e.target.value).replace(/[^0-9.-]/g, ''));
-  if (isNaN(n)) { render(); return; }
-  if (id === 'anProbBox') an.minProb = Math.max(50, Math.min(99, Math.round(n)));
-  if (id === 'anDteMin') an.dteMin = Math.max(0, Math.min(an.dteMax, Math.round(n)));
-  if (id === 'anDteMax') an.dteMax = Math.min(365, Math.max(an.dteMin, Math.round(n)));
+  if (!isNaN(n)) setSlider(F(fid), which, n);
   state.flow = null;
   render();
-  const again = $('#' + id); if (again) again.focus();
+  const again = document.querySelector(`[data-sldbox="${fid}:${which}"]`);
+  if (again) again.focus();
 });
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && /^(anProbBox|anDteMin|anDteMax)$/.test(e.target.id || '')) {
-    e.preventDefault(); e.target.dispatchEvent(new Event('change', { bubbles:true })); return;
+product.addEventListener('scroll', e => {
+  if (e.target.id === 'expScroll') {
+    state.expScroll = e.target.scrollLeft;
+    const bl = $('#expL'), br = $('#expR'), st = e.target;
+    if (bl) bl.hidden = st.scrollLeft <= 2;
+    if (br) br.hidden = st.scrollLeft + st.clientWidth >= st.scrollWidth - 2;
   }
-  if (state.openSelect) {
-    if (e.key === 'Escape') { e.preventDefault(); closeSelect(true); return; }
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      const opts = [...document.querySelectorAll('#sellist .selopt')];
-      if (opts.length) {
-        e.preventDefault();
-        const cur = opts.indexOf(document.activeElement);
-        const nx = e.key === 'ArrowDown' ? Math.min(opts.length - 1, cur + 1) : Math.max(0, cur - 1);
-        opts[cur < 0 ? 0 : nx].focus();
-      }
-      return;
-    }
+}, true);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.sldbox) {
+    e.preventDefault(); e.target.dispatchEvent(new Event('change', { bubbles:true })); return;
   }
   if (e.key === 'Escape') {
     if (state.popOpen || state.gateOpen) { e.preventDefault(); closePopover(); return; }
@@ -2636,7 +2391,7 @@ document.addEventListener('keydown', e => {
     const opts = [...document.querySelectorAll(`${scope} .opt[role="option"]`)];
     if (!opts.length) return;
     e.preventDefault();
-    const cur = opts.findIndex(o => o === document.activeElement);
+    const cur = opts.indexOf(document.activeElement);
     const next = e.key === 'ArrowDown'
       ? (cur < 0 ? 0 : Math.min(opts.length - 1, cur + 1))
       : (cur < 0 ? opts.length - 1 : Math.max(0, cur - 1));
@@ -2645,7 +2400,8 @@ document.addEventListener('keydown', e => {
   }
   if (state.panelOpen && e.key === 'Tab') {
     const panel = $('#panel'); if (!panel) return;
-    const f = [...panel.querySelectorAll('button, input, [tabindex="0"]')].filter(el => !el.disabled && el.offsetParent);
+    const f = [...panel.querySelectorAll('button, input, [tabindex="0"]')]
+      .filter(el => !el.disabled && el.offsetParent);
     if (!f.length) return;
     const first = f[0], last = f[f.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -2702,30 +2458,31 @@ function syncControls() {
     .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.flow === state.flow)));
 }
 
+
 /* ---------------------------------------------------------------- flows */
-const SET3 = () => { state.values = { exchange:['TSX'], sector:['Financials','Energy','Materials'],
-  mcap:{ preset:'large', min:10, max:200 } }; };
-const SET7 = () => { SET3(); Object.assign(state.values, { pe:{ preset:'value', max:15 },
-  dy:{ preset:'mid', min:3, max:5 }, vol:{ preset:'thin', max:5 }, ctry:['Canada'] }); };
+const V = o => { state.values[state.tab] = o; };
 const base = () => {
   Object.assign(state, { tab:'screener', input:'pointer', skin:'full', density:'comfortable',
-    sim:'default', promotedCount:6, pro:false, options:false, showCount:true, values:{},
-    panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null, openSelect:null });
-  Object.assign(chain, { expiryType:'All', expiry:'e0', window:5, near:'spot', nearPct:'all',
-    minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all', view:'side', expScroll:0 });
-  Object.assign(an, { marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90, view:'table' });
+    sim:'default', promotedCount:6, pro:false, options:false, showCount:true,
+    expiry:'e0', expScroll:0,
+    panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
+  state.values = { screener:{}, chain:{ window:5 }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } };
   panelEntering = false; drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
 };
-const chainBase = () => { base(); state.tab = 'chain'; };
-const anBase = () => { base(); state.tab = 'analyzer'; };
+const chainBaseFlow = () => { base(); state.tab = 'chain'; };
+const anBaseFlow = () => { base(); state.tab = 'analyzer'; };
+const SET3 = () => V({ exchange:['TSX'], sector:['Financials','Energy','Materials'],
+  mcap:{ preset:'large', min:10, max:200 } });
+const SET7 = () => { SET3(); Object.assign(state.values.screener, { pe:{ preset:'value', max:15 },
+  dy:{ preset:'mid', min:3, max:5 }, vol:{ preset:'thin', max:5 }, ctry:['Canada'] }); };
+
 const FLOWS = [
   { id:'default', g:'Screener', t:'Default', d:'Control row at rest, six chips', w:1180, run:base },
   { id:'overflow', t:'Overflowing', d:'Chips withdraw, badge counts them', w:820, run:base },
   { id:'filtered', t:'Filtered', d:'Three filters, state in the labels', w:1024, run:() => { base(); SET3(); } },
   { id:'squeezed', t:'Squeezed + filtered', d:'Longer labels withdraw sooner', w:700, run:() => { base(); SET3(); } },
-  { id:'hidden', t:'Applied, no chip', d:'Seven filters, none of them visible', w:360,
-    run:() => { base(); SET7(); } },
+  { id:'hidden', t:'Applied, no chip', d:'Seven filters, none of them visible', w:360, run:() => { base(); SET7(); } },
   { id:'popover', t:'Pointer popover', d:'Anchored dropdown, counts per option', w:1024,
     run:() => { base(); SET3(); state.popOpen = 'sector'; } },
   { id:'drawer', t:'Pointer drawer', d:'Sections expand in place', w:1024,
@@ -2735,9 +2492,6 @@ const FLOWS = [
   { id:'drill', t:'Touch drill-down', d:'Level two, Back returns', w:400,
     run:() => { base(); state.input = 'touch'; SET3(); state.panelOpen = true; state.drill = 'sector';
                 state.panelOpenFilter = 'sector'; panelEntering = true; } },
-  { id:'touchchip', t:'Touch chip', d:'A chip opens the sheet, not a popover', w:640,
-    run:() => { base(); state.input = 'touch'; state.panelOpen = true; state.drill = 'mcap';
-                state.panelOpenFilter = 'mcap'; panelEntering = true; } },
   { id:'gated', t:'Gated chip', d:'Lock glyph opens the upgrade gate', w:900,
     run:() => { base(); state.gateOpen = 'rating'; } },
   { id:'actions', t:'Actions collapse', d:'Group folds to overflow, chips stay', w:1024,
@@ -2749,44 +2503,47 @@ const FLOWS = [
   { id:'readonly', t:'Read-only', d:'Shared view, no chevrons', w:1024,
     run:() => { base(); SET3(); state.sim = 'readonly'; } },
   { id:'empty', t:'Empty result', d:'Bar stays interactive', w:1024,
-    run:() => { base(); state.values = { exchange:['NASDAQ'], ctry:['Canada'] }; } },
+    run:() => { base(); V({ exchange:['NASDAQ'], ctry:['Canada'] }); } },
   { id:'zero', t:'Zero promoted', d:'Every filter behind the trigger', w:1180,
     run:() => { base(); state.promotedCount = 0; } },
-  // ---- Options chain ----
-  { id:'ch-side', g:'Options chain', t:'Side-by-side', d:'±5 strikes around spot', w:1180, run:chainBase },
-  { id:'ch-wide', t:'All strikes', d:'41 strikes, spot line holds', w:1180,
-    run:() => { chainBase(); chain.window = 'all'; } },
-  { id:'ch-exp', t:'Expiry strip overflow', d:'17 expiries, scroll arrow', w:820, run:chainBase },
-  { id:'ch-set', t:'Chain settings', d:'View, strikes, liquidity, contract', w:1180,
-    run:() => { chainBase(); state.panelOpen = true; panelEntering = true; } },
-  { id:'ch-liq', t:'Liquid strikes only', d:'Min volume and spread applied', w:1180,
-    run:() => { chainBase(); chain.window = 'all'; chain.minVol = 1000; chain.maxSpread = 15; } },
-  { id:'ch-near', t:'Near money 5%', d:'Anchored on a strike, not spot', w:1180,
-    run:() => { chainBase(); chain.window = 'all'; chain.nearPct = 5; chain.near = '315'; } },
-  { id:'ch-stack', t:'Stacked view', d:'Calls then puts, one column set', w:900,
-    run:() => { chainBase(); chain.view = 'stack'; } },
-  { id:'ch-calls', t:'Calls only', d:'Single side, strike leads', w:700,
-    run:() => { chainBase(); chain.view = 'calls'; } },
-  { id:'ch-mob', t:'Chain on mobile', d:'Touch, columns drop out', w:400,
-    run:() => { chainBase(); state.input = 'touch'; chain.view = 'calls'; } },
-  { id:'ch-empty', t:'No strikes match', d:'Liquidity filters too tight', w:1180,
-    run:() => { chainBase(); chain.minVol = 10000; chain.maxSpread = 5; chain.nearPct = 2; } },
+
+  // ---- Options chain: same bar, same popovers, its own filter set ----
+  { id:'ch-side', g:'Options chain', t:'Default', d:'±5 strikes, six chips', w:1180, run:chainBaseFlow },
+  { id:'ch-chip', t:'Chip popover', d:'Strike window with match counts', w:1180,
+    run:() => { chainBaseFlow(); state.popOpen = 'window'; } },
+  { id:'ch-liq', t:'Liquidity applied', d:'Three chips carry values', w:1180,
+    run:() => { chainBaseFlow(); V({ minVol:1000, maxSpread:15, nearPct:10 }); } },
+  { id:'ch-near', t:'Anchored off spot', d:'Near 315, not the last price', w:1180,
+    run:() => { chainBaseFlow(); V({ window:10, near:'315' }); } },
+  { id:'ch-exp', t:'Expiry strip scrolls', d:'Navigation, not a chip', w:820, run:chainBaseFlow },
+  { id:'ch-monthly', t:'Monthly only', d:'Expiry chip filters the strip', w:1024,
+    run:() => { chainBaseFlow(); V({ window:5, expiryType:'Monthly' }); } },
+  { id:'ch-panel', t:'All filters', d:'Eight filters, four groups', w:1024,
+    run:() => { chainBaseFlow(); state.panelOpen = true; state.panelOpenFilter = 'maxSpread'; panelEntering = true; } },
+  { id:'ch-stack', t:'Stacked layout', d:'Display control, not a filter', w:900,
+    run:() => { chainBaseFlow(); state.values.chain.layout = 'stack'; } },
+  { id:'ch-mob', t:'Chain on mobile', d:'Trigger only, sheet drill-down', w:400,
+    run:() => { chainBaseFlow(); state.input = 'touch'; state.values.chain.layout = 'calls';
+                state.panelOpen = true; panelEntering = true; } },
+  { id:'ch-empty', t:'No strikes match', d:'Bar stays interactive', w:1180,
+    run:() => { chainBaseFlow(); V({ window:'x', deliverables:'ns' }); delete state.values.chain.window; } },
 
   // ---- Options analyzer ----
-  { id:'an-table', g:'Options analyzer', t:'Ranked table', d:'Sorted by probability', w:1180, run:anBase },
-  { id:'an-cards', t:'Card view', d:'Same rows, card layout', w:1180,
-    run:() => { anBase(); an.view = 'cards'; } },
-  { id:'an-bull', t:'Bullish, 85%+', d:'Constraints narrow the list', w:1180,
-    run:() => { anBase(); an.marketView = 'Bullish'; an.minProb = 85; } },
-  { id:'an-wide', t:'Full expiry range', d:'0 to 365 days', w:1180,
-    run:() => { anBase(); an.dteMax = 365; an.minProb = 60; } },
-  { id:'an-squeeze', t:'Sliders withdraw', d:'Days to Exp goes to the panel', w:768, run:anBase },
-  { id:'an-mob', t:'Analyzer on mobile', d:'Both sliders withdrawn', w:400,
-    run:() => { anBase(); an.view = 'cards'; } },
-  { id:'an-set', t:'Constraints panel', d:'Withdrawn controls, full size', w:768,
-    run:() => { anBase(); state.panelOpen = true; panelEntering = true; } },
+  { id:'an-table', g:'Options analyzer', t:'Default', d:'Two constraints applied', w:1180, run:anBaseFlow },
+  { id:'an-slider', t:'Slider in a popover', d:'The kind with no option list', w:1180,
+    run:() => { anBaseFlow(); state.popOpen = 'minProb'; } },
+  { id:'an-dual', t:'Dual range popover', d:'Days to expiry, both bounds', w:1180,
+    run:() => { anBaseFlow(); state.popOpen = 'dte'; } },
+  { id:'an-bull', t:'Bullish, 85%+', d:'Four chips, all with values', w:1180,
+    run:() => { anBaseFlow(); V({ marketView:'Bullish', minProb:{min:85}, dte:{min:0,max:120},
+                                  strategy:['Short Put','Put Credit Spread'] }); } },
+  { id:'an-cards', t:'Card view', d:'Display control in the action group', w:1180,
+    run:() => { anBaseFlow(); state.values.analyzer.view = 'cards'; } },
+  { id:'an-squeeze', t:'Squeezed', d:'Chips withdraw, not the sliders', w:700, run:anBaseFlow },
+  { id:'an-mob', t:'Analyzer on mobile', d:'Everything behind the trigger', w:400,
+    run:() => { anBaseFlow(); state.values.analyzer.view = 'cards'; } },
   { id:'an-empty', t:'Nothing clears', d:'Probability floor too high', w:1180,
-    run:() => { anBase(); an.minProb = 97; } }
+    run:() => { anBaseFlow(); V({ minProb:{min:97}, dte:{min:0,max:90} }); } }
 ];
 $('#flows').innerHTML = FLOWS.map((f, i) =>
   (f.g ? `<div class="flow__g">${f.g}</div>` : '') +
@@ -2799,7 +2556,9 @@ $('#flows').addEventListener('click', e => {
 function runFlow(id) {
   const f = FLOWS.find(x => x.id === id) || FLOWS[0];
   f.run(); state.flow = f.id;
-  $('#flowTitle').textContent = f.t + ' — ' + f.d.charAt(0).toLowerCase() + f.d.slice(1);
+  const g = FLOWS.slice(0, FLOWS.indexOf(f) + 1).reverse().find(x => x.g);
+  $('#flowTitle').textContent = (g ? g.g + ' · ' : '') + f.t + ' — '
+    + f.d.charAt(0).toLowerCase() + f.d.slice(1);
   setWidth(f.w); render();
   if (state.popOpen || state.gateOpen) requestAnimationFrame(placePopover);
 }
@@ -2816,14 +2575,6 @@ const ro = new ResizeObserver(() => {
 });
 ro.observe($('.viewport__inner'));
 
-product.addEventListener('scroll', e => {
-  if (e.target.id === 'expScroll') {
-    chain.expScroll = e.target.scrollLeft;
-    const bl = $('#expL'), br = $('#expR'), st = e.target;
-    if (bl) bl.hidden = st.scrollLeft <= 2;
-    if (br) br.hidden = st.scrollLeft + st.clientWidth >= st.scrollWidth - 2;
-  }
-}, true);
 
 const grip = $('#grip');
 grip.addEventListener('pointerdown', e => {
@@ -2858,6 +2609,7 @@ grip.addEventListener('keydown', e => {
     state.flow = null; setWidth(w); syncControls();
   }
 });
+
 
 /* ---------------------------------------------------------------- init */
 runFlow('default');
