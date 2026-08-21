@@ -193,6 +193,10 @@ button{font:inherit;color:inherit}
    run to more lines; `scroll` keeps one line and scrolls the chips between the
    pinned trigger and the pinned count. */
 .qxfb__chips{display:contents}
+/* sentence variant: prose with inline controls, no trigger, no chip labels */
+.qxfb[data-sentence="true"] .qxfb__row{align-items:center}
+.qxfb[data-sentence="true"] .qxfb__chips{row-gap:6px}
+.pmx__ranges .qxc--inline{height:22px;font-size:12px;padding:0 4px 0 8px}
 .qxfb[data-overflow="wrap"] .qxfb__row{align-items:flex-start}
 .qxfb[data-overflow="wrap"] .qxfb__chips{
   display:flex;flex-wrap:wrap;gap:8px;flex:1 1 auto;min-width:0;
@@ -246,6 +250,18 @@ button{font:inherit;color:inherit}
 .qxc__chev{flex:0 0 auto;color:var(--qx-text-muted);transition:transform var(--qx-dur-fast) var(--qx-ease)}
 .qxc[aria-expanded="true"]{background:var(--qx-surface-200);border-color:var(--qx-border-color-hover)}
 .qxc[aria-expanded="true"] .qxc__chev{transform:rotate(180deg)}
+
+/* sentence variant — declared after .qxc so it wins on source order */
+.sent__t{font-size:13.5px;color:var(--qx-text-secondary);white-space:nowrap;flex:0 0 auto}
+.qxc--inline{
+  height:26px;padding:0 6px 0 10px;
+  background:var(--qx-primary-subtle);border-color:var(--qx-state-selected-border);
+  color:var(--qx-brand-800);font-size:13px;
+}
+.qxc--inline:hover{background:var(--qx-primary-subtle-2);border-color:var(--qx-brand-200)}
+.qxc--inline .qxc__chev{color:var(--qx-primary)}
+.qxc--inline[aria-expanded="true"]{background:var(--qx-primary-subtle-2)}
+
 .qxc[data-selected="true"]{
   background:var(--qx-state-selected-bg);border-color:var(--qx-state-selected-border);
   color:var(--qx-state-selected-fg);
@@ -352,7 +368,7 @@ button{font:inherit;color:inherit}
   background:var(--qx-surface-0);color:var(--qx-text-primary);
 }
 .pop__search input:focus{border-color:var(--qx-primary);outline:none}
-.pop__list{max-height:248px;min-height:64px;flex:1 1 auto;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:2px}
+.pop__list{max-height:300px;min-height:64px;flex:1 1 auto;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:2px}
 .opt{
   display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--qx-radius-sm);
   background:none;border:0;text-align:left;cursor:pointer;font-size:13px;color:var(--qx-text-primary);
@@ -369,6 +385,11 @@ button{font:inherit;color:inherit}
 .opt[aria-selected="true"] .opt__radio{border-color:var(--qx-primary)}
 .opt[aria-selected="true"] .opt__radio::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--qx-primary)}
 .opt__label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt__stack{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0}
+.opt__stack .opt__label{font-weight:500;white-space:normal}
+.opt__sub{font-size:11.5px;color:var(--qx-text-secondary);line-height:1.35;white-space:normal}
+.opt:has(.opt__stack){align-items:flex-start;padding:7px 8px}
+.opt:has(.opt__stack) .opt__radio,.opt:has(.opt__stack) .opt__box{margin-top:2px}
 
 .pop__custom{flex:0 0 auto;padding:6px 12px 10px;border-top:1px solid var(--qx-border-color);display:flex;flex-direction:column;gap:6px}
 .pop__custom .lbl{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--qx-text-muted)}
@@ -1041,10 +1062,11 @@ button{font:inherit;color:inherit}
           <h3>What unifying the three settled</h3>
           <ul>
             <li><b>One component, four filter sets.</b> Every tab runs the same bar — pinned All filters trigger, promoted chips in authored order, the same popovers on pointer and sheet drill-down on touch, one collapse algorithm, one live count. A tab contributes only its filters, its rows and its result surface: 14 filters for the screener, 8 for the chain, 4 for the analyzer, 8 for the matrix.</li>
-            <li><b>The matrix showed where the concept stretches.</b> Five of its chips are parameters, not filters — Frequency, Year, Analysis, Data and Calculation change what is measured rather than narrowing a set, so the badge counts six the moment you arrive. They are also mandatory: re-picking the current option is a no-op rather than a clear, and Clear all leaves them alone and empties only the symbol selection. Worth deciding whether a parameter belongs in a filter bar at all, or wants a row of its own. Their labels are also long enough that seven chips will not fit on one line at any width the prototype allows — so Symbols and Highlighting, the two a user reaches for most, are the first withdrawn. Either they move earlier in the authored order or the bar needs the scroll strategy here.</li>
+            <li><b>The matrix answers the parameter question differently.</b> Its four controls are parameters, not filters — they change what is measured rather than narrowing a set — so instead of chips and a trigger it reads as a sentence: <em>Showing average of true range per month in 2022</em>. Every control is in the line, which is why it needs no All filters trigger, and the line wraps like prose rather than withdrawing anything. It is a real alternative to the chip bar for surfaces whose controls are all mandatory, and worth comparing side by side with the chain, where the same kind of parameters are chips.</li>
+            <li><b>Analysis carries the sentence.</b> It is a named-metric picker with a description under each option — Total Return, Typical Daily Move, Volatility, % Up Days, Best Day, Worst Day, Total Volume — and each one implies a datapoint and a reduction. Picking Custom grows the sentence two more slots so you can set that pair yourself, which is the only case where the raw vocabulary surfaces. Descriptions in an option list are new to the engine; the DS's Select already supports the label-plus-sublabel template, so this is its filter-popover counterpart.</li>
             <li><b>Choosing what to compare is not filtering.</b> The universe and the compared symbols sit in their own row under the bar, as removable chips with a Compare picker — the reference's second row, and the one place the removable-chip pattern earns its keep. An empty set there means none rather than "no constraint", so clearing the row empties the matrix instead of showing all eight.</li>
             <li><b>Daily means weekday.</b> 252 date columns would not be a matrix, so daily frequency reduces by day of week — the effect a daily seasonality view exists to show. Day-of-month is the other reading; worth confirming which one the tool means.</li>
-            <li><b>One chip can drive another.</b> Choosing an Analysis sets Data and Calculation together; touching either of those drops Analysis back to Custom, exactly as the reference implies. Universe does the same to Symbols. That coupling had to be added to the engine — the spec assumes filters are independent.</li>
+            <li><b>One control can drive another.</b> Choosing an Analysis sets the datapoint and the reduction behind it; choosing a Universe resets the compared symbols to that universe's members. That coupling had to be added to the engine — the spec assumes filters are independent.</li>
             <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
             <li><b>Expiry sits below the bar</b>, at the team's direction. The spec puts navigation above the bar, so this is a deliberate departure: filters read first, then the expiry you are looking at. The strip still scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
             <li><b>Display controls sit where each tool needs them.</b> The chain's View is the last chip in the row — which also makes it the first thing withdrawn, worth deciding on deliberately. The analyzer's Table/Cards keeps its own slot beside the actions and never folds into the overflow. Neither is accented as applied, neither is touched by Clear all, and both stay reachable in the panel.</li>
@@ -1382,13 +1404,19 @@ const PM = (() => {
       out.push(kind === 'ret1d' ? r
         : kind === 'ret1w' ? r * 2.15 + drift * 2.6
         : kind === 'tr' ? Math.abs(r) * 1.55 + 0.32 + h(i) * 0.45
+        : kind === 'shares' ? Math.max(0.4, 17 + z * 6.5 + drift * 3)
         : 82 + z * 26 + drift * 12);
     }
     return out;
   }
+  const mean = a => a.reduce((x, v) => x + v, 0) / a.length;
   const REDUCE = {
     pos:  a => a.filter(v => v > 0).length / a.length * 100,
-    avg:  a => a.reduce((x, v) => x + v, 0) / a.length,
+    avg:  mean,
+    absavg: a => mean(a.map(Math.abs)),
+    std:  a => { const m = mean(a); return Math.sqrt(mean(a.map(v => (v - m) ** 2))); },
+    total: a => (a.reduce((x, v) => x * (1 + v / 100), 1) - 1) * 100,
+    sum:  a => a.reduce((x, v) => x + v, 0),
     med:  a => { const s = [...a].sort((x, y) => x - y); const m = s.length >> 1;
                  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; },
     min:  a => Math.min(...a),
@@ -1398,35 +1426,49 @@ const PM = (() => {
   return { UNIVERSES, NAMES, MONTHS, QUARTERS, WEEKDAYS, YEARS, series, REDUCE };
 })();
 
+/* Named metrics, each of which is a datapoint plus a reduction. Custom exposes
+   the pair directly; everything else implies it. */
+const PM_ANALYSES = [
+  { id:'total',   label:'Total Return',       sub:'Total compounded return over the period', data:'ret1d', calc:'total', unit:'%' },
+  { id:'typical', label:'Typical Daily Move', sub:'Average size of a one-day move',          data:'ret1d', calc:'absavg', unit:'%' },
+  { id:'vola',    label:'Volatility',         sub:'How much daily returns swing (std. deviation)', data:'ret1d', calc:'std', unit:'%' },
+  { id:'up',      label:'% Up Days',          sub:'Share of days that closed higher',        data:'ret1d', calc:'pos',   unit:'%' },
+  { id:'best',    label:'Best Day',           sub:'Largest single-day gain',                 data:'ret1d', calc:'max',   unit:'%' },
+  { id:'worst',   label:'Worst Day',          sub:'Largest single-day loss',                 data:'ret1d', calc:'min',   unit:'%' },
+  { id:'volume',  label:'Total Volume',       sub:'Shares traded over the period',           data:'shares', calc:'sum',  unit:'M' },
+  { id:'custom',  label:'Custom…',            sub:'Pick your own datapoint and calculation' }
+];
+const pmAnalysis = () => PM_ANALYSES.find(a => a.id === val('analysis'));
+
 /* ---- filter set ---- */
 const PM_FILTERS = [
-  { id:'freq', label:'Frequency', kind:'choice', promoted:1, scoped:true, noAll:null,
-    options:[['day','Daily'],['month','Monthly'],['quarter','Quarterly']] },
-  { id:'year', label:'Year', kind:'choice', promoted:2, scoped:true, noAll:null,
-    options:PM.YEARS.map(y => [String(y), String(y)]) },
-  /* Picking an analysis sets Data and Calculation together; touching either of
-     those on its own drops Analysis back to Custom. */
-  { id:'analysis', label:'Analysis', kind:'choice', promoted:3, scoped:true, noAll:null,
-    options:[['seasonality','Seasonality'],['volatility','Volatility'],['liquidity','Liquidity'],['custom','Custom…']],
+  /* Option labels read as sentence fragments, because that is where they sit. */
+  { id:'analysis', label:'Analysis', kind:'choice', promoted:1, scoped:true, noAll:null,
+    options:PM_ANALYSES.map(a => [a.id, a.label, a.sub]),
+    chip:v => v === 'custom' ? 'Custom' : (PM_ANALYSES.find(a => a.id === v) || {}).label,
     onSet:v => {
-      const preset = { seasonality:['ret1d','pos'], volatility:['tr','avg'], liquidity:['vol','avg'] }[v];
-      if (preset) { setVal('data', preset[0]); setVal('calc', preset[1]); }
+      const a = PM_ANALYSES.find(x => x.id === v);
+      if (a && a.data) { setVal('data', a.data); setVal('calc', a.calc); }
     } },
-  { id:'data', label:'Data', kind:'choice', promoted:4, scoped:true, noAll:null,
-    options:[['ret1d','1D return'],['ret1w','1W return'],
-             ['tr','True range'],['vol','Volume vs avg']],
-    onSet:() => setVal('analysis', 'custom') },
-  { id:'calc', label:'Calculation', kind:'choice', promoted:5, scoped:true, noAll:null,
-    options:[['pos','% positive'],['avg','Average'],['med','Median'],
-             ['min','Min'],['max','Max'],['count','Count']],
-    onSet:() => setVal('analysis', 'custom') },
+  { id:'calc', label:'Calculation', kind:'choice', promoted:2, scoped:true, noAll:null,
+    options:[['pos','% positive'],['avg','average'],['med','median'],['std','std deviation'],
+             ['total','total return'],['min','minimum'],['max','maximum'],
+             ['sum','total'],['count','count']] },
+  { id:'data', label:'Data', kind:'choice', promoted:3, scoped:true, noAll:null,
+    options:[['ret1d','1D return'],['ret1w','1W return'],['tr','true range'],
+             ['vol','volume vs avg'],['shares','volume (M)']] },
+  { id:'freq', label:'Frequency', kind:'choice', promoted:4, scoped:true, noAll:null,
+    options:[['day','weekday'],['month','month'],['quarter','quarter']] },
+  { id:'year', label:'Year', kind:'choice', promoted:5, scoped:true, noAll:null,
+    options:PM.YEARS.map(y => [String(y), String(y)]) },
   /* Choosing what to compare is a selection, not a filter, so it gets its own
      row below the bar — and an empty set means none, not "no constraint". */
   { id:'symbols', label:'Symbols', kind:'multi', own:true, emptyMeansNone:true,
     options:() => PM.UNIVERSES[val('universe') || 'Global indices'],
     test:(row, v) => v.includes(row) },
   /* Re-maps the colour scale; it hides no data, so it is a display control. */
-  { id:'highlight', label:'Highlighting', kind:'slider', dual:true, promoted:6, display:true,
+  /* Lives beside the colour ramp it controls, not on the bar. */
+  { id:'highlight', label:'Highlighting', kind:'slider', dual:true, own:true, display:true,
     min:0, max:100, step:1, fmt:v => v + '%' },
   { id:'universe', label:'Universe', kind:'choice', own:true, scoped:true, noAll:null,
     options:Object.keys(PM.UNIVERSES).map(u => [u, u]),
@@ -1453,7 +1495,18 @@ function pmCell(sym, col) {
   return PM.REDUCE[calc](obs);
 }
 const PM_AGG = [['Avg', 'avg'], ['Min', 'min'], ['Max', 'max']];
-const pmFmt = v => val('calc') === 'count' ? Math.round(v).toLocaleString() : v.toFixed(1) + '%';
+function pmUnit() {
+  const a = pmAnalysis();
+  if (a && a.unit) return a.unit;
+  if (val('calc') === 'count') return '';
+  return val('data') === 'shares' ? 'M' : '%';
+}
+const pmFmt = v => {
+  const u = pmUnit();
+  if (u === 'M') return Math.round(v).toLocaleString() + 'M';
+  if (u === '') return Math.round(v).toLocaleString();
+  return v.toFixed(1) + '%';
+};
 
 /* light-to-mid brand ramp, so the value reads through it at every step */
 function pmHeat(v, lo, hi) {
@@ -1498,8 +1551,12 @@ function matrixResults() {
       <span>Lower</span><span class="pmx__ramp"></span><span>Higher</span>
       <div class="pmx__ranges">
         <div><span class="pmx__k">Matrix range</span><b>${pmFmt(dataLo)} → ${pmFmt(dataHi)}</b></div>
-        <div><span class="pmx__k">Highlighting</span><b>${
-          hv && hv.min != null ? `${pmFmt(lo)} → ${pmFmt(hi)}` : 'auto'}</b></div>
+        <div><span class="pmx__k">Highlighting</span>
+          <button class="qxc qxc--inline" type="button" data-chip="highlight"
+            aria-haspopup="dialog" aria-expanded="${state.popOpen === 'highlight'}"
+            aria-label="Highlighting, ${hv && hv.min != null ? pmFmt(lo) + ' to ' + pmFmt(hi) : 'auto'}">
+            <span class="qxc__label">${hv && hv.min != null
+              ? `${Math.round(lo)}% – ${Math.round(hi)}%` : 'Auto'}</span>${I.chev}</button></div>
       </div>
     </div>`;
 }
@@ -1526,21 +1583,6 @@ function symbolRowHTML() {
       aria-haspopup="listbox" aria-expanded="${state.popOpen === 'symbols'}"
       aria-label="Add symbols to compare, ${picked.length} of ${pool.length} selected">
       ${I.plus}<span>Compare</span></button>`}
-  </div>`;
-}
-function matrixContext() {
-  const d = PM_FILTERS.find(f => f.id === 'data'), c = PM_FILTERS.find(f => f.id === 'calc');
-  return `<div class="uline">
-    <div class="uline__id"><span class="uline__sym">${esc(val('universe') || 'Global indices')}</span>
-      <span class="uline__nm">${rowsNow().length} of ${
-        PM.UNIVERSES[val('universe') || 'Global indices'].length} symbols</span></div>
-    <div class="uline__m"><span class="uline__k">Measure</span>
-      <span class="uline__v">${esc(optLabel(d, val('data')))}</span></div>
-    <div class="uline__m"><span class="uline__k">Reduced by</span>
-      <span class="uline__v">${esc(optLabel(c, val('calc')))}</span></div>
-    <div class="uline__m"><span class="uline__k">Period</span>
-      <span class="uline__v">${val('year')} · ${
-        { day:'by weekday', quarter:'quarterly', month:'monthly' }[val('freq')]}</span></div>
   </div>`;
 }
 
@@ -1686,9 +1728,15 @@ const SURFACES = {
   },
   matrix: {
     label:'Performance matrix', filters:PM_FILTERS,
+    /* Reads as a sentence, so it needs no All filters trigger: every control it
+       has is already visible in the line. */
+    sentence:() => val('analysis') === 'custom'
+      ? [{ t:'Showing' }, { id:'analysis' }, { t:'—' }, { id:'calc' }, { t:'of' }, { id:'data' },
+         { t:'per' }, { id:'freq' }, { t:'in' }, { id:'year' }]
+      : [{ t:'Showing' }, { id:'analysis' }, { t:'per' }, { id:'freq' }, { t:'in' }, { id:'year' }],
     base:() => PM.UNIVERSES[val('universe') || 'Global indices'],
     unit:n => n === 1 ? 'symbol' : 'symbols',
-    below:() => symbolRowHTML() + matrixContext(),
+    below:symbolRowHTML,
     results:matrixResults,
     actions:() => [{ i:'dl', t:'Export' }]
   },
@@ -1696,7 +1744,6 @@ const SURFACES = {
     label:'Options analyzer', filters:AN_FILTERS,
     base:() => AN.STRATS,
     unit:n => n === 1 ? 'strategy' : 'strategies',
-    below:underlyingHTML,
     results:analyzerResults,
     display:[{ id:'view', label:'View', kind:'choice', display:true, toggle:true, noAll:null,
                options:[['table','Table'],['cards','Cards']] }],
@@ -1733,7 +1780,7 @@ const state = {
   pro:false, options:false,
   values:{ screener:{}, chain:{ window:5, view:'straddle' },
     analyzer:{ minProb:{min:70}, dte:{min:0,max:90} },
-    matrix:{ freq:'month', year:'2022', analysis:'seasonality', data:'ret1d', calc:'pos',
+    matrix:{ freq:'month', year:'2022', analysis:'up', data:'ret1d', calc:'pos',
       universe:'Global indices', symbols:['EFA','EEM','VGK','FXI','EWJ'] } },
   expiry:'e0', expScroll:0, rowScroll:0,
   panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null,
@@ -1858,7 +1905,7 @@ function optionRows(f, useSearch) {
     const rows = f.noAll !== null
       ? [{ key:'__all', label:f.noAll || 'All', on:v == null, type:'radio' }] : [];
     pairs(f).filter(match).forEach(o => rows.push({
-      key:o[0], label:o[1], on:String(v) === String(o[0]), type:'radio' }));
+      key:o[0], label:o[1], sub:o[2], on:String(v) === String(o[0]), type:'radio' }));
     return rows;
   }
   if (f.kind === 'slider') {
@@ -1917,17 +1964,18 @@ function tabsHTML() {
 function barHTML() {
   const s = surf();
   const readonly = state.sim === 'readonly';
-  const chips = promotedList().map(f => {
+  const chipFor = (f, inline) => {
     const gated = isGated(f), dis = isDisabled(f), sel = hasValue(f) && !dis && !f.display;
     const open = state.popOpen === f.id || (isTouch() && state.panelOpen && state.drill === f.id);
     const trailing = readonly ? '' : gated ? I.lock : I.chev;
-    return `<button class="qxc" type="button" data-chip="${f.id}"
-      data-selected="${sel}" data-gated="${gated}" data-disabled="${dis}" data-readonly="${readonly}"
+    return `<button class="qxc${inline ? ' qxc--inline' : ''}" type="button" data-chip="${f.id}"
+      data-selected="${inline ? 'false' : sel}" data-gated="${gated}" data-disabled="${dis}" data-readonly="${readonly}"
       ${dis ? 'aria-disabled="true"' : ''}
       ${readonly || dis ? '' : `aria-haspopup="${f.kind === 'multi' ? 'listbox' : 'dialog'}" aria-expanded="${open}"`}
-      aria-label="${esc(fullLabel(f))}${gated ? ', upgrade required' : ''}${dis ? ', not applicable to options' : ''}">
-      <span class="qxc__label">${esc(chipLabel(f))}</span>${trailing}</button>`;
-  }).join('');
+      aria-label="${esc(inline ? f.label + ', ' + valueText(f) : fullLabel(f))}${gated ? ', upgrade required' : ''}${dis ? ', not applicable to options' : ''}">
+      <span class="qxc__label">${esc(inline ? valueText(f) : chipLabel(f))}</span>${trailing}</button>`;
+  };
+  const chips = promotedList().map(f => chipFor(f, false)).join('');
 
   /* The badge counts filters the user has set, not filters that exist. */
   const applied = activeFilters().length;
@@ -1958,10 +2006,16 @@ function barHTML() {
         ${a.aria ? `aria-label="${esc(a.aria)}"` : ''}>${I[a.i]}${a.t ? `<span>${a.t}</span>` : ''}</button>`).join('')}
     </div>` : '';
 
+  const parts = s.sentence ? (typeof s.sentence === 'function' ? s.sentence() : s.sentence) : null;
+  const sentence = parts ? parts.map(part => part.t
+    ? `<span class="sent__t">${part.t}</span>`
+    : chipFor(F(part.id), true)).join('') : '';
+
   return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}"
-      data-state="${state.sim}" data-overflow="${state.overflow}">
+      data-state="${state.sim}" data-overflow="${parts ? 'wrap' : state.overflow}"
+      ${parts ? 'data-sentence="true"' : ''}>
     <div class="qxfb__row" id="row" role="group" aria-label="Filters">
-      ${trigger}<div class="qxfb__chips" id="chips">${chips}</div>
+      ${parts ? '' : trigger}<div class="qxfb__chips" id="chips">${parts ? sentence : chips}</div>
       <div class="qxfb__right" id="right">${clear}${dispSlot}${actions}</div>
     </div>
     ${state.overflow === 'scroll' ? `
@@ -2099,7 +2153,9 @@ function optHTML(f, r, ns) {
     data-opt="${esc(String(r.key))}">
     ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>`
                          : `<span class="opt__radio"></span>`}
-    <span class="opt__label">${esc(r.label)}</span></button>`;
+    ${r.sub ? `<span class="opt__stack"><span class="opt__label">${esc(r.label)}</span>
+      <span class="opt__sub">${esc(r.sub)}</span></span>`
+      : `<span class="opt__label">${esc(r.label)}</span>`}</button>`;
 }
 function customHTML(f, cls) {
   const v = val(f.id);
@@ -2348,11 +2404,14 @@ function layout() {
   if (clearEl) clearEl.classList.remove('is-withdrawn');
 
   // Reserve the trigger at its worst-case badge so a growing count never reflows.
-  const worst = String(surf().filters.length);
-  const shown = badge.textContent, wasHidden = badge.hidden;
-  badge.hidden = false; badge.textContent = worst;
-  const triggerW = Math.ceil(trigger.getBoundingClientRect().width);
-  badge.textContent = shown; badge.hidden = wasHidden;
+  let triggerW = 0;
+  if (trigger && badge) {
+    const worst = String(surf().filters.length);
+    const shown = badge.textContent, wasHidden = badge.hidden;
+    badge.hidden = false; badge.textContent = worst;
+    triggerW = Math.ceil(trigger.getBoundingClientRect().width);
+    badge.textContent = shown; badge.hidden = wasHidden;
+  }
 
   const cs = getComputedStyle(row);
   const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
@@ -2371,8 +2430,12 @@ function layout() {
   const rightExpandedW = rightW;
   let actionsCollapsed = false;
 
-  const promoted = promotedList();
-  const mode = state.overflow;
+  const promoted = surf().sentence
+    ? chipEls.map(el => F(el.dataset.chip)).filter(Boolean)
+    : promotedList();
+  /* A sentence is prose: it wraps, and it withdraws nothing — there is no
+     trigger to withdraw into. */
+  const mode = surf().sentence ? 'wrap' : state.overflow;
   const budgetFor = rw => rowW - triggerW - rw - GAP;
   const cost = set => [...set].reduce((a, id) => a + widths.get(id) + GAP, 0);
   let visible = new Set(promoted.map(f => f.id));
@@ -2430,20 +2493,21 @@ function layout() {
     rowW:row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
     budget, consumed:cost(visible), visible:[...visible], withdrawn, allWithdrawn,
     order:promoted.map(f => f.id), widths, gatedIds:promoted.filter(f => isGated(f)).map(f => f.id),
-    clearWithdrawn
+    clearWithdrawn, sentence:!!surf().sentence
   };
 
   const off = appliedOffBar();
   const applied = activeFilters().length;
-  badge.textContent = applied;
-  badge.hidden = applied === 0;
   telemetry.hidden = hiddenCount();
   telemetry.appliedOffBar = off.map(f => f.id);
   telemetry.appliedTotal = applied;
-  trigger.dataset.selected = String(off.length > 0);
-  trigger.setAttribute('aria-label', 'All filters'
-    + (applied ? ', ' + applied + ' applied' : '')
-    + (off.length ? ', ' + off.length + ' of them not shown on the bar' : ''));
+  if (badge) { badge.textContent = applied; badge.hidden = applied === 0; }
+  if (trigger) {
+    trigger.dataset.selected = String(off.length > 0);
+    trigger.setAttribute('aria-label', 'All filters'
+      + (applied ? ', ' + applied + ' applied' : '')
+      + (off.length ? ', ' + off.length + ' of them not shown on the bar' : ''));
+  }
 
   const ph = $('#panelHint'); if (ph) ph.textContent = panelHintText();
   layoutRowScroll(row, mode);
@@ -2545,7 +2609,7 @@ function renderTelemetry() {
     line('strategy', t.mode) +
     line('container', Math.round(t.rowW) + 'px') +
     line('row padding', '−' + t.padX) +
-    line('All filters (reserved)', '−' + t.triggerW) +
+    (t.sentence ? line('no All filters trigger', '—') : line('All filters (reserved)', '−' + t.triggerW)) +
     line(t.allWithdrawn ? 'clear only' : t.actionsCollapsed ? 'clear + overflow' : 'clear + actions', '−' + t.rightW) +
     line('gap', '−' + GAP) +
     `<div class="eq">chip budget<b>${t.budget}px</b></div>` +
@@ -2578,7 +2642,10 @@ function renderTelemetry() {
   const gatedOut = t.gatedIds.filter(id => t.withdrawn.includes(id));
   const ungatedIn = t.order.filter(id => !t.gatedIds.includes(id) && !t.withdrawn.includes(id));
   const as = [
-    t.mode === 'wrap'
+    t.sentence
+      ? [true, `Reads as a sentence, so it wraps like prose — <b>${t.lines} line${
+          t.lines === 1 ? '' : 's'}</b> at <b>${t.rowH}px</b>. Nothing is withdrawn and there is no trigger, because every control it has is already in the line.`]
+      : t.mode === 'wrap'
       ? [t.lines === 1, t.lines === 1
           ? `One line at this width — <b>${t.rowH}px</b>, but the row is free to wrap`
           : `Row wrapped to <b>${t.lines} lines</b> — height moved to <b>${t.rowH}px</b>, so a sticky-header offset can no longer be a constant. This is the trade-off the spec's no-wrap rule exists to avoid.`]
@@ -2945,7 +3012,7 @@ const base = () => {
     panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
   state.values = { screener:{}, chain:{ window:5, view:'straddle' },
     analyzer:{ minProb:{min:70}, dte:{min:0,max:90} },
-    matrix:{ freq:'month', year:'2022', analysis:'seasonality', data:'ret1d', calc:'pos',
+    matrix:{ freq:'month', year:'2022', analysis:'up', data:'ret1d', calc:'pos',
       universe:'Global indices', symbols:['EFA','EEM','VGK','FXI','EWJ'] } };
   drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
@@ -3031,29 +3098,37 @@ const FLOWS = [
     run:() => { anBaseFlow(); V({ minProb:{min:97}, dte:{min:0,max:90} }); } },
 
   // ---- Performance matrix ----
-  { id:'pm-default', g:'Performance matrix', t:'Seasonality', d:'% positive by month, 2022', w:1180, run:pmBaseFlow },
-  { id:'pm-all', t:'All seven, scrolled', d:'Long labels need the scroll strategy', w:1180,
-    run:() => { pmBaseFlow(); state.promotedCount = 99; state.overflow = 'scroll'; } },
-  { id:'pm-chip', t:'Calculation popover', d:'Six reductions of one series', w:1180,
-    run:() => { pmBaseFlow(); state.popOpen = 'calc'; } },
-  { id:'pm-analysis', t:'Analysis preset', d:'One chip sets two others', w:1180,
+  { id:'pm-default', g:'Performance matrix', t:'Sentence filters', d:'No trigger, every control in the line', w:1180, run:pmBaseFlow },
+  { id:'pm-chip', t:'Analysis picker', d:'Named metrics with descriptions', w:1180,
     run:() => { pmBaseFlow(); state.popOpen = 'analysis'; } },
-  { id:'pm-vol', t:'Volatility lens', d:'True range, averaged', w:1180,
+  { id:'pm-total', t:'Total return', d:'Compounded over each month', w:1180,
     run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
-      { analysis:'volatility', data:'tr', calc:'avg' }); } },
+      { analysis:'total', data:'ret1d', calc:'total' }); } },
+  { id:'pm-vola', t:'Volatility', d:'Standard deviation of daily moves', w:1180,
+    run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
+      { analysis:'vola', data:'ret1d', calc:'std' }); } },
+  { id:'pm-volume', t:'Total volume', d:'Different unit, same sentence', w:1180,
+    run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
+      { analysis:'volume', data:'shares', calc:'sum' }); } },
+  { id:'pm-custom', t:'Custom…', d:'Sentence grows two more slots', w:1180,
+    run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
+      { analysis:'custom', data:'tr', calc:'avg' }); } },
   { id:'pm-daily', t:'Daily', d:'Columns become weekdays', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.freq = 'day'; } },
   { id:'pm-quarter', t:'Quarterly', d:'Four columns, same reductions', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.freq = 'quarter'; } },
-  { id:'pm-highlight', t:'Highlight range', d:'Re-maps the scale, hides nothing', w:1180,
-    run:() => { pmBaseFlow(); state.promotedCount = 99; state.overflow = 'scroll';
-      state.values.matrix.highlight = { min:40, max:60 }; } },
+  { id:'pm-highlight', t:'Highlight range', d:'Sits beside the ramp it drives', w:1180,
+    run:() => { pmBaseFlow(); state.values.matrix.highlight = { min:40, max:60 };
+      state.popOpen = 'highlight'; } },
   { id:'pm-universe', t:'US sectors', d:'Universe swaps the symbol set', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.universe = 'US sectors';
       state.values.matrix.symbols = PM.UNIVERSES['US sectors'].slice(0, 6); } },
   { id:'pm-compare', t:'Compare picker', d:'Symbol row, not the filter bar', w:1180,
     run:() => { pmBaseFlow(); state.popOpen = 'symbols'; } },
-  { id:'pm-mob', t:'Matrix on mobile', d:'Sticky symbol column, scrolls', w:400,
+  { id:'pm-wrap', t:'Sentence wraps', d:'Two lines, no trigger to fall back on', w:540,
+    run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
+      { analysis:'custom', data:'tr', calc:'avg' }); } },
+  { id:'pm-mob', t:'Matrix on mobile', d:'Sentence over three lines', w:400,
     run:() => { pmBaseFlow(); state.input = 'touch'; } },
   { id:'pm-one', t:'One symbol', d:'Matrix down to a single row', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.symbols = ['EFA']; } },
