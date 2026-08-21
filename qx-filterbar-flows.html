@@ -189,6 +189,24 @@ button{font:inherit;color:inherit}
 }
 .qxfb[data-density="compact"] .qxfb__row{padding:6px 10px}
 .qxfb__right{display:flex;align-items:center;gap:12px;margin-left:auto;flex:0 0 auto}
+/* Overflow strategy. `menu` withdraws chips into All filters; `wrap` lets the row
+   run to more lines; `scroll` keeps one line and scrolls the chips between the
+   pinned trigger and the pinned count. */
+.qxfb__chips{display:contents}
+.qxfb[data-overflow="wrap"] .qxfb__row{align-items:flex-start}
+.qxfb[data-overflow="wrap"] .qxfb__chips{
+  display:flex;flex-wrap:wrap;gap:8px;flex:1 1 auto;min-width:0;
+}
+.qxfb[data-overflow="wrap"] .qxfb__right{padding-top:2px}
+.qxfb[data-overflow="wrap"] .qxfb__chips .qxc{flex:0 1 auto;min-width:0}
+.qxfb[data-overflow="wrap"] .qxfb__chips .qxc .qxc__label{min-width:0}
+.qxfb[data-overflow="scroll"] .qxfb__chips{
+  display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;
+  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  padding:4px 0;margin:-4px 0;                 /* keep the focus ring unclipped */
+}
+.qxfb[data-overflow="scroll"] .qxfb__chips::-webkit-scrollbar{display:none}
+.qxfb[data-overflow="scroll"] .qxfb__right{padding-left:4px}
 .qxfb__count{
   font-size:12px;color:var(--qx-text-secondary);white-space:nowrap;
   font-variant-numeric:tabular-nums;
@@ -845,6 +863,16 @@ button{font:inherit;color:inherit}
     </div>
 
     <div class="grp">
+      <div class="grp__label">Overflow</div>
+      <div class="seg" id="segOverflow">
+        <button data-v="menu" aria-pressed="true">Menu</button>
+        <button data-v="wrap" aria-pressed="false">Wrap</button>
+        <button data-v="scroll" aria-pressed="false">Scroll</button>
+      </div>
+      <div class="grp__note">What happens to chips that do not fit: withdraw into All filters, wrap to more lines, or scroll on one line.</div>
+    </div>
+
+    <div class="grp">
       <div class="grp__label">Input mode</div>
       <div class="seg" id="segInput">
         <button data-v="pointer" aria-pressed="true">Pointer</button>
@@ -916,7 +944,9 @@ button{font:inherit;color:inherit}
         <div class="note">
           <h3>What the prototype resolves</h3>
           <ul>
-            <li><b>The control row is the only row.</b> With the applied tray removed, state lives in the chip labels — and in the trigger, which takes the selected treatment whenever an applied filter is off the bar.</li>
+            <li><b>Three overflow strategies, one measurement.</b> Switch Overflow to compare what happens to chips that do not fit: withdraw into All filters, wrap to more lines, or scroll on one line. The same fit arithmetic drives all three — only the response differs. Wrap is the one that costs a fixed row height; scroll is the one where nothing is ever withdrawn, so the badge and the panel stay in step with the bar.</li>
+            <li><b>The badge counts what you set</b>, not what exists. Zero filters, no badge. The spec defines it as the count of filters available elsewhere; that number is still in the telemetry as <code>reachable only in panel</code>, but the bar now answers "how filtered am I" instead of "how much is hidden".</li>
+            <li><b>The control row is the only row</b> under menu and scroll. With the applied tray removed, state lives in the chip labels — and in the trigger, which takes the selected treatment whenever a set filter is off the bar.</li>
             <li><b>Gated chips outlast ungated ones.</b> Analyst rating is withdrawn last, after every ungated chip — watch the pills as you narrow.</li>
             <li><b>Actions collapse before filters.</b> On the Actions skin the group folds to one overflow button while all six chips are still showing.</li>
             <li><b>The trigger width is reserved</b> at its worst-case two-digit badge, so growing the count never forces a second pass.</li>
@@ -937,7 +967,8 @@ button{font:inherit;color:inherit}
             <li><b>One component, three filter sets.</b> Every tab runs the same bar — pinned All filters trigger, promoted chips in authored order, the same popovers on pointer and sheet drill-down on touch, one collapse algorithm, one live count. A tab contributes only its filters, its rows and its result surface: 14 filters for the screener, 8 for the chain, 4 for the analyzer.</li>
             <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
             <li><b>Expiry sits below the bar</b>, at the team's direction. The spec puts navigation above the bar, so this is a deliberate departure: filters read first, then the expiry you are looking at. The strip still scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
-            <li><b>Display controls sit where each tool needs them.</b> The chain's View rides in the chip row as a first-class chip; the analyzer's Table/Cards keeps its own slot beside the actions and never folds into the overflow. Neither is accented as applied, neither is touched by Clear all, and both stay reachable in the panel.</li>
+            <li><b>Display controls sit where each tool needs them.</b> The chain's View is the last chip in the row — which also makes it the first thing withdrawn, worth deciding on deliberately. The analyzer's Table/Cards keeps its own slot beside the actions and never folds into the overflow. Neither is accented as applied, neither is touched by Clear all, and both stay reachable in the panel.</li>
+            <li><b>The panel reads in row order.</b> Promoted filters first, in the order their chips appear, then everything that never made the bar under "More filters". Grouping by subject is gone — the trade is scannability across 14 screener filters for a panel that mirrors the bar exactly.</li>
             <li><b>No per-option match counts.</b> The spec asks for them inside every popover as the compensation for not seeing into a filter before opening it. They are out by decision, so the bar's live result count is now the only feedback a selection gets — worth watching in testing, on the chain especially, where a liquidity filter can empty the table in one click.</li>
             <li><b>The menu does not animate in.</b> Neither the drawer nor the sheet has an entry transition; only a drill step slides, and only when you move between levels. Nothing on the surrounding tool moves when the menu opens.</li>
             <li><b>One control height across all three.</b> 48px comfortable on every tab, so a sticky-header offset is a constant rather than a per-tool measurement.</li>
@@ -1294,27 +1325,23 @@ const SCREENER_FILTERS = [
 /* Expiry type, strike window and anchor re-scope the row set rather than
    testing rows, so they are marked `scoped` and applied in base(). */
 const CHAIN_FILTERS = [
-  /* A layout switch is a display control, not a filter — it sits in the chip row
-     by product decision, but never counts as applied and Clear all leaves it be. */
-  { id:'view', label:'View', kind:'choice', group:'View', promoted:1, display:true, noAll:null,
-    options:[['side','Side-by-side'],['stack','Stacked'],['calls','Calls only'],['puts','Puts only']] },
-  { id:'expiryType', label:'Expiry', kind:'choice', group:'Expiry', promoted:2, scoped:true,
+  { id:'expiryType', label:'Expiry', kind:'choice', group:'Expiry', promoted:1, scoped:true,
     options:[['Weekly','Weekly'],['Monthly','Monthly'],['Quarterly','Quarterly'],['LEAPS','LEAPS']],
  },
-  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:3, scoped:true, noAll:'All strikes',
+  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:2, scoped:true, noAll:'All strikes',
     options:[[5,'±5 strikes'],[10,'±10 strikes'],[20,'±20 strikes']] },
   { id:'near', label:'Near', kind:'choice', group:'Strikes', scoped:true, search:true,
     noAll:'Spot (311.51)',
     options:() => CH.STRIKES.map(k => [String(k), String(k)]) },
-  { id:'nearPct', label:'Near money', kind:'choice', group:'Strikes', promoted:4,
+  { id:'nearPct', label:'Near money', kind:'choice', group:'Strikes', promoted:3,
     options:[[2,'Within 2%'],[5,'Within 5%'],[10,'Within 10%'],[15,'Within 15%'],[20,'Within 20%'],[25,'Within 25%']],
     chip:v => 'within ' + v + '%',
     test:(r,v) => Math.abs(r.m) * 100 <= v },
-  { id:'minVol', label:'Min volume', kind:'choice', group:'Liquidity', promoted:5,
+  { id:'minVol', label:'Min volume', kind:'choice', group:'Liquidity', promoted:4,
     options:[[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
     chip:v => 'over ' + num(v),
     test:(r,v) => Math.max(r.call.vol, r.put.vol) >= v },
-  { id:'maxSpread', label:'Max spread', kind:'choice', group:'Liquidity', promoted:6,
+  { id:'maxSpread', label:'Max spread', kind:'choice', group:'Liquidity', promoted:5,
     options:[[5,'Tight (under 5%)'],[15,'Normal (under 15%)'],[30,'Wide (under 30%)']],
     chip:v => v === 5 ? 'tight' : v === 15 ? 'normal' : 'wide',
     test:(r,v) => Math.min(r.call.spr / r.call.last, r.put.spr / r.put.last) * 100 <= v },
@@ -1322,6 +1349,11 @@ const CHAIN_FILTERS = [
     options:[[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
     chip:v => 'over ' + num(v),
     test:(r,v) => Math.max(r.call.oi, r.put.oi) >= v },
+  /* A layout switch is a display control, not a filter — it rides in the chip row
+     by product decision, but never counts as applied and Clear all leaves it be.
+     Last in authored order, so it is also the first chip withdrawn. */
+  { id:'view', label:'View', kind:'choice', group:'View', promoted:6, display:true, noAll:null,
+    options:[['straddle','Straddle'],['stack','Stacked'],['calls','Calls only'],['puts','Puts only']] },
   { id:'deliverables', label:'Deliverables', kind:'choice', group:'Contract',
     options:[['std','Standard only'],['ns','Non-standard only']],
     help:'Non-standard (adjusted) contracts come from splits or mergers and are usually illiquid.',
@@ -1346,7 +1378,6 @@ const AN_FILTERS = [
 const SURFACES = {
   screener: {
     label:'Screener', filters:SCREENER_FILTERS,
-    groups:['Fundamentals','Market','Profile'],
     inapplicable:['pe','dy','rating'],
     base:() => SYMBOLS,
     unit:n => n === 1 ? 'result' : 'results',
@@ -1356,7 +1387,6 @@ const SURFACES = {
   },
   chain: {
     label:'Options chain', filters:CHAIN_FILTERS,
-    groups:['View','Expiry','Strikes','Liquidity','Contract'],
     base:chainBase,
     unit:n => n === 1 ? 'strike' : 'strikes',
     below:expiryStripHTML,
@@ -1365,7 +1395,6 @@ const SURFACES = {
   },
   analyzer: {
     label:'Options analyzer', filters:AN_FILTERS,
-    groups:['Outlook','Constraints'],
     base:() => AN.STRATS,
     unit:n => n === 1 ? 'strategy' : 'strategies',
     below:underlyingHTML,
@@ -1401,9 +1430,9 @@ function chainBase(v) {
 /* ---------------------------------------------------------------- state */
 const state = {
   tab:'screener', input:'pointer',
-  skin:'full', density:'comfortable', sim:'default', promotedCount:6,
+  skin:'full', density:'comfortable', sim:'default', promotedCount:6, overflow:'menu',
   pro:false, options:false, showCount:true,
-  values:{ screener:{}, chain:{ window:5, view:'side' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } },
+  values:{ screener:{}, chain:{ window:5, view:'straddle' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } },
   expiry:'e0', expScroll:0,
   panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null,
   width:1180, flow:'default'
@@ -1583,12 +1612,13 @@ function barHTML() {
       <span class="qxc__label">${esc(chipLabel(f))}</span>${trailing}</button>`;
   }).join('');
 
-  const hidden = hiddenCount();
+  /* The badge counts filters the user has set, not filters that exist. */
+  const applied = activeFilters().length;
   const trigger = `<button class="qxc qxfb__all" type="button" id="allTrigger"
       aria-haspopup="dialog" aria-expanded="${state.panelOpen}"
-      aria-label="All filters${hidden ? ', ' + hidden + ' more available' : ''}">
+      aria-label="All filters${applied ? ', ' + applied + ' applied' : ''}">
       <span class="qxc__icon">${I.sliders}</span><span class="qxc__label">All filters</span>
-      <span class="qxfb__badge" id="allBadge" ${hidden ? '' : 'hidden'}>${hidden}</span></button>`;
+      <span class="qxfb__badge" id="allBadge" ${applied ? '' : 'hidden'}>${applied}</span></button>`;
 
   const n = rowsNow().length;
   const clear = (activeFilters().length && !readonly)
@@ -1615,9 +1645,10 @@ function barHTML() {
         ${a.aria ? `aria-label="${esc(a.aria)}"` : ''}>${I[a.i]}${a.t ? `<span>${a.t}</span>` : ''}</button>`).join('')}
     </div>` : '';
 
-  return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}" data-state="${state.sim}">
+  return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}"
+      data-state="${state.sim}" data-overflow="${state.overflow}">
     <div class="qxfb__row" id="row" role="group" aria-label="Filters">
-      ${trigger}${chips}
+      ${trigger}<div class="qxfb__chips" id="chips">${chips}</div>
       <div class="qxfb__right" id="right">${clear}${count}${dispSlot}${actions}</div>
     </div>
   </div>`;
@@ -1689,7 +1720,7 @@ function chainResults() {
     'The liquidity filters are the usual cause.');
   const maxC = Math.max(1, ...rows.map(r => r.call.vol));
   const maxP = Math.max(1, ...rows.map(r => r.put.vol));
-  const body = layout === 'side' ? chainSide(rows, maxC, maxP)
+  const body = layout === 'straddle' ? chainSide(rows, maxC, maxP)
     : layout === 'stack' ? chainOne(rows, 'call', maxC, true) + chainOne(rows, 'put', maxP, true)
     : chainOne(rows, layout === 'calls' ? 'call' : 'put', layout === 'calls' ? maxC : maxP);
   return `<div class="tblwrap scroller">${body}</div>
@@ -1874,9 +1905,15 @@ function filterState(f) {
   if (isDisabled(f)) return 'n/a for options';
   return hasValue(f) ? valueText(f) : 'Any';
 }
+/* The panel reads in the same order as the row: promoted filters in their chip
+   order, then everything that never made it onto the bar. */
 function panelGroups() {
   const s = surf();
-  const out = s.groups.map(g => ({ g, fs:s.filters.filter(f => f.group === g) })).filter(x => x.fs.length);
+  const promoted = promotedList();
+  const rest = s.filters.filter(f => !promoted.includes(f));
+  const out = [];
+  if (promoted.length) out.push({ g:null, fs:promoted });
+  if (rest.length) out.push({ g:'More filters', fs:rest });
   if (s.display && s.display.length) out.push({ g:'Display', fs:s.display });
   return out;
 }
@@ -1889,7 +1926,8 @@ function controlBodyHTML(f, ns) {
 }
 /* Pointer: sections expand in place. */
 function accordionHTML() {
-  return panelGroups().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
+  return panelGroups().map(({ g, fs }) => `<div class="grp2">${
+    g ? `<div class="grp2__label">${g}</div>` : ''}${
     fs.map(f => {
       const gated = isGated(f), dis = isDisabled(f);
       const open = state.panelOpenFilter === f.id;
@@ -1907,7 +1945,8 @@ function accordionHTML() {
 /* Touch: a filter list, then one filter's options, with a Back that returns. */
 function drillListHTML() {
   return `<div class="drill${drillAnim === 'back' ? ' drill--back is-entering' : ''}">${
-    panelGroups().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
+    panelGroups().map(({ g, fs }) => `<div class="grp2">${
+      g ? `<div class="grp2__label">${g}</div>` : ''}${
       fs.map(f => {
         const dis = isDisabled(f);
         const st = f.display ? optLabel(f, dispVal(f)) : filterState(f);
@@ -1983,7 +2022,7 @@ function closePanel() {
 const GAP = 8;
 function layout() {
   const row = $('#row'); if (!row) return;
-  const chipEls = [...row.querySelectorAll('.qxfb__row > [data-chip]')];
+  const chipEls = [...row.querySelectorAll('#chips > [data-chip]')];
   const right = $('#right'), actions = $('#actions'), badge = $('#allBadge'), trigger = $('#allTrigger');
 
   chipEls.forEach(c => c.classList.remove('is-withdrawn'));
@@ -2016,58 +2055,76 @@ function layout() {
   let actionsCollapsed = false;
 
   const promoted = promotedList();
+  const mode = state.overflow;
   const budgetFor = rw => rowW - triggerW - rw - GAP;
   const cost = set => [...set].reduce((a, id) => a + widths.get(id) + GAP, 0);
   let visible = new Set(promoted.map(f => f.id));
   let budget = budgetFor(rightW);
-
-  // The action group collapses before any filter chip is withdrawn.
-  if (actions && cost(visible) > budget) {
-    actions.classList.add('is-collapsed');
-    actionsCollapsed = true;
-    rightW = wOf(right);
-    budget = budgetFor(rightW);
-  }
-
-  // Withdraw right-to-left; every ungated chip goes before any gated one.
-  const ungated = promoted.filter(f => !isGated(f)).map(f => f.id).reverse();
-  const gated = promoted.filter(f => isGated(f)).map(f => f.id).reverse();
-  const order = [...ungated, ...gated];
   const withdrawn = [];
-  let i = 0;
-  while (cost(visible) > budget && i < order.length) {
-    visible.delete(order[i]); withdrawn.push(order[i]); i++;
+
+  if (mode === 'menu') {
+    // The action group collapses before any filter chip is withdrawn.
+    if (actions && cost(visible) > budget) {
+      actions.classList.add('is-collapsed');
+      actionsCollapsed = true;
+      rightW = wOf(right);
+      budget = budgetFor(rightW);
+    }
+    // Withdraw right-to-left; every ungated chip goes before any gated one.
+    const ungated = promoted.filter(f => !isGated(f)).map(f => f.id).reverse();
+    const gated = promoted.filter(f => isGated(f)).map(f => f.id).reverse();
+    const order = [...ungated, ...gated];
+    let i = 0;
+    while (cost(visible) > budget && i < order.length) {
+      visible.delete(order[i]); withdrawn.push(order[i]); i++;
+    }
+    chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
+  } else if (mode === 'scroll' && actions) {
+    // One line still, so the right group has to fit alongside a partial chip.
+    if (triggerW + rightW + GAP + 96 > rowW) {
+      actions.classList.add('is-collapsed');
+      actionsCollapsed = true;
+      rightW = wOf(right);
+    }
   }
-  chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
 
   /* Last resort, once every chip is already withdrawn: drop the inline Clear.
      It is the only control here that is duplicated verbatim in the panel footer,
      so losing it costs nothing — unlike the count or the view toggle. */
   let clearWithdrawn = false;
-  if (clearEl && triggerW + wOf(right) + GAP > rowW) {
+  if (clearEl && mode !== 'wrap' && triggerW + wOf(right) + GAP > rowW) {
     clearEl.classList.add('is-withdrawn');
     clearWithdrawn = true;
     rightW = wOf(right);
   }
 
+  const chipsBox = $('#chips');
+  const lines = mode === 'wrap'
+    ? new Set(chipEls.map(el => el.offsetTop)).size : 1;
+  let inView = chipEls.length;
+  if (mode === 'scroll' && chipsBox) {
+    const l = chipsBox.scrollLeft, r = l + chipsBox.clientWidth;
+    inView = chipEls.filter(el => el.offsetLeft >= l - 1 && el.offsetLeft + el.offsetWidth <= r + 1).length;
+  }
   telemetry = {
-    surface:state.tab, rowW:row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
+    surface:state.tab, mode, lines, inView,
+    rowW:row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
     budget, consumed:cost(visible), visible:[...visible], withdrawn,
     order:promoted.map(f => f.id), widths, gatedIds:promoted.filter(f => isGated(f)).map(f => f.id),
     clearWithdrawn
   };
 
-  const hidden = hiddenCount();
-  badge.textContent = hidden;
-  badge.hidden = hidden === 0;
-
   const off = appliedOffBar();
+  const applied = activeFilters().length;
+  badge.textContent = applied;
+  badge.hidden = applied === 0;
+  telemetry.hidden = hiddenCount();
   telemetry.appliedOffBar = off.map(f => f.id);
-  telemetry.appliedTotal = activeFilters().length;
+  telemetry.appliedTotal = applied;
   trigger.dataset.selected = String(off.length > 0);
   trigger.setAttribute('aria-label', 'All filters'
-    + (hidden ? ', ' + hidden + ' more available' : '')
-    + (off.length ? ', ' + off.length + ' applied and not shown on the bar' : ''));
+    + (applied ? ', ' + applied + ' applied' : '')
+    + (off.length ? ', ' + off.length + ' of them not shown on the bar' : ''));
 
   const ph = $('#panelHint'); if (ph) ph.textContent = panelHintText();
   layoutStrip();
@@ -2145,6 +2202,7 @@ function renderTelemetry() {
 
   const line = (k, v, op) => `<div><span class="op">${op || ''}</span>${k}<b>${v}</b></div>`;
   $('#kvMath').innerHTML =
+    line('strategy', t.mode) +
     line('container', Math.round(t.rowW) + 'px') +
     line('row padding', '−' + t.padX) +
     line('All filters (reserved)', '−' + t.triggerW) +
@@ -2152,7 +2210,8 @@ function renderTelemetry() {
     line('gap', '−' + GAP) +
     `<div class="eq">chip budget<b>${t.budget}px</b></div>` +
     line('consumed by ' + t.visible.length + ' chips', t.consumed + 'px') +
-    line('headroom', (t.budget - t.consumed) + 'px');
+    line(t.mode === 'menu' ? 'headroom' : 'over budget by',
+      (t.mode === 'menu' ? t.budget - t.consumed : Math.max(0, t.consumed - t.budget)) + 'px');
 
   $('#pillsChips').innerHTML = t.order.map(id => {
     const out = t.withdrawn.includes(id);
@@ -2165,9 +2224,11 @@ function renderTelemetry() {
   $('#kvCounts').innerHTML =
     line('withdrawn', t.withdrawn.length) +
     line('never promoted', never) +
-    `<div class="eq">All filters badge<b>${t.withdrawn.length + never}</b></div>` +
-    line('applied', t.appliedTotal || 0) +
-    line('applied, no chip', (t.appliedOffBar || []).length) +
+    line('reachable only in panel', t.withdrawn.length + never) +
+    `<div class="eq">badge — filters set<b>${t.appliedTotal || 0}</b></div>` +
+    line('set, with no chip', (t.appliedOffBar || []).length) +
+    (t.mode === 'wrap' ? line('lines used', t.lines) : '') +
+    (t.mode === 'scroll' ? line('chips in view', t.inView + ' / ' + t.order.length) : '') +
     (t.tabsTotal ? line('expiry tabs in view', t.tabsVisible + ' / ' + t.tabsTotal) : '') +
     line('re-measures', remeasures);
 
@@ -2176,11 +2237,24 @@ function renderTelemetry() {
   const gatedOut = t.gatedIds.filter(id => t.withdrawn.includes(id));
   const ungatedIn = t.order.filter(id => !t.gatedIds.includes(id) && !t.withdrawn.includes(id));
   const as = [
-    [stable, `Control row is one line at every width — <b>${t.rowH}px</b>, ${
-      stable ? 'unchanged on this tab' : heights.size + ' heights seen'}`],
-    [true, t.withdrawn.length
-      ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => F(id).label).join(' → ')}</code>`
-      : `All ${t.visible.length} promoted chips fit — nothing withdrawn`],
+    t.mode === 'wrap'
+      ? [t.lines === 1, t.lines === 1
+          ? `One line at this width — <b>${t.rowH}px</b>, but the row is free to wrap`
+          : `Row wrapped to <b>${t.lines} lines</b> — height moved to <b>${t.rowH}px</b>, so a sticky-header offset can no longer be a constant. This is the trade-off the spec's no-wrap rule exists to avoid.`]
+      : [stable, `Control row is one line at every width — <b>${t.rowH}px</b>, ${
+          stable ? 'unchanged on this strategy' : heights.size + ' heights seen'}`],
+    t.mode === 'menu'
+      ? [true, t.withdrawn.length
+          ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => F(id).label).join(' → ')}</code>`
+          : `All ${t.visible.length} promoted chips fit — nothing withdrawn`]
+      : t.mode === 'scroll'
+        ? [t.inView === t.order.length || t.inView >= 1,
+           t.inView === t.order.length
+             ? `All ${t.order.length} chips fit — the scroller has nothing to hide`
+             : `<b>${t.inView} of ${t.order.length}</b> chips in view; the rest scroll, with a partial chip at the edge as the signal. Nothing is withdrawn, so the badge stays honest`]
+        : [true, t.lines > 1
+            ? `Nothing withdrawn — all ${t.order.length} chips stay addressable across ${t.lines} lines`
+            : `All ${t.order.length} chips fit on one line`],
     [!(gatedOut.length && ungatedIn.length), t.gatedIds.length === 0
       ? (t.tabsTotal
         ? `Expiry is navigation, not a chip: <b>${t.tabsVisible} of ${t.tabsTotal}</b> tabs in view, the strip scrolls`
@@ -2194,7 +2268,7 @@ function renderTelemetry() {
         ? `<b>${t.appliedTotal} applied</b>, every one of them visible as a chip on the bar`
         : `<b>${t.appliedTotal} applied, ${off.length} with no chip on the bar</b> — <code>${
             off.map(id => F(id).label).join(', ')}</code>. Only the trigger's tint carries it.`],
-    [true, t.clearWithdrawn
+    [t.mode !== 'wrap' || t.lines === 1, t.clearWithdrawn
       ? `Inline <b>Clear</b> withdrawn last of all — it is the one control duplicated in the panel footer`
       : t.actionsCollapsed
         ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
@@ -2369,6 +2443,12 @@ product.addEventListener('change', e => {
   if (again) again.focus();
 });
 
+/* WCAG 2.4.11: a chip reached by Tab inside the scroller must scroll into view. */
+product.addEventListener('focusin', e => {
+  const chip = e.target.closest && e.target.closest('#chips > [data-chip]');
+  if (chip && state.overflow === 'scroll') chip.scrollIntoView({ block:'nearest', inline:'nearest' });
+});
+
 product.addEventListener('scroll', e => {
   if (e.target.id === 'expScroll') {
     state.expScroll = e.target.scrollLeft;
@@ -2438,7 +2518,7 @@ function seg(id, key, cast) {
   $(id).addEventListener('click', e => {
     const b = e.target.closest('[data-v]'); if (!b) return;
     state[key] = cast ? cast(b.dataset.v) : b.dataset.v;
-    if (key === 'density' || key === 'skin') { heights.clear(); measuredLabels.clear(); }
+    if (key === 'density' || key === 'skin' || key === 'overflow') { heights.clear(); measuredLabels.clear(); }
     if (key === 'input') {
       // The two presentations are different surfaces; don't carry an open one across.
       closePopover(true);
@@ -2449,6 +2529,7 @@ function seg(id, key, cast) {
 }
 seg('#segSkin', 'skin'); seg('#segDensity', 'density'); seg('#segState', 'sim');
 seg('#segPromoted', 'promotedCount', Number); seg('#segInput', 'input');
+seg('#segOverflow', 'overflow');
 
 const CB = { cbPro:'pro', cbOptions:'options', cbCount:'showCount' };
 Object.entries(CB).forEach(([id, key]) => {
@@ -2461,7 +2542,7 @@ function syncControls() {
     .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(v))));
   set('#segSkin', state.skin); set('#segDensity', state.density);
   set('#segState', state.sim); set('#segPromoted', state.promotedCount);
-  set('#segInput', state.input);
+  set('#segInput', state.input); set('#segOverflow', state.overflow);
   Object.entries(CB).forEach(([id, key]) => { $('#' + id).checked = state[key]; });
   [...$('#widths').querySelectorAll('[data-w]')]
     .forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.w) === state.width)));
@@ -2480,10 +2561,10 @@ const V = o => {
 };
 const base = () => {
   Object.assign(state, { tab:'screener', input:'pointer', skin:'full', density:'comfortable',
-    sim:'default', promotedCount:6, pro:false, options:false, showCount:true,
+    sim:'default', promotedCount:6, overflow:'menu', pro:false, options:false, showCount:true,
     expiry:'e0', expScroll:0,
     panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
-  state.values = { screener:{}, chain:{ window:5, view:'side' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } };
+  state.values = { screener:{}, chain:{ window:5, view:'straddle' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } };
   drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
 };
@@ -2499,6 +2580,10 @@ const FLOWS = [
   { id:'overflow', t:'Overflowing', d:'Chips withdraw, badge counts them', w:820, run:base },
   { id:'filtered', t:'Filtered', d:'Three filters, state in the labels', w:1024, run:() => { base(); SET3(); } },
   { id:'squeezed', t:'Squeezed + filtered', d:'Longer labels withdraw sooner', w:700, run:() => { base(); SET3(); } },
+  { id:'wrap', t:'Wrap to more lines', d:'Nothing withdrawn, height moves', w:700,
+    run:() => { base(); SET3(); state.overflow = 'wrap'; } },
+  { id:'scroll', t:'Scroll on one line', d:'Partial chip is the signal', w:700,
+    run:() => { base(); SET3(); state.overflow = 'scroll'; } },
   { id:'hidden', t:'Applied, no chip', d:'Seven filters, none of them visible', w:360, run:() => { base(); SET7(); } },
   { id:'popover', t:'Pointer popover', d:'Anchored dropdown, counts per option', w:1024,
     run:() => { base(); SET3(); state.popOpen = 'sector'; } },
@@ -2525,7 +2610,7 @@ const FLOWS = [
     run:() => { base(); state.promotedCount = 0; } },
 
   // ---- Options chain: same bar, same popovers, its own filter set ----
-  { id:'ch-side', g:'Options chain', t:'Default', d:'±5 strikes, six chips', w:1180, run:chainBaseFlow },
+  { id:'ch-side', g:'Options chain', t:'Default', d:'Straddle, ±5 strikes', w:1180, run:chainBaseFlow },
   { id:'ch-chip', t:'Chip popover', d:'Strike window with match counts', w:1180,
     run:() => { chainBaseFlow(); state.popOpen = 'window'; } },
   { id:'ch-liq', t:'Liquidity applied', d:'Three chips carry values', w:1180,
