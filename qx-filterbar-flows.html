@@ -1,0 +1,1519 @@
+<title>QX-FilterBar Flows</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+/* ============================================================================
+   QX-FilterBar — flow prototype
+   Product surface = Qmodii DS tokens (light only; Qmodii ships light mode).
+   Lab chrome = slate-biased dark so the light embed reads as a host container.
+   Single-theme by intent: every colour is painted explicitly, no inherited ground.
+   ============================================================================ */
+
+/* ---- Lab chrome tokens ---------------------------------------------------- */
+:root{
+  --lab-ground:#14161A; --lab-panel:#1C1F24; --lab-panel-2:#22262C;
+  --lab-rule:#2A2F36;   --lab-rule-2:#3A424C;
+  --lab-fg:#E8EAED;     --lab-fg-2:#9AA3AE; --lab-fg-3:#6B747E;
+  --lab-accent:#53A4E4; --lab-accent-deep:#0477D1;
+  --lab-ok:#5DB678;     --lab-warn:#F5C63F;
+  --lab-mono:'Roboto Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  --lab-sans:'Roboto',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+}
+
+/* ---- Qmodii tokens (subset, verbatim values) ------------------------------ */
+.qx-root{
+  --qx-brand-50:#F2F8FE; --qx-brand-100:#C0DEF7; --qx-brand-200:#A5D0F3;
+  --qx-brand-600:#1D86D8; --qx-brand-700:#0477D1; --qx-brand-800:#00407F; --qx-brand-900:#002C5A;
+  --qx-neutral-0:#FFFFFF; --qx-neutral-50:#F6F6F6; --qx-neutral-100:#EEEEEE;
+  --qx-neutral-200:#E3E3E3; --qx-neutral-300:#A7A7A7; --qx-neutral-400:#707070;
+  --qx-neutral-500:#575757; --qx-neutral-600:#444444; --qx-neutral-800:#222222; --qx-neutral-950:#111111;
+  --qx-up-500:#2B7F45; --qx-up-100:#D6EBDE; --qx-up-200:#B4DBC3; --qx-up-300:#8ECBA5;
+  --qx-down-500:#D02A48; --qx-down-100:#FAD3DB; --qx-down-200:#F4AEBC; --qx-down-300:#EC8598;
+  --qx-hold:#F5C63F; --qx-hold-border:#E0A800;
+
+  --qx-primary:var(--qx-brand-700); --qx-primary-hover:var(--qx-brand-600);
+  --qx-primary-subtle:var(--qx-brand-50); --qx-primary-subtle-2:var(--qx-brand-100);
+  --qx-surface-0:var(--qx-neutral-0); --qx-surface-50:var(--qx-neutral-50);
+  --qx-surface-100:var(--qx-neutral-100); --qx-surface-200:var(--qx-neutral-200);
+  --qx-surface-300:var(--qx-neutral-300); --qx-surface-ground:var(--qx-neutral-50);
+  --qx-text-primary:var(--qx-neutral-800); --qx-text-secondary:var(--qx-neutral-500);
+  --qx-text-muted:var(--qx-neutral-400);
+  --qx-state-selected-bg:var(--qx-primary-subtle); --qx-state-selected-fg:var(--qx-brand-900);
+  --qx-state-selected-border:var(--qx-brand-200);
+  --qx-border-color:var(--qx-surface-200); --qx-border-color-hover:var(--qx-surface-300);
+
+  --qx-radius-xs:2px; --qx-radius-sm:4px; --qx-radius-lg:8px; --qx-radius-full:9999px;
+  --qx-shadow-md:0 2px 6px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06);
+  --qx-shadow-lg:0 8px 24px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.08);
+  --qx-shadow-sheet:0 -8px 28px rgba(0,0,0,.20);
+  --qx-mask-bg:rgba(0,0,0,.4);
+  --qx-ease:cubic-bezier(.4,0,.2,1); --qx-dur:160ms; --qx-dur-fast:120ms;
+
+  font-family:var(--lab-sans); font-size:14px; line-height:20px;
+  color:var(--qx-text-primary); box-sizing:border-box;
+  font-variant-numeric:tabular-nums;
+}
+.qx-root *,.qx-root *::before,.qx-root *::after{box-sizing:border-box}
+
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; background:var(--lab-ground); color:var(--lab-fg);
+  font-family:var(--lab-sans); font-size:14px; line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--lab-accent); outline-offset:2px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ============================== LAB SHELL ================================== */
+.lab{display:grid;grid-template-columns:288px minmax(0,1fr);min-height:100vh}
+.rail{
+  background:var(--lab-panel);border-right:1px solid var(--lab-rule);
+  padding:20px 18px 40px;display:flex;flex-direction:column;gap:22px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.brand{display:flex;flex-direction:column;gap:6px}
+.brand__mark{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.brand__mark em{font-style:normal;color:var(--lab-accent)}
+.brand__sub{font-size:12px;color:var(--lab-fg-3);line-height:1.4}
+
+.grp{display:flex;flex-direction:column;gap:8px}
+.grp__label{
+  font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--lab-fg-3);
+}
+.seg{display:flex;background:var(--lab-panel-2);border:1px solid var(--lab-rule);border-radius:4px;padding:2px;gap:2px}
+.seg button{
+  flex:1;background:none;border:0;border-radius:3px;padding:6px 4px;font-size:12px;
+  color:var(--lab-fg-2);cursor:pointer;transition:background var(--lab-t,120ms) ease,color 120ms ease;
+  white-space:nowrap;
+}
+.seg button:hover{color:var(--lab-fg);background:#2A2F36}
+.seg button[aria-pressed="true"]{background:var(--lab-accent-deep);color:#fff;font-weight:500}
+.chks{display:flex;flex-direction:column;gap:6px}
+.chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--lab-fg-2);cursor:pointer}
+.chk input{accent-color:var(--lab-accent-deep);margin:0;width:14px;height:14px}
+.chk:hover{color:var(--lab-fg)}
+
+.widths{display:flex;flex-wrap:wrap;gap:4px}
+.widths button{
+  background:var(--lab-panel-2);border:1px solid var(--lab-rule);border-radius:4px;
+  padding:5px 8px;font-family:var(--lab-mono);font-size:11px;color:var(--lab-fg-2);cursor:pointer;
+}
+.widths button:hover{border-color:var(--lab-rule-2);color:var(--lab-fg)}
+.widths button[aria-pressed="true"]{background:var(--lab-accent-deep);border-color:var(--lab-accent-deep);color:#fff}
+
+.flows{display:flex;flex-direction:column;gap:3px;counter-reset:f}
+.flow{
+  display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:baseline;
+  background:none;border:0;border-radius:4px;padding:7px 8px;text-align:left;cursor:pointer;
+  color:var(--lab-fg-2);
+}
+.flow:hover{background:var(--lab-panel-2);color:var(--lab-fg)}
+.flow[aria-pressed="true"]{background:#22303C;color:var(--lab-fg)}
+.flow[aria-pressed="true"] .flow__n{color:var(--lab-accent)}
+.flow__n{font-family:var(--lab-mono);font-size:10.5px;color:var(--lab-fg-3)}
+.flow__t{font-size:12.5px;line-height:1.35}
+.flow__d{display:block;font-size:11px;color:var(--lab-fg-3);margin-top:1px}
+.reset{
+  background:none;border:1px solid var(--lab-rule);border-radius:4px;padding:7px;
+  font-size:12px;color:var(--lab-fg-2);cursor:pointer;
+}
+.reset:hover{border-color:var(--lab-rule-2);color:var(--lab-fg)}
+
+/* ============================== STAGE ====================================== */
+.stage{display:flex;flex-direction:column;min-width:0}
+.stage__bar{
+  display:flex;align-items:center;gap:14px;padding:12px 24px;
+  border-bottom:1px solid var(--lab-rule);background:#171A1F;position:sticky;top:0;z-index:5;
+  flex-wrap:wrap;
+}
+.stage__title{font-size:13px;font-weight:500}
+.stage__meta{font-family:var(--lab-mono);font-size:11.5px;color:var(--lab-fg-3);display:flex;gap:16px;flex-wrap:wrap}
+.stage__meta b{color:var(--lab-accent);font-weight:500}
+.stage__body{padding:28px 24px 64px;display:flex;flex-direction:column;gap:24px;min-width:0}
+
+.holder{display:flex;flex-direction:column;gap:8px;min-width:0}
+.holder__label{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--lab-mono);font-size:11px;color:var(--lab-fg-3);
+}
+.viewport{
+  position:relative;background:#0F1114;border:1px dashed var(--lab-rule-2);border-radius:6px;
+  padding:10px;width:1180px;max-width:100%;
+}
+.viewport__inner{position:relative;overflow:hidden;border-radius:4px}
+.grip{
+  position:absolute;top:0;right:-7px;width:14px;height:100%;cursor:col-resize;
+  display:flex;align-items:center;justify-content:center;touch-action:none;
+}
+.grip::after{
+  content:"";width:4px;height:44px;border-radius:2px;background:var(--lab-rule-2);
+  transition:background 120ms ease;
+}
+.grip:hover::after,.grip:focus-visible::after,.grip[data-dragging]::after{background:var(--lab-accent)}
+.viewport[data-dragging]{border-color:var(--lab-accent)}
+
+/* ============================== PRODUCT ==================================== */
+.product{
+  background:var(--qx-surface-ground);position:relative;container-type:inline-size;
+  overflow:hidden;min-height:440px;
+}
+.tool{background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);margin:10px}
+.tool__head{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--qx-border-color);
+}
+.tool__icon{
+  width:24px;height:24px;border-radius:var(--qx-radius-sm);background:var(--qx-primary-subtle);
+  color:var(--qx-primary);display:grid;place-items:center;flex:0 0 auto;
+}
+.tool__title{font-size:14px;font-weight:700;color:var(--qx-text-primary)}
+.tool__meta{margin-left:auto;font-size:12px;color:var(--qx-text-muted)}
+
+/* ---- QX-FilterBar -------------------------------------------------------- */
+.qxfb{border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-0)}
+.qxfb__row{
+  display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;
+  padding:10px 12px;              /* 44px tap target via row padding, chip stays 28px */
+}
+.qxfb[data-density="compact"] .qxfb__row{padding:6px 10px}
+.qxfb__right{display:flex;align-items:center;gap:12px;margin-left:auto;flex:0 0 auto}
+.qxfb__count{
+  font-size:12px;color:var(--qx-text-secondary);white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.qxfb__count b{color:var(--qx-text-primary);font-weight:500}
+.skel{display:inline-block;width:62px;height:12px;border-radius:2px;background:
+  linear-gradient(90deg,var(--qx-surface-100) 25%,var(--qx-surface-50) 37%,var(--qx-surface-100) 63%);
+  background-size:400% 100%;animation:sk 1.1s linear infinite;vertical-align:-1px}
+@keyframes sk{0%{background-position:100% 0}100%{background-position:0 0}}
+
+/* trigger + chips share one shape */
+.qxc{
+  display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px;flex:0 0 auto;
+  background:var(--qx-surface-50);border:1px solid var(--qx-border-color);
+  border-radius:var(--qx-radius-sm);color:var(--qx-text-primary);
+  font-size:13px;line-height:1;cursor:pointer;white-space:nowrap;
+  transition:background var(--qx-dur-fast) var(--qx-ease),border-color var(--qx-dur-fast) var(--qx-ease);
+}
+.qxfb[data-density="compact"] .qxc{height:26px;font-size:12.5px}
+.qxc:hover{background:var(--qx-surface-100);border-color:var(--qx-border-color-hover)}
+.qxc:active{background:var(--qx-surface-200)}
+.qxc:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.qxc__label{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qxc__chev{flex:0 0 auto;color:var(--qx-text-muted);transition:transform var(--qx-dur-fast) var(--qx-ease)}
+.qxc[aria-expanded="true"]{background:var(--qx-surface-200);border-color:var(--qx-border-color-hover)}
+.qxc[aria-expanded="true"] .qxc__chev{transform:rotate(180deg)}
+.qxc[data-selected="true"]{
+  background:var(--qx-state-selected-bg);border-color:var(--qx-state-selected-border);
+  color:var(--qx-state-selected-fg);
+}
+.qxc[data-selected="true"] .qxc__chev{color:var(--qx-primary)}
+.qxc[data-selected="true"]:hover{background:var(--qx-primary-subtle-2)}
+.qxc[data-disabled="true"]{color:var(--qx-surface-300);border-color:var(--qx-surface-100);background:var(--qx-surface-0);cursor:not-allowed}
+.qxc[data-disabled="true"] .qxc__chev{color:var(--qx-surface-300)}
+.qxc[data-gated="true"] .qxc__lock{color:var(--qx-text-muted)}
+.qxc.is-withdrawn{display:none}
+.qxc[data-readonly="true"]{cursor:default;background:var(--qx-surface-50)}
+
+.qxfb__all{font-weight:500}
+.qxfb__all .qxc__icon{color:var(--qx-text-secondary)}
+.qxfb__badge{
+  display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;
+  border-radius:var(--qx-radius-full);background:var(--qx-primary);color:#fff;
+  font-size:11px;font-weight:700;line-height:1;
+}
+.qxfb__badge[hidden]{display:none}
+
+.qxfb__actions{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.qxbtn{
+  display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;
+  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  font-size:13px;color:var(--qx-text-primary);cursor:pointer;white-space:nowrap;
+  transition:background var(--qx-dur-fast) var(--qx-ease),border-color var(--qx-dur-fast) var(--qx-ease);
+}
+.qxbtn:hover{background:var(--qx-surface-50);border-color:var(--qx-border-color-hover)}
+.qxbtn:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.qxbtn--icon{width:28px;padding:0;justify-content:center}
+.qxbtn--primary{background:var(--qx-primary);border-color:var(--qx-primary);color:#fff}
+.qxbtn--primary:hover{background:var(--qx-primary-hover);border-color:var(--qx-primary-hover)}
+.qxbtn--text{background:none;border-color:transparent;color:var(--qx-primary)}
+.qxbtn--text:hover{background:var(--qx-primary-subtle);border-color:transparent}
+.qxfb__actions.is-collapsed .qxbtn:not(.qxbtn--overflow){display:none}
+.qxbtn--overflow{display:none}
+.qxfb__actions.is-collapsed .qxbtn--overflow{display:inline-flex}
+
+/* ---- applied-chip tray (row 2 — wraps, capped at 2 rows) ----------------- */
+.qxfb__tray{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  padding:0 12px 10px;border-top:0;
+}
+.qxfb[data-density="compact"] .qxfb__tray{padding:0 10px 8px}
+.qxfb__tray[hidden]{display:none}
+.qxac{
+  display:inline-flex;align-items:center;height:26px;padding:0 2px 0 8px;flex:0 0 auto;
+  background:var(--qx-state-selected-bg);border:1px solid var(--qx-state-selected-border);
+  border-radius:var(--qx-radius-sm);color:var(--qx-state-selected-fg);font-size:12.5px;line-height:1;
+  max-width:240px;
+}
+.qxac:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.qxac__label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qxac__x{
+  display:grid;place-items:center;width:20px;height:20px;margin-left:2px;flex:0 0 auto;
+  background:none;border:0;border-radius:var(--qx-radius-xs);color:var(--qx-brand-800);cursor:pointer;
+}
+.qxac__x:hover{background:var(--qx-primary-subtle-2)}
+.qxac__x:focus-visible{outline:2px solid var(--qx-primary);outline-offset:1px}
+.qxac[data-readonly="true"] .qxac__x{display:none}
+.qxac[data-readonly="true"]{padding-right:8px}
+.tray__more{
+  background:none;border:0;padding:4px 6px;border-radius:var(--qx-radius-sm);
+  font-size:12.5px;color:var(--qx-primary);cursor:pointer;
+}
+.tray__more:hover{background:var(--qx-primary-subtle)}
+.tray__clearwrap{margin-left:auto;display:flex}
+.tray__clear{background:none;border:0;padding:4px 6px;border-radius:var(--qx-radius-sm);
+  font-size:12.5px;color:var(--qx-text-secondary);cursor:pointer;
+}
+.tray__clear:hover{background:var(--qx-surface-50);color:var(--qx-text-primary)}
+
+/* ---- popover ------------------------------------------------------------- */
+.pop{
+  position:absolute;z-index:40;width:272px;background:var(--qx-surface-0);
+  border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  box-shadow:var(--qx-shadow-md);display:flex;flex-direction:column;overflow:hidden;
+}
+.pop__head{flex:0 0 auto;
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding:8px 12px;border-bottom:1px solid var(--qx-border-color);
+}
+.pop__title{font-size:13px;font-weight:600}
+.pop__hint{font-size:11px;color:var(--qx-text-muted)}
+.pop__search{padding:8px 12px 4px}
+.pop__search input{
+  width:100%;height:30px;padding:0 8px;font:inherit;font-size:13px;
+  border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  background:var(--qx-surface-0);color:var(--qx-text-primary);
+}
+.pop__search input:focus{border-color:var(--qx-primary);outline:none}
+.pop__list{max-height:248px;min-height:64px;flex:1 1 auto;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:2px}
+.opt{
+  display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--qx-radius-sm);
+  background:none;border:0;text-align:left;cursor:pointer;font-size:13px;color:var(--qx-text-primary);
+}
+.opt:hover{background:var(--qx-surface-50)}
+.opt[data-focus="true"]{background:var(--qx-surface-50);box-shadow:inset 0 0 0 1px var(--qx-primary)}
+.opt[aria-selected="true"]{background:var(--qx-state-selected-bg);color:var(--qx-state-selected-fg)}
+.opt[data-empty="true"]{color:var(--qx-text-muted)}
+.opt__box{
+  width:15px;height:15px;flex:0 0 auto;border:1px solid var(--qx-surface-300);
+  border-radius:var(--qx-radius-xs);display:grid;place-items:center;background:var(--qx-surface-0);
+}
+.opt[aria-selected="true"] .opt__box{background:var(--qx-primary);border-color:var(--qx-primary);color:#fff}
+.opt__radio{width:15px;height:15px;flex:0 0 auto;border:1px solid var(--qx-surface-300);border-radius:50%;display:grid;place-items:center}
+.opt[aria-selected="true"] .opt__radio{border-color:var(--qx-primary)}
+.opt[aria-selected="true"] .opt__radio::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--qx-primary)}
+.opt__label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt__count{font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums}
+.opt[aria-selected="true"] .opt__count{color:var(--qx-brand-800)}
+
+.pop__custom{flex:0 0 auto;padding:6px 12px 10px;border-top:1px solid var(--qx-border-color);display:flex;flex-direction:column;gap:6px}
+.pop__custom .lbl{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--qx-text-muted)}
+.range{display:flex;align-items:center;gap:6px}
+.range input{
+  flex:1;min-width:0;height:30px;padding:0 8px;font:inherit;font-size:13px;
+  font-variant-numeric:tabular-nums;border:1px solid var(--qx-border-color);
+  border-radius:var(--qx-radius-sm);background:var(--qx-surface-0);color:var(--qx-text-primary);
+}
+.range input:focus{border-color:var(--qx-primary);outline:none}
+.range span{font-size:12px;color:var(--qx-text-muted)}
+.pop__foot{flex:0 0 auto;
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  border-top:1px solid var(--qx-border-color);background:var(--qx-surface-50);
+}
+.pop__foot .qxbtn--primary{margin-left:auto}
+
+/* gate popover */
+.gate{width:268px;padding:14px}
+.gate__tag{align-self:flex-start;
+  display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:var(--qx-radius-xs);
+  background:var(--qx-primary-subtle-2);color:var(--qx-brand-800);
+  font-size:10.5px;font-weight:700;letter-spacing:.06em;
+}
+.gate h4{margin:8px 0 4px;font-size:14px;font-weight:500}
+.gate p{margin:0 0 12px;font-size:12.5px;color:var(--qx-text-secondary);line-height:1.4}
+.gate__row{display:flex;gap:8px}
+
+/* ---- panel (drawer ≥640cqw / sheet below) -------------------------------- */
+.scrim{position:absolute;inset:0;background:var(--qx-mask-bg);z-index:50;animation:fade 150ms var(--qx-ease)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.panel{
+  position:absolute;z-index:51;background:var(--qx-surface-0);display:flex;flex-direction:column;
+  top:0;right:0;bottom:0;width:376px;max-width:calc(100% - 32px);
+  border-left:1px solid var(--qx-border-color);box-shadow:var(--qx-shadow-lg);
+  animation:slideIn 400ms cubic-bezier(.05,.7,.1,1);
+}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.panel__head{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--qx-border-color);
+}
+.panel__title{font-size:14px;font-weight:600}
+.panel__x{margin-left:auto}
+.panel__body{flex:1;overflow-y:auto;padding:4px 0}
+.panel__foot{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--qx-border-color);
+  background:var(--qx-surface-50);
+}
+.panel__foot .qxbtn--primary{margin-left:auto}
+.grp2{border-bottom:1px solid var(--qx-surface-100)}
+.grp2__label{
+  padding:10px 12px 4px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--qx-text-secondary);
+}
+.acc{border:0;background:none;width:100%;display:flex;align-items:center;gap:8px;
+  padding:9px 12px;cursor:pointer;text-align:left;font-size:13px;color:var(--qx-text-primary)}
+.acc:hover{background:var(--qx-surface-50)}
+.acc__state{margin-left:auto;font-size:12px;color:var(--qx-text-muted);max-width:150px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc__state[data-on="true"]{color:var(--qx-primary)}
+.acc__chev{color:var(--qx-text-muted);transition:transform var(--qx-dur-fast) var(--qx-ease);flex:0 0 auto}
+.acc[aria-expanded="true"] .acc__chev{transform:rotate(90deg)}
+.acc[data-disabled="true"]{color:var(--qx-surface-300);cursor:not-allowed}
+.acc__lock{color:var(--qx-text-muted);flex:0 0 auto}
+.accbody{padding:0 12px 10px;display:flex;flex-direction:column;gap:2px}
+.accbody[hidden]{display:none}
+
+@container (max-width:639px){
+  .panel{
+    inset:auto 14px 14px 14px;width:auto;max-width:none;max-height:calc(100% - 42px);
+    border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-lg);
+    box-shadow:var(--qx-shadow-sheet);animation:sheetIn 400ms cubic-bezier(.05,.7,.1,1);
+  }
+  .panel__handle{display:block}
+}
+@keyframes sheetIn{from{transform:translateY(102%)}to{transform:translateY(0)}}
+.panel__handle{display:none;padding:8px 0 4px;flex:0 0 auto;cursor:grab}
+.panel__handle::after{content:"";display:block;width:36px;height:4px;border-radius:2px;
+  background:var(--qx-surface-300);margin:0 auto}
+
+/* ---- result table -------------------------------------------------------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:7px 10px;text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child,.tbl th.l,.tbl td.l{text-align:left}
+.tbl thead th{
+  font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--qx-text-muted);border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-0);
+}
+.tbl tbody tr{border-bottom:1px solid var(--qx-surface-100)}
+.tbl tbody tr:hover{background:var(--qx-surface-50)}
+.tbl td{font-variant-numeric:tabular-nums;color:var(--qx-text-primary)}
+.sym{font-weight:500}
+.nm{color:var(--qx-text-secondary);max-width:190px;overflow:hidden;text-overflow:ellipsis}
+.up{color:var(--qx-up-500)}.dn{color:var(--qx-down-500)}
+.rtg{display:inline-block;padding:2px 6px;border-radius:var(--qx-radius-xs);font-size:11px;font-weight:700;color:var(--qx-text-primary)}
+.rtg[data-r="Strong buy"]{background:var(--qx-up-300)}
+.rtg[data-r="Buy"]{background:var(--qx-up-200)}
+.rtg[data-r="Hold"]{background:var(--qx-hold)}
+.rtg[data-r="Sell"]{background:var(--qx-down-200)}
+.tbl__foot{padding:8px 12px;font-size:12px;color:var(--qx-text-muted);border-top:1px solid var(--qx-border-color)}
+.tblwrap{overflow-x:auto}
+.empty{padding:40px 20px;text-align:center}
+.empty h4{margin:0 0 4px;font-size:14px;font-weight:500}
+.empty p{margin:0 0 12px;font-size:13px;color:var(--qx-text-secondary)}
+.is-loading .tbl tbody{opacity:.45}
+@container (max-width:860px){ .c-hide-860{display:none} }
+@container (max-width:700px){ .c-hide-700{display:none} }
+@container (max-width:560px){ .c-hide-560{display:none} }
+
+/* ============================== TELEMETRY ================================== */
+.tele{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:1px;
+  background:var(--lab-rule);border:1px solid var(--lab-rule);border-radius:6px;overflow:hidden;
+}
+.tele__col{background:var(--lab-panel);padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.tele__h{
+  font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--lab-fg-3);
+}
+.kv{font-family:var(--lab-mono);font-size:11.5px;line-height:1.75;color:var(--lab-fg-2)}
+.kv div{display:flex;justify-content:space-between;gap:12px}
+.kv b{color:var(--lab-fg);font-weight:500}
+.kv .op{color:var(--lab-fg-3)}
+.kv .eq{border-top:1px solid var(--lab-rule);margin-top:4px;padding-top:4px}
+.kv .eq b{color:var(--lab-accent)}
+.pill{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:3px;
+  font-family:var(--lab-mono);font-size:11px;background:var(--lab-panel-2);color:var(--lab-fg-2);
+  border:1px solid var(--lab-rule);
+}
+.pill[data-t="out"]{color:var(--lab-fg-3);text-decoration:line-through;text-decoration-color:var(--lab-rule-2)}
+.pill[data-t="in"]{border-color:#2C4A63;color:var(--lab-accent)}
+.pill[data-t="gate"]{border-color:#5A4A1E;color:var(--lab-warn)}
+.pills{display:flex;flex-wrap:wrap;gap:4px}
+.asserts{display:flex;flex-direction:column;gap:7px;font-size:12px}
+.as{display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:start;color:var(--lab-fg-2)}
+.as__i{color:var(--lab-ok);line-height:1.3}
+.as b{color:var(--lab-fg);font-weight:500}
+.as code{font-family:var(--lab-mono);font-size:11px;color:var(--lab-accent)}
+
+/* ============================== NOTES ====================================== */
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.note h3{
+  margin:0 0 10px;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--lab-fg-3);
+}
+.note dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:12.5px;align-items:baseline}
+.note dt{font-family:var(--lab-mono);font-size:11px;color:var(--lab-accent);white-space:nowrap}
+.note dd{margin:0;color:var(--lab-fg-2);line-height:1.45}
+.note ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--lab-fg-2);line-height:1.55}
+.note ul li{margin-bottom:5px}
+.note ul li b{color:var(--lab-fg);font-weight:500}
+.note p{margin:0 0 8px;font-size:12.5px;color:var(--lab-fg-2);line-height:1.5}
+.note code{font-family:var(--lab-mono);font-size:11.5px;color:var(--lab-accent)}
+
+@media (max-width:1000px){
+  .lab{grid-template-columns:1fr}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--lab-rule)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+
+<div class="lab">
+  <aside class="rail">
+    <div class="brand">
+      <div class="brand__mark">QX-FilterBar <em>/ flows</em></div>
+      <div class="brand__sub">Live prototype of the responsive spec. Drag the container edge — collapse runs on a real <code>ResizeObserver</code>, not breakpoints.</div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Flows</div>
+      <div class="flows" id="flows"></div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Skin</div>
+      <div class="seg" id="segSkin">
+        <button data-v="full" aria-pressed="true">Full</button>
+        <button data-v="compact" aria-pressed="false">Compact</button>
+        <button data-v="actions" aria-pressed="false">Actions</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Density</div>
+      <div class="seg" id="segDensity">
+        <button data-v="comfortable" aria-pressed="true">Comfortable</button>
+        <button data-v="compact" aria-pressed="false">Compact</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">State</div>
+      <div class="seg" id="segState">
+        <button data-v="default" aria-pressed="true">Default</button>
+        <button data-v="loading" aria-pressed="false">Loading</button>
+        <button data-v="readonly" aria-pressed="false">Read-only</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Promoted count</div>
+      <div class="seg" id="segPromoted">
+        <button data-v="0" aria-pressed="false">0</button>
+        <button data-v="2" aria-pressed="false">2</button>
+        <button data-v="4" aria-pressed="false">4</button>
+        <button data-v="6" aria-pressed="true">6</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Deployment</div>
+      <div class="chks">
+        <label class="chk"><input type="checkbox" id="cbPro"> Entitled to Pro (ungates Analyst rating)</label>
+        <label class="chk"><input type="checkbox" id="cbOptions"> Options asset class (P/E, Div yield, Rating inapplicable)</label>
+        <label class="chk"><input type="checkbox" id="cbCount" checked> Show result count</label>
+        <label class="chk"><input type="checkbox" id="cbTray" checked> Show applied tray</label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Container width</div>
+      <div class="widths" id="widths"></div>
+    </div>
+
+    <button class="reset" id="btnReset">Reset everything</button>
+  </aside>
+
+  <main class="stage">
+    <div class="stage__bar">
+      <div class="stage__title" id="flowTitle">Default — control row at rest</div>
+      <div class="stage__meta">
+        <span>container <b id="mW">—</b></span>
+        <span>row height <b id="mH">—</b></span>
+        <span>RO ticks <b id="mT">0</b></span>
+      </div>
+    </div>
+
+    <div class="stage__body">
+      <div class="holder">
+        <div class="holder__label">
+          <span>host container — width is unknown to the component</span>
+          <span id="hint">drag the right edge →</span>
+        </div>
+        <div class="viewport" id="viewport">
+          <div class="viewport__inner">
+            <div class="qx-root product" id="product"></div>
+          </div>
+          <div class="grip" id="grip" role="separator" aria-orientation="vertical"
+               aria-label="Resize host container" tabindex="0"></div>
+        </div>
+      </div>
+
+      <section class="tele" aria-label="Collapse telemetry">
+        <div class="tele__col">
+          <div class="tele__h">Fit calculation</div>
+          <div class="kv" id="kvMath"></div>
+        </div>
+        <div class="tele__col">
+          <div class="tele__h">Promoted chips — authored order</div>
+          <div class="pills" id="pillsChips"></div>
+          <div class="kv" id="kvCounts"></div>
+        </div>
+        <div class="tele__col">
+          <div class="tele__h">Live assertions</div>
+          <div class="asserts" id="asserts"></div>
+        </div>
+      </section>
+
+      <section class="notes">
+        <div class="note">
+          <h3>Keyboard</h3>
+          <dl>
+            <dt>Tab</dt><dd>All filters → visible promoted chips → action group → applied chips → Clear all. Result count is skipped.</dd>
+            <dt>Enter / Space</dt><dd>Opens the chip's popover and moves focus into it.</dd>
+            <dt>↑ ↓</dt><dd>Moves within the open option list only — chips are independent controls, not a composite widget.</dd>
+            <dt>Esc</dt><dd>Closes the popover, returns focus to the originating chip.</dd>
+            <dt>Backspace</dt><dd>On a focused applied chip: removes that filter, focus moves to the next chip, or Clear all if it was last.</dd>
+          </dl>
+        </div>
+        <div class="note">
+          <h3>What the prototype resolves</h3>
+          <ul>
+            <li><b>Filter inputs collapse, filter state wraps.</b> Row 1 never wraps at any width; row 2 wraps and caps at two rows.</li>
+            <li><b>Gated chips outlast ungated ones.</b> Analyst rating is withdrawn last, after every ungated chip — watch the pills as you narrow.</li>
+            <li><b>Actions collapse before filters.</b> On the Actions skin the group folds to one overflow button while all six chips are still showing.</li>
+            <li><b>The trigger width is reserved</b> at its worst-case two-digit badge, so growing the count never forces a second pass.</li>
+            <li><b>Applying a filter doesn't reposition neighbours</b> — a chip grows in place; the withdrawal boundary moves, the order never does.</li>
+          </ul>
+        </div>
+        <div class="note">
+          <h3>Open against the spec</h3>
+          <p><b>Label re-measurement.</b> The spec caches intrinsic widths at mount and re-measures on locale or density change only — but a chip growing from <code>Sector</code> to <code>Sector: Financials +2</code> changes width too. This prototype re-measures on label change and reports it in the telemetry; the spec should say so explicitly.</p>
+          <p><b>Result count at the end state.</b> With zero chips fitting, the row is the trigger plus the count. At 320px that still fits, so the count is never the thing that gets dropped. Worth confirming there is no narrower deployment.</p>
+          <p><b>Component name</b> is still an assumption — this prototype treats the bar and the panel as one component with two skins.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="vh" id="live" role="status" aria-live="polite"></div>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+
+/* ---------------------------------------------------------------- icons */
+const I = {
+  sliders: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h11M17 6h4M3 12h4M10 12h11M3 18h11M17 18h4"/><circle cx="15.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="8.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="15.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg>',
+  chev: '<svg class="qxc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+  chevR: '<svg class="acc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  lock: '<svg class="qxc__lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
+  x: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  check: '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>',
+  dots: '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>',
+  dl: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v11M7 12l5 5 5-5M5 20h14"/></svg>',
+  save: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 4h11l3 3v13H5z"/><path d="M9 4v5h6"/></svg>',
+  star: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4l2.5 5.2 5.5.8-4 3.9 1 5.5-5-2.8-5 2.8 1-5.5-4-3.9 5.5-.8z"/></svg>',
+  tick: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>',
+  warn: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg>'
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------------------------------------------------------- dataset */
+const R = (s,n,ex,sec,mcap,pe,dy,last,chg,vol,beta,si,rating,idx) =>
+  ({s,n,ex,sec,mcap,pe,dy,last,chg,vol,beta,si,rating,
+    ctry: (ex==='TSX'||ex==='TSXV')?'Canada':'United States',
+    ccy:  (ex==='TSX'||ex==='TSXV')?'CAD':'USD', idx});
+const SP=['S&P 500'], NQ=['S&P 500','Nasdaq 100'], T60=['S&P/TSX 60','S&P/TSX Composite'], TC=['S&P/TSX Composite'];
+const SYMBOLS = [
+  R('AAPL','Apple Inc.','NASDAQ','Technology',3120,30.4,0.45,232.15,0.82,48.2,1.21,0.8,'Buy',NQ),
+  R('MSFT','Microsoft Corp.','NASDAQ','Technology',2980,33.1,0.72,401.22,-0.41,21.4,0.94,0.6,'Strong buy',NQ),
+  R('NVDA','NVIDIA Corp.','NASDAQ','Technology',2740,44.8,0.03,112.40,2.14,302.1,1.68,1.4,'Strong buy',NQ),
+  R('AMZN','Amazon.com Inc.','NASDAQ','Consumer',1910,38.6,0,183.55,0.36,39.8,1.14,0.9,'Buy',NQ),
+  R('JPM','JPMorgan Chase & Co.','NYSE','Financials',604,12.1,2.24,208.90,0.55,9.2,1.08,0.7,'Buy',SP),
+  R('XOM','Exxon Mobil Corp.','NYSE','Energy',512,13.6,3.31,117.44,-0.92,15.6,0.88,1.1,'Hold',SP),
+  R('PG','Procter & Gamble Co.','NYSE','Consumer',388,25.9,2.41,164.85,-0.18,5.4,0.42,0.8,'Hold',SP),
+  R('JNJ','Johnson & Johnson','NYSE','Healthcare',372,15.4,3.08,154.60,0.12,6.9,0.55,0.9,'Buy',SP),
+  R('KO','Coca-Cola Co.','NYSE','Consumer',276,24.6,2.96,64.10,0.24,12.3,0.61,1.0,'Hold',SP),
+  R('CVX','Chevron Corp.','NYSE','Energy',268,14.2,4.12,145.30,-1.08,8.1,0.94,1.3,'Buy',SP),
+  R('VZ','Verizon Communications','NYSE','Communication',176,9.4,6.42,41.85,0.31,18.7,0.42,2.1,'Hold',SP),
+  R('CAT','Caterpillar Inc.','NYSE','Industrials',172,16.8,1.52,352.40,0.68,3.1,1.06,1.6,'Buy',SP),
+  R('NEE','NextEra Energy Inc.','NYSE','Utilities',158,21.4,2.88,76.90,0.44,11.2,0.58,1.2,'Buy',SP),
+  R('PFE','Pfizer Inc.','NYSE','Healthcare',154,10.8,6.11,27.20,-0.55,28.9,0.66,2.8,'Hold',SP),
+  R('T','AT&T Inc.','NYSE','Communication',148,11.2,5.38,20.65,-0.24,32.4,0.58,2.4,'Sell',SP),
+  R('RY','Royal Bank of Canada','TSX','Financials',168,13.2,3.54,172.35,0.42,3.8,0.84,0.5,'Buy',T60),
+  R('SHOP','Shopify Inc.','TSX','Technology',138,76.2,0,148.60,1.86,4.6,2.14,3.2,'Buy',T60),
+  R('TD','Toronto-Dominion Bank','TSX','Financials',132,11.6,5.12,76.20,-0.34,6.2,0.86,0.9,'Hold',T60),
+  R('ENB','Enbridge Inc.','TSX','Energy',92,19.8,6.68,57.40,0.28,7.4,0.92,1.4,'Buy',T60),
+  R('CNR','Canadian National Railway','TSX','Industrials',88,18.4,2.18,141.10,-0.22,1.9,0.94,1.1,'Hold',T60),
+  R('DOL','Dollarama Inc.','TSX','Consumer',42,34.2,0.28,148.90,0.52,0.9,0.62,1.2,'Buy',T60),
+  R('WPM','Wheaton Precious Metals','TSX','Materials',38,42.8,0.82,84.20,0.96,1.6,1.02,1.5,'Buy',T60),
+  R('CVE','Cenovus Energy Inc.','TSX','Energy',31,11.4,3.24,22.60,-0.86,9.6,1.42,1.8,'Buy',T60),
+  R('FTS','Fortis Inc.','TSX','Utilities',29,18.2,4.02,60.85,0.16,1.2,0.42,0.8,'Hold',T60),
+  R('BCE','BCE Inc.','TSX','Communication',28,21.6,8.94,31.20,-0.64,4.1,0.66,3.6,'Sell',T60),
+  R('K','Kinross Gold Corp.','TSX','Materials',22,14.6,0.94,17.85,1.42,12.8,1.34,1.9,'Buy',T60),
+  R('ARX','ARC Resources Ltd.','TSX','Energy',14,10.2,2.86,24.10,-0.42,3.2,1.38,2.2,'Buy',TC),
+  R('LSPD','Lightspeed Commerce','TSX','Technology',2.1,null,0,18.40,-1.24,1.4,2.48,6.2,'Hold',TC),
+  R('PMET','Patriot Battery Metals','TSXV','Materials',0.68,null,0,5.60,-2.14,1.1,2.02,5.4,'Hold',[]),
+  R('NEXT','NextSource Materials','TSXV','Materials',0.32,null,0,2.14,3.38,0.6,1.86,4.8,'Hold',[])
+];
+
+/* ---------------------------------------------------------------- filters */
+const money = v => v >= 1000 ? '$' + (v/1000).toFixed(v%1000?1:0) + 'T' : '$' + v + 'B';
+const FILTERS = [
+  { id:'exchange', label:'Exchange', kind:'multi', field:'ex', group:'Profile', promoted:1,
+    options:['NASDAQ','NYSE','TSX','TSXV'] },
+  { id:'sector', label:'Sector', kind:'multi', field:'sec', group:'Profile', promoted:2, search:true,
+    options:['Technology','Financials','Energy','Healthcare','Consumer','Communication','Industrials','Materials','Utilities'] },
+  { id:'mcap', label:'Market cap', kind:'range', field:'mcap', group:'Fundamentals', promoted:3, fmt:money,
+    presets:[{id:'mega',label:'Mega — over $200B',chip:'over $200B',min:200},
+             {id:'large',label:'Large — $10B to $200B',chip:'$10B–$200B',min:10,max:200},
+             {id:'mid',label:'Mid — $2B to $10B',chip:'$2B–$10B',min:2,max:10},
+             {id:'small',label:'Small — under $2B',chip:'under $2B',max:2}] },
+  { id:'pe', label:'P/E', kind:'range', field:'pe', group:'Fundamentals', promoted:4, fmt:v=>String(v),
+    presets:[{id:'value',label:'Under 15',chip:'under 15',max:15},
+             {id:'core',label:'15 to 25',chip:'15–25',min:15,max:25},
+             {id:'growth',label:'25 to 40',chip:'25–40',min:25,max:40},
+             {id:'rich',label:'Over 40',chip:'over 40',min:40}] },
+  { id:'dy', label:'Dividend yield', kind:'range', field:'dy', group:'Fundamentals', promoted:5, fmt:v=>v+'%',
+    presets:[{id:'high',label:'Over 5%',chip:'over 5%',min:5},
+             {id:'mid',label:'3% to 5%',chip:'3%–5%',min:3,max:5},
+             {id:'low',label:'1% to 3%',chip:'1%–3%',min:1,max:3},
+             {id:'nil',label:'Under 1%',chip:'under 1%',max:1}] },
+  { id:'rating', label:'Analyst rating', kind:'multi', field:'rating', group:'Fundamentals', promoted:6, gated:true,
+    options:['Strong buy','Buy','Hold','Sell'] },
+  { id:'price', label:'Price', kind:'range', field:'last', group:'Market', fmt:v=>'$'+v,
+    presets:[{id:'a',label:'Under $25',chip:'under $25',max:25},
+             {id:'b',label:'$25 to $100',chip:'$25–$100',min:25,max:100},
+             {id:'c',label:'Over $100',chip:'over $100',min:100}] },
+  { id:'chg', label:'Day change', kind:'range', field:'chg', group:'Market', fmt:v=>(v>0?'+':'')+v+'%',
+    presets:[{id:'up',label:'Advancing',chip:'advancing',min:0},
+             {id:'down',label:'Declining',chip:'declining',max:0},
+             {id:'big',label:'Up over 1%',chip:'up over 1%',min:1}] },
+  { id:'vol', label:'Volume', kind:'range', field:'vol', group:'Market', fmt:v=>v+'M',
+    presets:[{id:'thin',label:'Under 5M',chip:'under 5M',max:5},
+             {id:'mid',label:'5M to 25M',chip:'5M–25M',min:5,max:25},
+             {id:'heavy',label:'Over 25M',chip:'over 25M',min:25}] },
+  { id:'beta', label:'Beta', kind:'range', field:'beta', group:'Market', fmt:v=>String(v),
+    presets:[{id:'low',label:'Under 0.8 — defensive',chip:'under 0.8',max:0.8},
+             {id:'mkt',label:'0.8 to 1.2 — market',chip:'0.8–1.2',min:0.8,max:1.2},
+             {id:'high',label:'Over 1.2 — aggressive',chip:'over 1.2',min:1.2}] },
+  { id:'si', label:'Short interest', kind:'range', field:'si', group:'Market', fmt:v=>v+'%',
+    presets:[{id:'lo',label:'Under 1%',chip:'under 1%',max:1},
+             {id:'hi',label:'Over 2%',chip:'over 2%',min:2}] },
+  { id:'ctry', label:'Country', kind:'multi', field:'ctry', group:'Profile', options:['United States','Canada'] },
+  { id:'ccy', label:'Currency', kind:'multi', field:'ccy', group:'Profile', options:['USD','CAD'] },
+  { id:'idx', label:'Index membership', kind:'multi', field:'idx', listField:true, group:'Profile',
+    options:['S&P 500','Nasdaq 100','S&P/TSX 60','S&P/TSX Composite'] }
+];
+const F = id => FILTERS.find(f => f.id === id);
+const INAPPLICABLE_OPTIONS = ['pe','dy','rating'];
+const GROUPS = ['Fundamentals','Market','Profile'];
+
+/* ---------------------------------------------------------------- state */
+const state = {
+  skin:'full', density:'comfortable', sim:'default', promotedCount:6,
+  pro:false, options:false, showCount:true, showTray:true,
+  values:{}, panelOpen:false, popOpen:null, gateOpen:null, trayExpanded:false,
+  width:1180, flow:'default', panelGroups:{Fundamentals:true,Market:false,Profile:false},
+  panelOpenFilter:null
+};
+const heights = new Set();
+let roTicks = 0, telemetry = {}, measuredLabels = new Map(), remeasures = 0;
+
+const val = id => state.values[id];
+const setVal = (id, v) => { if (v == null) delete state.values[id]; else state.values[id] = v; };
+const isGated = f => !!f.gated && !state.pro;
+const isDisabled = f => state.options && INAPPLICABLE_OPTIONS.includes(f.id);
+const promotedList = () => FILTERS.filter(f => f.promoted).sort((a,b)=>a.promoted-b.promoted).slice(0, state.promotedCount);
+const hasValue = f => {
+  const v = val(f.id); if (!v) return false;
+  return f.kind === 'multi' ? v.length > 0 : (v.min != null || v.max != null);
+};
+const activeFilters = () => FILTERS.filter(f => hasValue(f) && !isDisabled(f));
+
+/* ---------------------------------------------------------------- matching */
+function matches(row, f, v) {
+  if (f.kind === 'multi') {
+    if (!v.length) return true;
+    return f.listField ? row[f.field].some(x => v.includes(x)) : v.includes(row[f.field]);
+  }
+  const n = row[f.field];
+  if (n == null) return false;
+  if (v.min != null && n < v.min) return false;
+  if (v.max != null && n > v.max) return false;
+  return true;
+}
+function rowsMatching(exceptId, extra) {
+  return SYMBOLS.filter(row => {
+    for (const f of activeFilters()) {
+      if (f.id === exceptId) continue;
+      if (!matches(row, f, val(f.id))) return false;
+    }
+    if (extra && !matches(row, extra.f, extra.v)) return false;
+    return true;
+  });
+}
+const results = () => rowsMatching(null, null);
+
+/* ---------------------------------------------------------------- labels */
+function chipLabel(f) {
+  if (!hasValue(f)) return f.label;
+  const v = val(f.id);
+  if (f.kind === 'multi')
+    return f.label + ': ' + v[0] + (v.length > 1 ? ' +' + (v.length - 1) : '');
+  if (v.preset) return f.label + ': ' + f.presets.find(p => p.id === v.preset).chip;
+  if (v.min != null && v.max != null) return f.label + ': ' + f.fmt(v.min) + '–' + f.fmt(v.max);
+  if (v.min != null) return f.label + ': over ' + f.fmt(v.min);
+  return f.label + ': under ' + f.fmt(v.max);
+}
+function fullLabel(f) {
+  if (!hasValue(f)) return f.label;
+  const v = val(f.id);
+  if (f.kind === 'multi') return f.label + ', ' + v.join(', ') + ' selected';
+  return chipLabel(f).replace(f.label + ': ', f.label + ', ') + ' selected';
+}
+
+/* ---------------------------------------------------------------- bar DOM */
+function barHTML() {
+  const readonly = state.sim === 'readonly';
+  const promoted = promotedList();
+  const chips = promoted.map(f => {
+    const gated = isGated(f), dis = isDisabled(f), sel = hasValue(f) && !dis;
+    const trailing = readonly ? '' : gated ? I.lock : I.chev;
+    return `<button class="qxc" type="button" data-chip="${f.id}"
+      data-selected="${sel}" data-gated="${gated}" data-disabled="${dis}" data-readonly="${readonly}"
+      ${dis ? 'aria-disabled="true"' : ''}
+      ${readonly || dis ? '' : `aria-haspopup="${f.kind === 'multi' ? 'listbox' : 'dialog'}" aria-expanded="${state.popOpen === f.id}"`}
+      aria-label="${esc(fullLabel(f))}${gated ? ', upgrade required' : ''}${dis ? ', not applicable to options' : ''}">
+      <span class="qxc__label">${esc(chipLabel(f))}</span>${trailing}</button>`;
+  }).join('');
+
+  const hidden = hiddenCount();
+  const trigger = `<button class="qxc qxfb__all" type="button" id="allTrigger"
+      aria-haspopup="dialog" aria-expanded="${state.panelOpen}"
+      aria-label="All filters${hidden ? ', ' + hidden + ' more available' : ''}">
+      <span class="qxc__icon">${I.sliders}</span><span class="qxc__label">All filters</span>
+      <span class="qxfb__badge" id="allBadge" ${hidden ? '' : 'hidden'}>${hidden}</span></button>`;
+
+  const n = results().length;
+  const count = state.showCount ? `<div class="qxfb__count" id="count">${
+    state.sim === 'loading' ? '<span class="skel"></span>' : `<b>${n.toLocaleString()}</b> result${n === 1 ? '' : 's'}`
+  }</div>` : '';
+
+  const actions = state.skin === 'actions' ? `<div class="qxfb__actions" id="actions">
+      <button class="qxbtn qxbtn--icon qxbtn--overflow" type="button" aria-label="More actions">${I.dots}</button>
+      <button class="qxbtn" type="button">${I.dl}<span>Export</span></button>
+      <button class="qxbtn" type="button">${I.save}<span>Save</span></button>
+      <button class="qxbtn qxbtn--icon" type="button" aria-label="Add to watchlist">${I.star}</button>
+    </div>` : '';
+
+  return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}" data-state="${state.sim}">
+    <div class="qxfb__row" id="row" role="group" aria-label="Filters">
+      ${trigger}${chips}
+      <div class="qxfb__right" id="right">${count}${actions}</div>
+    </div>
+    ${state.skin === 'compact' || !state.showTray ? '' : '<ul class="qxfb__tray" id="tray"></ul>'}
+  </div>`;
+}
+function hiddenCount() {
+  const promoted = promotedList().map(f => f.id);
+  const withdrawn = telemetry.withdrawn ? telemetry.withdrawn.length : 0;
+  const never = FILTERS.filter(f => !promoted.includes(f.id) && !isDisabled(f)).length;
+  return withdrawn + never;
+}
+
+/* ---------------------------------------------------------------- tray */
+function trayHTML() {
+  const readonly = state.sim === 'readonly';
+  const active = activeFilters();
+  if (!active.length) return '';
+  const chips = active.map(f => `<li class="qxac" tabindex="0" data-applied="${f.id}"
+      data-readonly="${readonly}" aria-label="${esc(fullLabel(f))}">
+      <span class="qxac__label">${esc(chipLabel(f))}</span>
+      ${readonly ? '' : `<button class="qxac__x" type="button" tabindex="-1"
+        aria-label="Remove ${esc(f.label)}: ${esc(chipLabel(f).replace(f.label + ': ', ''))}">${I.x}</button>`}
+    </li>`).join('');
+  const more = `<li><button class="tray__more" type="button" id="trayMore" hidden></button></li>`;
+  const clear = readonly ? '' : `<li class="tray__clearwrap"><button class="tray__clear" type="button" id="clearAll">Clear all</button></li>`;
+  return chips + more + clear;
+}
+function trayLayout() {
+  const tray = $('#tray'); if (!tray) return { rows: 0, hiddenN: 0 };
+  const items = [...tray.querySelectorAll('.qxac')];
+  const more = $('#trayMore');
+  items.forEach(i => { i.hidden = false; });
+  if (more) { more.hidden = true; more.textContent = ''; }
+  if (!items.length) return { rows: 0, hiddenN: 0 };
+  let rows = new Set(items.map(i => i.offsetTop)).size;
+  if (state.trayExpanded || rows <= 2) return { rows, hiddenN: 0 };
+  // cap at two rows, then "+N more"
+  more.hidden = false;
+  let hiddenN = 0, guard = 0;
+  while (guard++ < 40) {
+    const tops = [...new Set(items.filter(i => !i.hidden).map(i => i.offsetTop))].sort((a, b) => a - b);
+    if (tops.length <= 2) break;
+    const cut = tops[2];
+    let changed = false;
+    for (let k = items.length - 1; k >= 0; k--) {
+      const it = items[k];
+      if (!it.hidden && it.offsetTop >= cut) { it.hidden = true; hiddenN++; changed = true; break; }
+    }
+    more.textContent = '+' + hiddenN + ' more';
+    if (!changed) break;
+  }
+  more.textContent = '+' + hiddenN + ' more';
+  more.setAttribute('aria-label', hiddenN + ' more applied filters, show all');
+  rows = new Set(items.filter(i => !i.hidden).map(i => i.offsetTop)).size;
+  return { rows, hiddenN };
+}
+
+/* ---------------------------------------------------------------- collapse */
+const GAP = 8;
+function layout() {
+  const row = $('#row'); if (!row) return;
+  const chipEls = [...row.querySelectorAll('[data-chip]')];
+  const right = $('#right'), actions = $('#actions'), badge = $('#allBadge'), trigger = $('#allTrigger');
+
+  chipEls.forEach(c => c.classList.remove('is-withdrawn'));
+  if (actions) actions.classList.remove('is-collapsed');
+
+  // Reserve the trigger at its worst-case badge so a growing count never reflows.
+  const worst = String(FILTERS.length);
+  const shown = badge.textContent, wasHidden = badge.hidden;
+  badge.hidden = false; badge.textContent = worst;
+  const triggerW = Math.ceil(trigger.getBoundingClientRect().width);
+  badge.textContent = shown; badge.hidden = wasHidden;
+
+  const cs = getComputedStyle(row);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  const rowW = row.clientWidth - padX;
+
+  const wOf = el => Math.ceil(el.getBoundingClientRect().width);
+  const widths = new Map();
+  chipEls.forEach(el => {
+    const id = el.dataset.chip, key = state.density + '|' + el.querySelector('.qxc__label').textContent;
+    const w = wOf(el);
+    if (measuredLabels.has(id) && measuredLabels.get(id) !== key) remeasures++;
+    measuredLabels.set(id, key);
+    widths.set(id, w);
+  });
+
+  let rightW = wOf(right);
+  const rightExpandedW = rightW;
+  let actionsCollapsed = false;
+
+  const promoted = promotedList();
+  const budgetFor = rw => rowW - triggerW - rw - GAP;
+  const cost = set => [...set].reduce((a, id) => a + widths.get(id) + GAP, 0);
+
+  let visible = new Set(promoted.map(f => f.id));
+  let budget = budgetFor(rightW);
+
+  // Rule: the action group collapses before any filter chip is withdrawn.
+  if (actions && cost(visible) > budget) {
+    actions.classList.add('is-collapsed');
+    actionsCollapsed = true;
+    rightW = wOf(right);
+    budget = budgetFor(rightW);
+  }
+
+  // Withdraw right-to-left; every ungated chip goes before any gated one.
+  const ungated = promoted.filter(f => !isGated(f)).map(f => f.id).reverse();
+  const gated = promoted.filter(f => isGated(f)).map(f => f.id).reverse();
+  const order = [...ungated, ...gated];
+  const withdrawn = [];
+  let i = 0;
+  while (cost(visible) > budget && i < order.length) {
+    visible.delete(order[i]); withdrawn.push(order[i]); i++;
+  }
+  chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
+
+  telemetry = {
+    rowW: row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
+    budget, consumed: cost(visible), visible: [...visible], withdrawn,
+    order: promoted.map(f => f.id), widths, gatedIds: promoted.filter(f => isGated(f)).map(f => f.id)
+  };
+
+  const hidden = hiddenCount();
+  badge.textContent = hidden;
+  badge.hidden = hidden === 0;
+  trigger.setAttribute('aria-label', 'All filters' + (hidden ? ', ' + hidden + ' more available' : ''));
+
+  const tray = trayLayout();
+  telemetry.trayRows = tray.rows;
+  telemetry.trayHidden = tray.hiddenN;
+
+  const h = Math.round(row.getBoundingClientRect().height);
+  telemetry.rowH = h; heights.add(h);
+  renderTelemetry();
+}
+
+/* ---------------------------------------------------------------- table */
+function tableHTML() {
+  const rows = results();
+  const loading = state.sim === 'loading';
+  if (!rows.length && !loading) {
+    return `<div class="empty"><h4>No symbols match these filters.</h4>
+      <p>The narrowest filter is usually the one to widen first.</p>
+      <button class="qxbtn" type="button" id="emptyClear">Clear all filters</button></div>`;
+  }
+  const shown = rows.slice(0, 12);
+  const body = shown.map(r => `<tr>
+      <td class="l sym">${r.s}</td>
+      <td class="l nm c-hide-700">${esc(r.n)}</td>
+      <td class="l c-hide-860">${r.ex}</td>
+      <td class="l c-hide-860">${r.sec}</td>
+      <td>${r.last.toFixed(2)}</td>
+      <td class="${r.chg >= 0 ? 'up' : 'dn'}">${r.chg >= 0 ? '▲' : '▼'} ${Math.abs(r.chg).toFixed(2)}%</td>
+      <td class="c-hide-560">${money(r.mcap)}</td>
+      <td class="c-hide-560">${r.pe == null ? '—' : r.pe.toFixed(1)}</td>
+      <td class="c-hide-700">${r.dy ? r.dy.toFixed(2) + '%' : '—'}</td>
+      <td class="c-hide-860"><span class="rtg" data-r="${r.rating}">${r.rating}</span></td>
+    </tr>`).join('');
+  return `<div class="tblwrap"><table class="tbl">
+    <thead><tr>
+      <th class="l">Symbol</th><th class="l c-hide-700">Name</th><th class="l c-hide-860">Exch</th>
+      <th class="l c-hide-860">Sector</th><th>Last</th><th>Chg %</th>
+      <th class="c-hide-560">Mkt cap</th><th class="c-hide-560">P/E</th>
+      <th class="c-hide-700">Div yield</th><th class="c-hide-860">Rating</th>
+    </tr></thead><tbody>${body}</tbody></table></div>
+    <div class="tbl__foot">Showing ${shown.length} of ${rows.length} matching · delayed 15m</div>`;
+}
+
+/* ---------------------------------------------------------------- popover */
+const pop = { search:'', focus:-1 };
+function optionRows(f, useSearch) {
+  const v = val(f.id) || (f.kind === 'multi' ? [] : {});
+  if (f.kind === 'multi') {
+    const q = useSearch ? pop.search.trim().toLowerCase() : '';
+    return f.options.filter(o => !q || o.toLowerCase().includes(q)).map(o => {
+      const on = (v || []).includes(o);
+      const n = rowsMatching(f.id, { f, v:[o] }).length;
+      return { key:o, label:o, count:n, on, type:'check' };
+    });
+  }
+  return f.presets.map(p => {
+    const on = v.preset === p.id;
+    const n = rowsMatching(f.id, { f, v:{ min:p.min, max:p.max } }).length;
+    return { key:p.id, label:p.label, count:n, on, type:'radio' };
+  });
+}
+function popoverHTML(f) {
+  const rows = optionRows(f, true);
+  const v = val(f.id);
+  const list = rows.length ? rows.map((r, i) => `<button class="opt" type="button" role="option"
+      aria-selected="${r.on}" data-opt="${esc(r.key)}" data-i="${i}" data-empty="${r.count === 0}">
+      ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>`
+                           : `<span class="opt__radio"></span>`}
+      <span class="opt__label">${esc(r.label)}</span>
+      <span class="opt__count">${r.count}</span></button>`).join('')
+    : `<div class="opt" data-empty="true"><span class="opt__label">No match for “${esc(pop.search)}”</span></div>`;
+
+  const custom = f.kind === 'range' ? `<div class="pop__custom">
+      <div class="lbl">Custom range</div>
+      <div class="range">
+        <input type="number" id="rMin" placeholder="Min" value="${v && !v.preset && v.min != null ? v.min : ''}" aria-label="Minimum ${esc(f.label)}">
+        <span>to</span>
+        <input type="number" id="rMax" placeholder="Max" value="${v && !v.preset && v.max != null ? v.max : ''}" aria-label="Maximum ${esc(f.label)}">
+      </div></div>` : '';
+
+  return `<div class="pop" id="pop" role="${f.kind === 'multi' ? 'listbox' : 'dialog'}"
+      ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
+    <div class="pop__head"><span class="pop__title">${esc(f.label)}</span>
+      <span class="pop__hint">matches</span></div>
+    ${f.search ? `<div class="pop__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
+    <div class="pop__list" id="popList">${list}</div>
+    ${custom}
+    <div class="pop__foot">
+      <button class="qxbtn qxbtn--text" type="button" id="popClear">Clear</button>
+      <button class="qxbtn qxbtn--primary" type="button" id="popDone">Done</button>
+    </div></div>`;
+}
+function gateHTML(f) {
+  return `<div class="pop gate" id="pop" role="dialog" aria-label="${esc(f.label)} requires Pro">
+    <span class="gate__tag">PRO</span>
+    <h4>${esc(f.label)} is a Pro filter</h4>
+    <p>Consensus ratings and price targets are part of Qmodii Pro. Your other ${FILTERS.length - 1} filters are unaffected.</p>
+    <p style="font-size:11.5px;color:var(--qx-text-muted);margin-bottom:10px">In this prototype, Compare plans grants the entitlement so you can see the unlocked chip.</p>
+    <div class="gate__row">
+      <button class="qxbtn qxbtn--primary" type="button" id="gateUp">Compare plans</button>
+      <button class="qxbtn" type="button" id="gateNo">Not now</button>
+    </div></div>`;
+}
+function placePopover() {
+  const el = $('#pop'); if (!el) return;
+  const id = state.popOpen || state.gateOpen;
+  const anchor = $(`[data-chip="${id}"]`); if (!anchor) { closePopover(); return; }
+  const p = $('#product').getBoundingClientRect(), a = anchor.getBoundingClientRect();
+  const maxW = Math.min(el.classList.contains('gate') ? 268 : 272, p.width - 20);
+  el.style.width = maxW + 'px';
+  el.style.maxHeight = '';
+  const h = el.getBoundingClientRect().height;
+  let left = a.left - p.left;
+  left = Math.max(10, Math.min(left, p.width - maxW - 10));
+  const below = p.height - (a.bottom - p.top) - 20;
+  const above = (a.top - p.top) - 20;
+  let top;
+  if (h <= below) top = a.bottom - p.top + 10;
+  else if (h <= above) top = a.top - p.top - h - 10;
+  else { top = a.bottom - p.top + 10; el.style.maxHeight = Math.max(180, below) + 'px'; }
+  el.style.left = left + 'px'; el.style.top = top + 'px';
+}
+function openPopover(id) {
+  const f = F(id);
+  if (isDisabled(f) || state.sim === 'readonly') return;
+  closePopover(true);
+  if (isGated(f)) { state.gateOpen = id; } else { state.popOpen = id; pop.search = ''; pop.focus = -1; }
+  render();
+  requestAnimationFrame(() => {
+    const el = $('#pop'); if (!el) return;
+    const first = $('#popSearch') || el.querySelector('.opt[role="option"]') || el.querySelector('button');
+    if (first) first.focus();
+  });
+}
+function closePopover(silent) {
+  const id = state.popOpen || state.gateOpen;
+  state.popOpen = null; state.gateOpen = null;
+  if (silent) return;
+  render();
+  const back = $(`[data-chip="${id}"]`);
+  if (back && !back.classList.contains('is-withdrawn')) back.focus();
+  else { const t = $('#allTrigger'); if (t) t.focus(); }
+}
+
+/* ---------------------------------------------------------------- panel */
+function panelHTML() {
+  const hidden = hiddenCount();
+  const groups = GROUPS.map(g => {
+    const fs = FILTERS.filter(f => f.group === g);
+    if (!fs.length) return '';
+    const items = fs.map(f => {
+      const gated = isGated(f), dis = isDisabled(f);
+      const openF = state.panelOpenFilter === f.id;
+      const stateTxt = dis ? 'n/a for options'
+        : hasValue(f) ? chipLabel(f).replace(f.label + ': ', '') : 'Any';
+      const body = openF && !dis && !gated ? `<div class="accbody" role="listbox"${f.kind==='multi'?' aria-multiselectable="true"':''} aria-label="${esc(f.label)}">${
+        optionRows(f, false).map(r => `<button class="opt" type="button" role="option" aria-selected="${r.on}"
+          data-popt="${f.id}" data-opt="${esc(r.key)}">
+          ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>` : `<span class="opt__radio"></span>`}
+          <span class="opt__label">${esc(r.label)}</span><span class="opt__count">${r.count}</span></button>`).join('')
+      }</div>` : '';
+      return `<button class="acc" type="button" data-pfilter="${f.id}" data-disabled="${dis}"
+          ${dis ? 'aria-disabled="true"' : ''} aria-expanded="${openF}">
+          ${I.chevR}<span>${esc(f.label)}</span>${gated ? I.lock : ''}
+          <span class="acc__state" data-on="${hasValue(f) && !dis}">${esc(stateTxt)}</span>
+        </button>${body}`;
+    }).join('');
+    return `<div class="grp2"><div class="grp2__label">${g}</div>${items}</div>`;
+  }).join('');
+  const n = results().length;
+  return `<div class="scrim" id="scrim"></div>
+    <div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="All filters">
+      <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
+      <div class="panel__head"><span class="panel__title">All filters</span>
+        <span class="pop__hint">${FILTERS.length} filters · ${hidden} not on the bar</span>
+        <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
+      </div>
+      <div class="panel__body">${groups}</div>
+      <div class="panel__foot">
+        <button class="qxbtn qxbtn--text" type="button" id="panelClear">Clear all</button>
+        <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${n.toLocaleString()} result${n===1?'':'s'}</button>
+      </div>
+    </div>`;
+}
+
+/* ---------------------------------------------------------------- render */
+let announceTimer = null, lastAnnounced = -1;
+function announce() {
+  clearTimeout(announceTimer);
+  announceTimer = setTimeout(() => {
+    const n = results().length;
+    if (n === lastAnnounced) return;
+    lastAnnounced = n;
+    $('#live').textContent = n.toLocaleString() + ' result' + (n === 1 ? '' : 's');
+  }, 320);
+}
+function render() {
+  const p = $('#product');
+  const openId = state.popOpen || state.gateOpen;
+  p.className = 'qx-root product' + (state.sim === 'loading' ? ' is-loading' : '');
+  p.innerHTML = `<div class="tool">
+      <div class="tool__head"><span class="tool__icon">${I.sliders}</span>
+        <span class="tool__title">Equity screener</span>
+        <span class="tool__meta">${state.sim === 'readonly' ? 'Shared view — read-only' : 'North America'}</span></div>
+      ${barHTML()}
+      ${tableHTML()}
+    </div>
+    ${openId ? (state.gateOpen ? gateHTML(F(openId)) : popoverHTML(F(openId))) : ''}
+    ${state.panelOpen ? panelHTML() : ''}`;
+  const tray = $('#tray');
+  if (tray) { tray.innerHTML = trayHTML(); tray.hidden = !tray.innerHTML; }
+  layout();
+  if (openId) placePopover();
+  announce();
+  syncControls();
+}
+
+/* ---------------------------------------------------------------- telemetry */
+function renderTelemetry() {
+  const t = telemetry;
+  $('#mW').textContent = Math.round(t.rowW) + 'px';
+  $('#mH').textContent = t.rowH + 'px';
+  $('#mT').textContent = roTicks;
+
+  const line = (k, v, op) => `<div><span class="op">${op || ''}</span>${k}<b>${v}</b></div>`;
+  $('#kvMath').innerHTML =
+    line('container', Math.round(t.rowW) + 'px') +
+    line('row padding', '−' + t.padX) +
+    line('All filters (reserved)', '−' + t.triggerW) +
+    line(state.skin === 'actions' ? (t.actionsCollapsed ? 'count + overflow' : 'count + actions') : 'result count', '−' + t.rightW) +
+    line('gap', '−' + GAP) +
+    `<div class="eq">chip budget<b>${t.budget}px</b></div>` +
+    line('consumed by ' + t.visible.length + ' chips', t.consumed + 'px') +
+    line('headroom', (t.budget - t.consumed) + 'px');
+
+  $('#pillsChips').innerHTML = t.order.map(id => {
+    const out = t.withdrawn.includes(id);
+    const g = t.gatedIds.includes(id);
+    return `<span class="pill" data-t="${out ? 'out' : g ? 'gate' : 'in'}">${esc(F(id).label)}
+      <span class="op">${t.widths.get(id)}</span></span>`;
+  }).join('') || '<span class="pill" data-t="out">no promoted chips</span>';
+
+  const promotedIds = t.order;
+  const never = FILTERS.filter(f => !promotedIds.includes(f.id) && !isDisabled(f)).length;
+  $('#kvCounts').innerHTML =
+    line('withdrawn', t.withdrawn.length) +
+    line('never promoted', never) +
+    `<div class="eq">All filters badge<b>${t.withdrawn.length + never}</b></div>` +
+    line('re-measures', remeasures);
+
+  const as = [];
+  const heightStable = heights.size === 1;
+  as.push([heightStable, `Control row is one line at every width — <b>${t.rowH}px</b>, ${heightStable ? 'unchanged since load' : heights.size + ' heights seen (density change)'}`]);
+  as.push([true, t.withdrawn.length
+    ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => F(id).label).join(' → ')}</code>`
+    : `All ${t.visible.length} promoted chips fit — nothing withdrawn`]);
+  const gatedOut = t.gatedIds.filter(id => t.withdrawn.includes(id));
+  const ungatedIn = t.order.filter(id => !t.gatedIds.includes(id) && !t.withdrawn.includes(id));
+  as.push([!(gatedOut.length && ungatedIn.length),
+    t.gatedIds.length === 0 ? 'No gated filters at this entitlement'
+    : gatedOut.length ? `Gated chip withdrawn only after all ungated ones — <b>${ungatedIn.length} ungated remain</b>`
+    : `Gated chip <b>${t.gatedIds.map(id => F(id).label).join(', ')}</b> held on the bar`]);
+  as.push([t.trayRows <= 2, state.skin === 'compact' || !state.showTray
+    ? 'Applied tray off — state lives in the trigger chip labels'
+    : `Applied tray wraps, capped at two rows — <b>${t.trayRows} row${t.trayRows === 1 ? '' : 's'}</b>${t.trayHidden ? `, ${t.trayHidden} behind “+N more”` : ''}`]);
+  as.push([true, state.skin === 'actions'
+    ? (t.actionsCollapsed ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
+                          : 'Action group intact — it collapses before any filter chip')
+    : `All filters trigger reserved at <code>${t.triggerW}px</code> with a worst-case badge`]);
+  $('#asserts').innerHTML = as.map(([ok, txt]) =>
+    `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
+}
+
+/* ---------------------------------------------------------------- mutations */
+function toggleMulti(f, key) {
+  const cur = (val(f.id) || []).slice();
+  const i = cur.indexOf(key);
+  if (i >= 0) cur.splice(i, 1); else cur.push(key);
+  setVal(f.id, cur.length ? cur : null);
+}
+function setPreset(f, id) {
+  const cur = val(f.id);
+  if (cur && cur.preset === id) { setVal(f.id, null); return; }
+  const p = f.presets.find(x => x.id === id);
+  setVal(f.id, { preset: id, min: p.min, max: p.max });
+}
+function clearAll() { state.values = {}; state.trayExpanded = false; }
+
+/* ---------------------------------------------------------------- events */
+const product = $('#product');
+
+product.addEventListener('click', e => {
+  const t = e.target;
+  const hit = s => t.closest(s);
+
+  if (hit('#scrim')) { state.panelOpen = false; render(); $('#allTrigger').focus(); return; }
+  if (hit('#panelX') || hit('#panelDone')) {
+    state.panelOpen = false; render(); $('#allTrigger').focus(); return;
+  }
+  if (hit('#panelClear')) { clearAll(); render(); return; }
+  if (hit('#allTrigger')) {
+    closePopover(true); state.panelOpen = !state.panelOpen; state.panelOpenFilter = null; render();
+    if (state.panelOpen) requestAnimationFrame(() => { const x = $('#panelX'); if (x) x.focus(); });
+    return;
+  }
+
+  const acc = hit('.acc');
+  if (acc) {
+    if (acc.dataset.disabled === 'true') return;
+    const id = acc.dataset.pfilter;
+    if (isGated(F(id))) { state.panelOpen = false; state.gateOpen = id; render(); return; }
+    state.panelOpenFilter = state.panelOpenFilter === id ? null : id;
+    render(); return;
+  }
+  const popt = hit('[data-popt]');
+  if (popt) {
+    const f = F(popt.dataset.popt), key = popt.dataset.opt;
+    f.kind === 'multi' ? toggleMulti(f, key) : setPreset(f, key);
+    render(); return;
+  }
+
+  const chip = hit('[data-chip]');
+  if (chip) {
+    const id = chip.dataset.chip;
+    if (chip.dataset.disabled === 'true' || state.sim === 'readonly') return;
+    if (state.popOpen === id || state.gateOpen === id) closePopover();
+    else { state.panelOpen = false; openPopover(id); }
+    return;
+  }
+
+  const opt = hit('#pop .opt[data-opt]');
+  if (opt) {
+    const f = F(state.popOpen), key = opt.dataset.opt;
+    f.kind === 'multi' ? toggleMulti(f, key) : setPreset(f, key);
+    render();
+    const again = $(`#pop .opt[data-opt="${CSS.escape(key)}"]`);
+    if (again) again.focus();
+    return;
+  }
+  if (hit('#popClear')) { setVal(state.popOpen, null); render(); const c = $('#popClear'); if (c) c.focus(); return; }
+  if (hit('#popDone')) { closePopover(); return; }
+  if (hit('#gateNo')) { closePopover(); return; }
+  if (hit('#gateUp')) { state.pro = true; closePopover(); return; }
+
+  const x = hit('.qxac__x');
+  if (x) {
+    const li = x.closest('.qxac');
+    const all = [...document.querySelectorAll('.qxac')];
+    const i = all.indexOf(li);
+    setVal(li.dataset.applied, null); render();
+    const after = [...document.querySelectorAll('.qxac')];
+    (after[Math.min(i, after.length - 1)] || $('#clearAll') || $('#allTrigger'))?.focus();
+    return;
+  }
+  if (hit('#trayMore')) { state.trayExpanded = true; render(); return; }
+  if (hit('#clearAll') || hit('#emptyClear')) { clearAll(); render(); $('#allTrigger').focus(); return; }
+});
+
+product.addEventListener('input', e => {
+  if (e.target.id === 'popSearch') {
+    pop.search = e.target.value;
+    const caret = e.target.selectionStart;
+    render();
+    const s = $('#popSearch');
+    if (s) { s.focus(); s.setSelectionRange(caret, caret); }
+    return;
+  }
+  if (e.target.id === 'rMin' || e.target.id === 'rMax') {
+    const f = F(state.popOpen); if (!f) return;
+    const min = $('#rMin').value === '' ? null : Number($('#rMin').value);
+    const max = $('#rMax').value === '' ? null : Number($('#rMax').value);
+    const which = e.target.id;
+    setVal(f.id, (min == null && max == null) ? null : { min, max });
+    const caret = e.target.selectionStart;
+    render();
+    const again = $('#' + which);
+    if (again) { again.focus(); try { again.setSelectionRange(caret, caret); } catch (_) {} }
+  }
+});
+
+product.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (state.popOpen || state.gateOpen) { e.preventDefault(); closePopover(); return; }
+    if (state.panelOpen) { e.preventDefault(); state.panelOpen = false; render(); $('#allTrigger').focus(); return; }
+  }
+  const li = e.target.closest && e.target.closest('.qxac');
+  if (li && (e.key === 'Backspace' || e.key === 'Delete')) {
+    e.preventDefault();
+    const all = [...document.querySelectorAll('.qxac')];
+    const i = all.indexOf(li);
+    setVal(li.dataset.applied, null); render();
+    const after = [...document.querySelectorAll('.qxac')];
+    (after[Math.min(i, after.length - 1)] || $('#clearAll') || $('#allTrigger'))?.focus();
+    return;
+  }
+  if (state.popOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    const opts = [...document.querySelectorAll('#pop .opt[data-opt]')];
+    if (!opts.length) return;
+    e.preventDefault();
+    const cur = opts.findIndex(o => o === document.activeElement);
+    const next = e.key === 'ArrowDown'
+      ? (cur < 0 ? 0 : Math.min(opts.length - 1, cur + 1))
+      : (cur < 0 ? opts.length - 1 : Math.max(0, cur - 1));
+    opts[next].focus();
+    return;
+  }
+  if (state.panelOpen && e.key === 'Tab') {
+    const panel = $('#panel'); if (!panel) return;
+    const f = [...panel.querySelectorAll('button, input, [tabindex="0"]')].filter(el => !el.disabled && el.offsetParent);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
+
+/* ---------------------------------------------------------------- rail */
+const WIDTHS = [1180, 1024, 900, 820, 768, 700, 640, 540, 480, 400, 360];
+const viewport = $('#viewport');
+function setWidth(w) {
+  state.width = w;
+  viewport.style.width = w + 'px';
+  requestAnimationFrame(() => { layout(); if (state.popOpen || state.gateOpen) placePopover(); });
+}
+$('#widths').innerHTML = WIDTHS.map(w => `<button type="button" data-w="${w}" aria-pressed="false">${w}</button>`).join('');
+$('#widths').addEventListener('click', e => {
+  const b = e.target.closest('[data-w]'); if (!b) return;
+  state.flow = null; setWidth(Number(b.dataset.w)); syncControls();
+});
+
+function seg(id, key, cast) {
+  $(id).addEventListener('click', e => {
+    const b = e.target.closest('[data-v]'); if (!b) return;
+    state[key] = cast ? cast(b.dataset.v) : b.dataset.v;
+    if (key === 'density' || key === 'skin') { heights.clear(); measuredLabels.clear(); }
+    state.flow = null; render();
+  });
+}
+seg('#segSkin', 'skin'); seg('#segDensity', 'density'); seg('#segState', 'sim');
+seg('#segPromoted', 'promotedCount', Number);
+
+const CB = { cbPro:'pro', cbOptions:'options', cbCount:'showCount', cbTray:'showTray' };
+Object.entries(CB).forEach(([id, key]) => {
+  $('#' + id).addEventListener('change', e => { state[key] = e.target.checked; state.flow = null; render(); });
+});
+$('#btnReset').addEventListener('click', () => runFlow('default'));
+
+function syncControls() {
+  const set = (id, v) => [...$(id).querySelectorAll('[data-v]')]
+    .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(v))));
+  set('#segSkin', state.skin); set('#segDensity', state.density);
+  set('#segState', state.sim); set('#segPromoted', state.promotedCount);
+  Object.entries(CB).forEach(([id, key]) => { $('#' + id).checked = state[key]; });
+  [...$('#widths').querySelectorAll('[data-w]')]
+    .forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.w) === state.width)));
+  [...$('#flows').querySelectorAll('[data-flow]')]
+    .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.flow === state.flow)));
+}
+
+/* ---------------------------------------------------------------- flows */
+const SET3 = () => { state.values = { exchange:['TSX'], sector:['Financials','Energy','Materials'],
+  mcap:{ preset:'large', min:10, max:200 } }; };
+const SET7 = () => { SET3(); Object.assign(state.values, { pe:{ preset:'value', max:15 },
+  dy:{ preset:'mid', min:3, max:5 }, vol:{ preset:'thin', max:5 }, ctry:['Canada'] }); };
+const base = () => {
+  Object.assign(state, { skin:'full', density:'comfortable', sim:'default', promotedCount:6,
+    pro:false, options:false, showCount:true, showTray:true, values:{}, panelOpen:false,
+    popOpen:null, gateOpen:null, trayExpanded:false, panelOpenFilter:null });
+  heights.clear(); measuredLabels.clear(); remeasures = 0;
+};
+const FLOWS = [
+  { id:'default', t:'Default', d:'Control row at rest, six chips', w:1180, run:base },
+  { id:'overflow', t:'Overflowing', d:'Chips withdraw, badge counts them', w:820, run:base },
+  { id:'filtered', t:'Filtered', d:'Three filters, tray present', w:1024, run:() => { base(); SET3(); } },
+  { id:'squeezed', t:'Squeezed + filtered', d:'Longer labels withdraw sooner', w:700, run:() => { base(); SET3(); } },
+  { id:'traycap', t:'Tray overflow', d:'Seven filters, capped at two rows', w:640, run:() => { base(); SET7(); } },
+  { id:'mobile', t:'Mobile end state', d:'Trigger + count only', w:360, run:base },
+  { id:'sheet', t:'Mobile sheet', d:'All filters in a bottom sheet', w:360,
+    run:() => { base(); SET3(); state.panelOpen = true; state.panelOpenFilter = 'mcap'; } },
+  { id:'gated', t:'Gated chip', d:'Lock glyph opens the upgrade gate', w:900,
+    run:() => { base(); state.gateOpen = 'rating'; } },
+  { id:'actions', t:'Actions collapse', d:'Group folds to overflow, chips stay', w:1024,
+    run:() => { base(); state.skin = 'actions'; } },
+  { id:'compact', t:'Compact skin', d:'No tray — state in the labels', w:480,
+    run:() => { base(); state.skin = 'compact'; SET3(); } },
+  { id:'loading', t:'Loading', d:'Skeleton on the count, bar live', w:1024,
+    run:() => { base(); SET3(); state.sim = 'loading'; } },
+  { id:'readonly', t:'Read-only', d:'Shared view, no chevrons', w:1024,
+    run:() => { base(); SET3(); state.sim = 'readonly'; } },
+  { id:'empty', t:'Empty result', d:'Bar stays interactive', w:1024,
+    run:() => { base(); state.values = { exchange:['NASDAQ'], ctry:['Canada'] }; } },
+  { id:'zero', t:'Zero promoted', d:'Every filter behind the trigger', w:1180,
+    run:() => { base(); state.promotedCount = 0; } }
+];
+$('#flows').innerHTML = FLOWS.map((f, i) => `<button class="flow" type="button" data-flow="${f.id}" aria-pressed="false">
+  <span class="flow__n">${String(i + 1).padStart(2, '0')}</span>
+  <span class="flow__t">${f.t}<span class="flow__d">${f.d}</span></span></button>`).join('');
+$('#flows').addEventListener('click', e => {
+  const b = e.target.closest('[data-flow]'); if (b) runFlow(b.dataset.flow);
+});
+function runFlow(id) {
+  const f = FLOWS.find(x => x.id === id) || FLOWS[0];
+  f.run(); state.flow = f.id;
+  $('#flowTitle').textContent = f.t + ' — ' + f.d.charAt(0).toLowerCase() + f.d.slice(1);
+  setWidth(f.w); render();
+  if (state.popOpen || state.gateOpen) requestAnimationFrame(placePopover);
+}
+
+/* ---------------------------------------------------------------- resize */
+let raf = null;
+const ro = new ResizeObserver(() => {
+  roTicks++;
+  if (raf) return;
+  raf = requestAnimationFrame(() => {
+    raf = null; layout();
+    if (state.popOpen || state.gateOpen) placePopover();
+  });
+});
+ro.observe($('.viewport__inner'));
+
+const grip = $('#grip');
+grip.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  const startX = e.clientX, startW = viewport.getBoundingClientRect().width;
+  const stageMax = $('.stage__body').clientWidth;
+  grip.dataset.dragging = '1'; viewport.dataset.dragging = '1';
+  grip.setPointerCapture(e.pointerId);
+  $('#hint').textContent = 'resizing — ResizeObserver is driving the collapse';
+  const move = ev => {
+    const w = Math.round(Math.max(320, Math.min(stageMax, startW + (ev.clientX - startX))));
+    state.flow = null; state.width = w; viewport.style.width = w + 'px'; syncControls();
+  };
+  const up = () => {
+    delete grip.dataset.dragging; delete viewport.dataset.dragging;
+    $('#hint').textContent = 'drag the right edge →';
+    grip.removeEventListener('pointermove', move);
+    grip.removeEventListener('pointerup', up);
+    grip.removeEventListener('pointercancel', up);
+  };
+  grip.addEventListener('pointermove', move);
+  grip.addEventListener('pointerup', up);
+  grip.addEventListener('pointercancel', up);
+});
+grip.addEventListener('keydown', e => {
+  const step = e.shiftKey ? 60 : 20;
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    const stageMax = $('.stage__body').clientWidth;
+    const w = Math.round(Math.max(320, Math.min(stageMax,
+      viewport.getBoundingClientRect().width + (e.key === 'ArrowRight' ? step : -step))));
+    state.flow = null; setWidth(w); syncControls();
+  }
+});
+
+/* ---------------------------------------------------------------- init */
+runFlow('default');
+})();
+</script>
