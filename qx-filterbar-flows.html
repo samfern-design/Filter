@@ -237,6 +237,8 @@ button{font:inherit;color:inherit}
 .qxfb__badge[hidden]{display:none}
 
 .qxfb__actions{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.qxfb__disp{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.qxfb__disp .iconbtn{width:28px;height:28px}
 .qxbtn{
   display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;
   background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
@@ -284,6 +286,7 @@ button{font:inherit;color:inherit}
 }
 .qxfb__clear:hover{background:var(--qx-primary-subtle)}
 .qxfb__clear:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.qxfb__clear.is-withdrawn{display:none}
 
 /* ---- awaiting-spec stub for the unbuilt experiences ---------------------- */
 .stub{padding:28px 24px 34px;max-width:560px}
@@ -325,7 +328,6 @@ button{font:inherit;color:inherit}
 .opt:hover{background:var(--qx-surface-50)}
 .opt[data-focus="true"]{background:var(--qx-surface-50);box-shadow:inset 0 0 0 1px var(--qx-primary)}
 .opt[aria-selected="true"]{background:var(--qx-state-selected-bg);color:var(--qx-state-selected-fg)}
-.opt[data-empty="true"]{color:var(--qx-text-muted)}
 .opt__box{
   width:15px;height:15px;flex:0 0 auto;border:1px solid var(--qx-surface-300);
   border-radius:var(--qx-radius-xs);display:grid;place-items:center;background:var(--qx-surface-0);
@@ -335,8 +337,6 @@ button{font:inherit;color:inherit}
 .opt[aria-selected="true"] .opt__radio{border-color:var(--qx-primary)}
 .opt[aria-selected="true"] .opt__radio::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--qx-primary)}
 .opt__label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.opt__count{font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums}
-.opt[aria-selected="true"] .opt__count{color:var(--qx-brand-800)}
 
 .pop__custom{flex:0 0 auto;padding:6px 12px 10px;border-top:1px solid var(--qx-border-color);display:flex;flex-direction:column;gap:6px}
 .pop__custom .lbl{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--qx-text-muted)}
@@ -375,15 +375,11 @@ button{font:inherit;color:inherit}
   top:0;right:0;bottom:0;width:376px;max-width:calc(100% - 32px);
   border-left:1px solid var(--qx-border-color);box-shadow:var(--qx-shadow-lg);
 }
-.panel.is-entering{animation:slideIn 400ms cubic-bezier(.05,.7,.1,1)}
-@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 .panel[data-mode="touch"]{
   inset:auto 14px 14px 14px;width:auto;max-width:none;max-height:calc(100% - 42px);
   border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-lg);
   box-shadow:var(--qx-shadow-sheet);
 }
-.panel[data-mode="touch"].is-entering{animation:sheetIn 400ms cubic-bezier(.05,.7,.1,1)}
-@keyframes sheetIn{from{transform:translateY(102%)}to{transform:translateY(0)}}
 .panel__handle{display:none;padding:8px 0 4px;flex:0 0 auto;cursor:grab}
 .panel[data-mode="touch"] .panel__handle{display:block}
 .panel__handle::after{content:"";display:block;width:36px;height:4px;border-radius:2px;
@@ -661,7 +657,6 @@ button{font:inherit;color:inherit}
   margin-left:4px;padding:0 3px;border-radius:2px;background:var(--qx-amber-100);
   color:var(--qx-amber-700);font-size:9.5px;font-weight:700;vertical-align:1px;
 }
-.sld__meta{font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums}
 .pop__help{margin:0;padding:8px 12px 10px;border-top:1px solid var(--qx-border-color);
   font-size:11.5px;color:var(--qx-text-muted);line-height:1.45}
 .setp__help{margin:6px 0 0;font-size:11.5px;color:var(--qx-text-muted);line-height:1.45}
@@ -941,8 +936,10 @@ button{font:inherit;color:inherit}
           <ul>
             <li><b>One component, three filter sets.</b> Every tab runs the same bar — pinned All filters trigger, promoted chips in authored order, the same popovers on pointer and sheet drill-down on touch, one collapse algorithm, one live count. A tab contributes only its filters, its rows and its result surface: 14 filters for the screener, 8 for the chain, 4 for the analyzer.</li>
             <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
-            <li><b>Expiry stayed navigation.</b> The strip sits above the bar, per the spec's rule that navigation does not belong in it. It scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
-            <li><b>Display controls are not filters.</b> Layout on the chain and Table/Cards on the analyzer sit in the action group and in a Display group in the panel. They never count as applied, and they fold into the overflow before any filter chip.</li>
+            <li><b>Expiry sits below the bar</b>, at the team's direction. The spec puts navigation above the bar, so this is a deliberate departure: filters read first, then the expiry you are looking at. The strip still scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
+            <li><b>Display controls sit where each tool needs them.</b> The chain's View rides in the chip row as a first-class chip; the analyzer's Table/Cards keeps its own slot beside the actions and never folds into the overflow. Neither is accented as applied, neither is touched by Clear all, and both stay reachable in the panel.</li>
+            <li><b>No per-option match counts.</b> The spec asks for them inside every popover as the compensation for not seeing into a filter before opening it. They are out by decision, so the bar's live result count is now the only feedback a selection gets — worth watching in testing, on the chain especially, where a liquidity filter can empty the table in one click.</li>
+            <li><b>The menu does not animate in.</b> Neither the drawer nor the sheet has an entry transition; only a drill step slides, and only when you move between levels. Nothing on the surrounding tool moves when the menu opens.</li>
             <li><b>One control height across all three.</b> 48px comfortable on every tab, so a sticky-header offset is a constant rather than a per-tool measurement.</li>
             <li><b>Still open:</b> the strategy accent colour is not in the Qmodii palette, and the chain's <code>Near</code> chip carries 41 options — the point where a searchable single-select starts to be the wrong control.</li>
           </ul>
@@ -1297,13 +1294,16 @@ const SCREENER_FILTERS = [
 /* Expiry type, strike window and anchor re-scope the row set rather than
    testing rows, so they are marked `scoped` and applied in base(). */
 const CHAIN_FILTERS = [
-  { id:'expiryType', label:'Expiry', kind:'choice', group:'Expiry', promoted:1, scoped:true,
+  /* A layout switch is a display control, not a filter — it sits in the chip row
+     by product decision, but never counts as applied and Clear all leaves it be. */
+  { id:'view', label:'View', kind:'choice', group:'View', promoted:1, display:true, noAll:null,
+    options:[['side','Side-by-side'],['stack','Stacked'],['calls','Calls only'],['puts','Puts only']] },
+  { id:'expiryType', label:'Expiry', kind:'choice', group:'Expiry', promoted:2, scoped:true,
     options:[['Weekly','Weekly'],['Monthly','Monthly'],['Quarterly','Quarterly'],['LEAPS','LEAPS']],
-    count:key => CH.EXPIRIES.filter(e => key === 'all' || e.type === key).length,
-    countUnit:'expiries' },
-  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:2, scoped:true, noAll:'All strikes',
+ },
+  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:3, scoped:true, noAll:'All strikes',
     options:[[5,'±5 strikes'],[10,'±10 strikes'],[20,'±20 strikes']] },
-  { id:'near', label:'Near', kind:'choice', group:'Strikes', promoted:3, scoped:true, search:true,
+  { id:'near', label:'Near', kind:'choice', group:'Strikes', scoped:true, search:true,
     noAll:'Spot (311.51)',
     options:() => CH.STRIKES.map(k => [String(k), String(k)]) },
   { id:'nearPct', label:'Near money', kind:'choice', group:'Strikes', promoted:4,
@@ -1356,13 +1356,11 @@ const SURFACES = {
   },
   chain: {
     label:'Options chain', filters:CHAIN_FILTERS,
-    groups:['Expiry','Strikes','Liquidity','Contract'],
+    groups:['View','Expiry','Strikes','Liquidity','Contract'],
     base:chainBase,
     unit:n => n === 1 ? 'strike' : 'strikes',
-    above:expiryStripHTML,
+    below:expiryStripHTML,
     results:chainResults,
-    display:[{ id:'layout', label:'Layout', kind:'choice', display:true, icon:'grid', noAll:null,
-               options:[['side','Side-by-side'],['stack','Stacked'],['calls','Calls only'],['puts','Puts only']] }],
     actions:() => [{ i:'dl', t:'Export' }]
   },
   analyzer: {
@@ -1405,13 +1403,13 @@ const state = {
   tab:'screener', input:'pointer',
   skin:'full', density:'comfortable', sim:'default', promotedCount:6,
   pro:false, options:false, showCount:true,
-  values:{ screener:{}, chain:{ window:5 }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } },
+  values:{ screener:{}, chain:{ window:5, view:'side' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } },
   expiry:'e0', expScroll:0,
   panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null,
   width:1180, flow:'default'
 };
-// Entry animations are one-shot: expanding a section must not replay them.
-let panelEntering = false, drillAnim = null;
+// The menu itself never animates in — only a drill step slides, and only once.
+let drillAnim = null;
 const heights = new Set();
 let roTicks = 0, telemetry = {}, measuredLabels = new Map(), remeasures = 0;
 
@@ -1437,7 +1435,7 @@ function hasValue(f) {
   if (f.kind === 'choice') return true;
   return v.min != null || v.max != null;               // range + slider
 }
-const activeFilters = () => surf().filters.filter(f => hasValue(f) && !isDisabled(f));
+const activeFilters = () => surf().filters.filter(f => !f.display && hasValue(f) && !isDisabled(f));
 
 /* ---------------------------------------------------------------- matching */
 function testRow(f, row, v) {
@@ -1497,7 +1495,8 @@ function valueText(f) {
   if (v.min != null && v.max != null) return fm(v.min) + '–' + fm(v.max);
   return v.min != null ? 'over ' + fm(v.min) : 'under ' + fm(v.max);
 }
-const chipLabel = f => hasValue(f) ? f.label + ': ' + valueText(f) : f.label;
+const chipLabel = f => f.display ? f.label + ': ' + optLabel(f, dispVal(f))
+  : hasValue(f) ? f.label + ': ' + valueText(f) : f.label;
 function fullLabel(f) {
   if (!hasValue(f)) return f.label;
   const v = val(f.id);
@@ -1508,33 +1507,27 @@ function fullLabel(f) {
 const dispVal = f => val(f.id) != null ? val(f.id) : pairs(f)[0][0];
 
 /* ---------------------------------------------------------------- options */
+/* Option lists carry no match counts. The spec asks for them — they are the
+   compensation for not seeing inside a filter before opening it — but the
+   product decision is to leave them out, so the bar's result count is the only
+   feedback a selection gets. */
 function optionRows(f, useSearch) {
   const v = val(f.id);
-  if (f.kind === 'multi') {
-    const q = useSearch ? pop.search.trim().toLowerCase() : '';
-    return pairs(f).filter(o => !q || String(o[1]).toLowerCase().includes(q)).map(o => ({
-      key:o[0], label:o[1], on:(v || []).includes(o[0]), type:'check',
-      count:rowsFor(f.id, { f, v:[o[0]] }).length
-    }));
-  }
+  const q = useSearch ? pop.search.trim().toLowerCase() : '';
+  const match = o => !q || String(o[1]).toLowerCase().includes(q);
+  if (f.kind === 'multi')
+    return pairs(f).filter(match).map(o => ({ key:o[0], label:o[1], type:'check',
+      on:(v || []).includes(o[0]) }));
   if (f.kind === 'choice') {
-    const q = useSearch ? pop.search.trim().toLowerCase() : '';
-    const rows = [];
-    if (f.noAll !== null) rows.push({
-      key:'__all', label:f.noAll || 'All', on:v == null, type:'radio',
-      count:f.count ? f.count('all') : rowsFor(f.id, null).length
-    });
-    pairs(f).filter(o => !q || String(o[1]).toLowerCase().includes(q)).forEach(o => rows.push({
-      key:o[0], label:o[1], on:String(v) === String(o[0]), type:'radio',
-      count:f.count ? f.count(o[0]) : rowsFor(f.id, { f, v:o[0] }).length
-    }));
+    const rows = f.noAll !== null
+      ? [{ key:'__all', label:f.noAll || 'All', on:v == null, type:'radio' }] : [];
+    pairs(f).filter(match).forEach(o => rows.push({
+      key:o[0], label:o[1], on:String(v) === String(o[0]), type:'radio' }));
     return rows;
   }
   if (f.kind === 'slider') return [];
-  return f.presets.map(p => ({
-    key:p.id, label:p.label, on:v && v.preset === p.id, type:'radio',
-    count:rowsFor(f.id, { f, v:{ min:p.min, max:p.max } }).length
-  }));
+  return f.presets.map(p => ({ key:p.id, label:p.label, type:'radio',
+    on:v && v.preset === p.id }));
 }
 
 /* ---------------------------------------------------------------- mutations */
@@ -1565,7 +1558,7 @@ function setSlider(f, which, n) {
   setVal(f.id, f.dual ? { min:lo, max:hi } : { min:lo });
 }
 function clearAll() {
-  surf().filters.forEach(f => delete vals()[f.id]);
+  surf().filters.forEach(f => { if (!f.display) delete vals()[f.id]; });
 }
 
 /* ---------------------------------------------------------------- bar DOM */
@@ -1579,7 +1572,7 @@ function barHTML() {
   const s = surf();
   const readonly = state.sim === 'readonly';
   const chips = promotedList().map(f => {
-    const gated = isGated(f), dis = isDisabled(f), sel = hasValue(f) && !dis;
+    const gated = isGated(f), dis = isDisabled(f), sel = hasValue(f) && !dis && !f.display;
     const open = state.popOpen === f.id || (isTouch() && state.panelOpen && state.drill === f.id);
     const trailing = readonly ? '' : gated ? I.lock : I.chev;
     return `<button class="qxc" type="button" data-chip="${f.id}"
@@ -1604,31 +1597,28 @@ function barHTML() {
     state.sim === 'loading' ? '<span class="skel"></span>'
       : `<b>${n.toLocaleString()}</b> ${s.unit(n)}`}</div>` : '';
 
+  /* A view toggle is neither a filter nor a page action, so it keeps its own
+     slot: it never folds into the action group's overflow. */
   const disp = (s.display || []).map(d => {
     const cur = dispVal(d);
-    if (d.toggle) {
-      const other = pairs(d).find(o => String(o[0]) !== String(cur));
-      return `<button class="iconbtn tip" type="button" data-disptoggle="${d.id}"
-        data-tip="${esc(other[1])} view" aria-pressed="${String(cur) !== String(pairs(d)[0][0])}"
-        aria-label="Switch to ${esc(other[1])} view">${cur === 'cards' ? I.rows : I.grid}</button>`;
-    }
-    return `<button class="iconbtn tip" type="button" data-chip="${d.id}"
-      data-tip="${esc(d.label)}: ${esc(optLabel(d, cur))}" aria-haspopup="dialog"
-      aria-expanded="${state.popOpen === d.id}"
-      aria-label="${esc(d.label)}, ${esc(optLabel(d, cur))}">${I[d.icon || 'grid']}</button>`;
+    const other = pairs(d).find(o => String(o[0]) !== String(cur));
+    return `<button class="iconbtn tip" type="button" data-disptoggle="${d.id}"
+      data-tip="${esc(other[1])} view" aria-pressed="${String(cur) !== String(pairs(d)[0][0])}"
+      aria-label="Switch to ${esc(other[1])} view">${cur === 'cards' ? I.rows : I.grid}</button>`;
   }).join('');
+  const dispSlot = disp ? `<div class="qxfb__disp">${disp}</div>` : '';
 
   const acts = s.actions ? s.actions() : [];
-  const actions = (acts.length || disp) ? `<div class="qxfb__actions" id="actions">
+  const actions = acts.length ? `<div class="qxfb__actions" id="actions">
       <button class="qxbtn qxbtn--icon qxbtn--overflow" type="button" aria-label="More actions">${I.dots}</button>
-      ${disp}${acts.map(a => `<button class="qxbtn${a.t ? '' : ' qxbtn--icon'}" type="button"
+      ${acts.map(a => `<button class="qxbtn${a.t ? '' : ' qxbtn--icon'}" type="button"
         ${a.aria ? `aria-label="${esc(a.aria)}"` : ''}>${I[a.i]}${a.t ? `<span>${a.t}</span>` : ''}</button>`).join('')}
     </div>` : '';
 
   return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}" data-state="${state.sim}">
     <div class="qxfb__row" id="row" role="group" aria-label="Filters">
       ${trigger}${chips}
-      <div class="qxfb__right" id="right">${clear}${count}${actions}</div>
+      <div class="qxfb__right" id="right">${clear}${count}${dispSlot}${actions}</div>
     </div>
   </div>`;
 }
@@ -1694,7 +1684,7 @@ const chgCls = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'mut';
 function chainResults() {
   const rows = rowsNow();
   const e = chExpiry();
-  const layout = dispVal(F('layout'));
+  const layout = dispVal(F('view'));
   if (!rows.length) return emptyHTML('No strikes match these filters.',
     'The liquidity filters are the usual cause.');
   const maxC = Math.max(1, ...rows.map(r => r.call.vol));
@@ -1758,10 +1748,10 @@ const pop = { search:'' };
 function optHTML(f, r, ns) {
   const attr = ns ? `data-popt="${f.id}"` : '';
   return `<button class="opt" type="button" role="option" aria-selected="${r.on}" ${attr}
-    data-opt="${esc(String(r.key))}" data-empty="${r.count === 0}">
+    data-opt="${esc(String(r.key))}">
     ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>`
                          : `<span class="opt__radio"></span>`}
-    <span class="opt__label">${esc(r.label)}</span><span class="opt__count">${r.count}</span></button>`;
+    <span class="opt__label">${esc(r.label)}</span></button>`;
 }
 function customHTML(f, cls) {
   const v = val(f.id);
@@ -1780,7 +1770,6 @@ function sliderHTML(f, cls) {
   const hi = v.max == null ? f.max : v.max;
   const fmt = f.fmt || String;
   const p = x => (x - f.min) / (f.max - f.min) * 100;
-  const n = rowsNow().length;
   const box = (w, x) => `<input class="sld__box" type="text" data-sldbox="${f.id}:${w}"
     value="${esc(fmt(x))}" aria-label="${w === 'min' ? 'Minimum' : 'Maximum'} ${esc(f.label)}">`;
   const rng = (w, x) => `<input type="range" data-sld="${f.id}:${w}" min="${f.min}" max="${f.max}"
@@ -1798,8 +1787,7 @@ function sliderHTML(f, cls) {
         ${box('min', lo)}</div>`;
   return `<div class="${cls}">
     <div class="lbl">${f.boundLabel || (f.dual ? 'Between' : 'At least')}</div>
-    ${body}
-    <div class="sld__meta">${n.toLocaleString()} ${surf().unit(n)} match</div></div>`;
+    ${body}</div>`;
 }
 
 function popoverHTML(f) {
@@ -1810,8 +1798,7 @@ function popoverHTML(f) {
     : `<div class="pop__list"><div class="opt" data-empty="true"><span class="opt__label">No match for “${esc(pop.search)}”</span></div></div>`;
   return `<div class="pop" id="pop" role="${f.kind === 'multi' ? 'listbox' : 'dialog'}"
       ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
-    <div class="pop__head"><span class="pop__title">${esc(f.label)}</span>
-      <span class="pop__hint">${isSlider ? '' : 'matches'}</span></div>
+    <div class="pop__head"><span class="pop__title">${esc(f.label)}</span></div>
     ${f.search ? `<div class="pop__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
     ${list}
     ${isSlider ? sliderHTML(f, 'pop__custom') : (f.kind === 'range' ? customHTML(f, 'pop__custom') : '')}
@@ -1948,7 +1935,6 @@ function panelHTML() {
   const touch = isTouch();
   const drilled = touch && state.drill ? F(state.drill) : null;
   const n = rowsNow().length;
-  const enter = panelEntering ? ' is-entering' : '';
   const head = drilled
     ? `<div class="panel__head">
          <button class="panel__back" type="button" id="panelBack">${I.chevL}<span>All filters</span></button>
@@ -1961,7 +1947,7 @@ function panelHTML() {
        </div>`;
   const body = touch ? (drilled ? drillOptionsHTML(drilled) : drillListHTML()) : accordionHTML();
   return `<div class="scrim" id="scrim"></div>
-    <div class="panel${enter}" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
+    <div class="panel" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
          role="dialog" aria-modal="true" aria-label="All filters">
       <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
       ${head}
@@ -1975,7 +1961,6 @@ function panelHTML() {
 function openPanel(drillTo) {
   const wasOpen = state.panelOpen, cameFrom = state.drill;
   closePopover(true);
-  panelEntering = !wasOpen;
   drillAnim = drillTo ? 'in' : (cameFrom ? 'back' : null);
   state.panelOpen = true;
   state.drill = drillTo || null;
@@ -1989,7 +1974,7 @@ function openPanel(drillTo) {
   });
 }
 function closePanel() {
-  state.panelOpen = false; state.drill = null; panelEntering = false; drillAnim = null;
+  state.panelOpen = false; state.drill = null; drillAnim = null;
   render();
   const t = $('#allTrigger'); if (t) t.focus();
 }
@@ -2003,6 +1988,8 @@ function layout() {
 
   chipEls.forEach(c => c.classList.remove('is-withdrawn'));
   if (actions) actions.classList.remove('is-collapsed');
+  const clearEl = $('#barClear');
+  if (clearEl) clearEl.classList.remove('is-withdrawn');
 
   // Reserve the trigger at its worst-case badge so a growing count never reflows.
   const worst = String(surf().filters.length);
@@ -2053,10 +2040,21 @@ function layout() {
   }
   chipEls.forEach(el => { if (!visible.has(el.dataset.chip)) el.classList.add('is-withdrawn'); });
 
+  /* Last resort, once every chip is already withdrawn: drop the inline Clear.
+     It is the only control here that is duplicated verbatim in the panel footer,
+     so losing it costs nothing — unlike the count or the view toggle. */
+  let clearWithdrawn = false;
+  if (clearEl && triggerW + wOf(right) + GAP > rowW) {
+    clearEl.classList.add('is-withdrawn');
+    clearWithdrawn = true;
+    rightW = wOf(right);
+  }
+
   telemetry = {
     surface:state.tab, rowW:row.clientWidth, padX, triggerW, rightW, rightExpandedW, actionsCollapsed,
     budget, consumed:cost(visible), visible:[...visible], withdrawn,
-    order:promoted.map(f => f.id), widths, gatedIds:promoted.filter(f => isGated(f)).map(f => f.id)
+    order:promoted.map(f => f.id), widths, gatedIds:promoted.filter(f => isGated(f)).map(f => f.id),
+    clearWithdrawn
   };
 
   const hidden = hiddenCount();
@@ -2133,7 +2131,7 @@ function render() {
     ${state.panelOpen ? panelHTML() : ''}`;
   layout();
   if (openId) placePopover();
-  panelEntering = false; drillAnim = null;
+  drillAnim = null;
   announce();
   syncControls();
 }
@@ -2196,9 +2194,11 @@ function renderTelemetry() {
         ? `<b>${t.appliedTotal} applied</b>, every one of them visible as a chip on the bar`
         : `<b>${t.appliedTotal} applied, ${off.length} with no chip on the bar</b> — <code>${
             off.map(id => F(id).label).join(', ')}</code>. Only the trigger's tint carries it.`],
-    [true, t.actionsCollapsed
-      ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
-      : `All filters trigger reserved at <code>${t.triggerW}px</code> with a worst-case badge`]
+    [true, t.clearWithdrawn
+      ? `Inline <b>Clear</b> withdrawn last of all — it is the one control duplicated in the panel footer`
+      : t.actionsCollapsed
+        ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
+        : `All filters trigger reserved at <code>${t.triggerW}px</code> with a worst-case badge`]
   ];
   $('#asserts').innerHTML = as.map(([ok, txt]) =>
     `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${
@@ -2378,6 +2378,17 @@ product.addEventListener('scroll', e => {
   }
 }, true);
 
+/* Dismiss on any pointer-down outside the popover. The originating chip is
+   exempt so its own click still toggles rather than closing then reopening. */
+document.addEventListener('pointerdown', e => {
+  const id = state.popOpen || state.gateOpen;
+  if (!id) return;
+  if (e.target.closest('#pop')) return;
+  if (e.target.closest(`[data-chip="${id}"]`)) return;
+  closePopover(true);
+  render();
+}, true);
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.dataset && e.target.dataset.sldbox) {
     e.preventDefault(); e.target.dispatchEvent(new Event('change', { bubbles:true })); return;
@@ -2431,7 +2442,7 @@ function seg(id, key, cast) {
     if (key === 'input') {
       // The two presentations are different surfaces; don't carry an open one across.
       closePopover(true);
-      if (state.panelOpen) { state.drill = null; panelEntering = true; }
+      if (state.panelOpen) { state.drill = null; }
     }
     state.flow = null; render();
   });
@@ -2460,14 +2471,20 @@ function syncControls() {
 
 
 /* ---------------------------------------------------------------- flows */
-const V = o => { state.values[state.tab] = o; };
+/* Setting up a flow replaces the tab's filter values but keeps its display
+   choices — a layout is not something a filter preset should silently reset. */
+const V = o => {
+  const keep = {};
+  surf().filters.forEach(f => { if (f.display && vals()[f.id] != null) keep[f.id] = vals()[f.id]; });
+  state.values[state.tab] = Object.assign(keep, o);
+};
 const base = () => {
   Object.assign(state, { tab:'screener', input:'pointer', skin:'full', density:'comfortable',
     sim:'default', promotedCount:6, pro:false, options:false, showCount:true,
     expiry:'e0', expScroll:0,
     panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
-  state.values = { screener:{}, chain:{ window:5 }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } };
-  panelEntering = false; drillAnim = null;
+  state.values = { screener:{}, chain:{ window:5, view:'side' }, analyzer:{ minProb:{min:70}, dte:{min:0,max:90} } };
+  drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
 };
 const chainBaseFlow = () => { base(); state.tab = 'chain'; };
@@ -2486,12 +2503,12 @@ const FLOWS = [
   { id:'popover', t:'Pointer popover', d:'Anchored dropdown, counts per option', w:1024,
     run:() => { base(); SET3(); state.popOpen = 'sector'; } },
   { id:'drawer', t:'Pointer drawer', d:'Sections expand in place', w:1024,
-    run:() => { base(); SET3(); state.panelOpen = true; state.panelOpenFilter = 'mcap'; panelEntering = true; } },
+    run:() => { base(); SET3(); state.panelOpen = true; state.panelOpenFilter = 'mcap'; } },
   { id:'sheet', t:'Touch sheet', d:'Drill-down level one', w:400,
-    run:() => { base(); state.input = 'touch'; SET3(); state.panelOpen = true; panelEntering = true; } },
+    run:() => { base(); state.input = 'touch'; SET3(); state.panelOpen = true; } },
   { id:'drill', t:'Touch drill-down', d:'Level two, Back returns', w:400,
     run:() => { base(); state.input = 'touch'; SET3(); state.panelOpen = true; state.drill = 'sector';
-                state.panelOpenFilter = 'sector'; panelEntering = true; } },
+                state.panelOpenFilter = 'sector'; } },
   { id:'gated', t:'Gated chip', d:'Lock glyph opens the upgrade gate', w:900,
     run:() => { base(); state.gateOpen = 'rating'; } },
   { id:'actions', t:'Actions collapse', d:'Group folds to overflow, chips stay', w:1024,
@@ -2519,12 +2536,12 @@ const FLOWS = [
   { id:'ch-monthly', t:'Monthly only', d:'Expiry chip filters the strip', w:1024,
     run:() => { chainBaseFlow(); V({ window:5, expiryType:'Monthly' }); } },
   { id:'ch-panel', t:'All filters', d:'Eight filters, four groups', w:1024,
-    run:() => { chainBaseFlow(); state.panelOpen = true; state.panelOpenFilter = 'maxSpread'; panelEntering = true; } },
+    run:() => { chainBaseFlow(); state.panelOpen = true; state.panelOpenFilter = 'maxSpread'; } },
   { id:'ch-stack', t:'Stacked layout', d:'Display control, not a filter', w:900,
-    run:() => { chainBaseFlow(); state.values.chain.layout = 'stack'; } },
+    run:() => { chainBaseFlow(); state.values.chain.view = 'stack'; } },
   { id:'ch-mob', t:'Chain on mobile', d:'Trigger only, sheet drill-down', w:400,
-    run:() => { chainBaseFlow(); state.input = 'touch'; state.values.chain.layout = 'calls';
-                state.panelOpen = true; panelEntering = true; } },
+    run:() => { chainBaseFlow(); state.input = 'touch'; state.values.chain.view = 'calls';
+                state.panelOpen = true; } },
   { id:'ch-empty', t:'No strikes match', d:'Bar stays interactive', w:1180,
     run:() => { chainBaseFlow(); V({ window:'x', deliverables:'ns' }); delete state.values.chain.window; } },
 
