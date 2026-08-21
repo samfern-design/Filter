@@ -1610,8 +1610,8 @@ const CHAIN_FILTERS = [
   { id:'expiryType', label:'Expiry', kind:'choice', group:'Expiry', promoted:1, scoped:true,
     options:[['Weekly','Weekly'],['Monthly','Monthly'],['Quarterly','Quarterly'],['LEAPS','LEAPS']],
  },
-  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:2, scoped:true, noAll:'All strikes',
-    options:[[5,'±5 strikes'],[10,'±10 strikes'],[20,'±20 strikes']] },
+  { id:'window', label:'Strikes', kind:'choice', group:'Strikes', promoted:2, scoped:true, noAll:'All',
+    options:[[5,'±5'],[10,'±10'],[20,'±20']] },
   { id:'near', label:'Near', kind:'choice', group:'Strikes', scoped:true, search:true,
     noAll:'Spot (311.51)',
     options:() => CH.STRIKES.map(k => [String(k), String(k)]) },
@@ -1652,9 +1652,17 @@ const AN_FILTERS = [
     test:(r,v) => v.includes(r.name) },
   { id:'minProb', label:'Min probability', kind:'slider', group:'Constraints', promoted:3,
     min:50, max:99, step:1, fmt:v => v + '%', boundLabel:'At least',
+    presets:[{ id:'p60', label:'Over 60%', min:60 }, { id:'p70', label:'Over 70%', min:70 },
+             { id:'p80', label:'Over 80%', min:80 }, { id:'p90', label:'Over 90%', min:90 }],
     test:(r,v) => r.prob >= (v.min == null ? 0 : v.min) },
   { id:'dte', label:'Days to exp', kind:'slider', dual:true, group:'Constraints', promoted:4,
-    min:0, max:365, step:1, fmt:v => String(v), field:'dte' }
+    min:0, max:365, step:1, fmt:v => String(v), field:'dte',
+    presets:[{ id:'d7', label:'This week', min:0, max:7 },
+             { id:'d30', label:'Within 30 days', min:0, max:30 },
+             { id:'d60', label:'Within 60 days', min:0, max:60 },
+             { id:'d90', label:'Within 90 days', min:0, max:90 },
+             { id:'dq', label:'30 to 180 days', min:30, max:180 },
+             { id:'dall', label:'Any expiry', min:0, max:365 }] }
 ];
 
 const SURFACES = {
@@ -1852,7 +1860,13 @@ function optionRows(f, useSearch) {
       key:o[0], label:o[1], on:String(v) === String(o[0]), type:'radio' }));
     return rows;
   }
-  if (f.kind === 'slider') return [];
+  if (f.kind === 'slider') {
+    const same = (a, b) => (a == null ? null : a) === (b == null ? null : b);
+    return (f.presets || []).map(pr => ({
+      key:pr.id, label:pr.label, type:'radio',
+      on:!!v && same(v.min, pr.min) && (f.dual ? same(v.max, pr.max) : v.max == null)
+    }));
+  }
   return f.presets.map(p => ({ key:p.id, label:p.label, type:'radio',
     on:v && v.preset === p.id }));
 }
@@ -2119,14 +2133,14 @@ function sliderHTML(f, cls) {
           style="--sw:100%;flex:1;--trk:linear-gradient(to right,var(--qx-primary) ${p(lo)}%,var(--qx-surface-200) ${p(lo)}%)">
         ${box('min', lo)}</div>`;
   return `<div class="${cls}">
-    <div class="lbl">${f.boundLabel || (f.dual ? 'Between' : 'At least')}</div>
+    <div class="lbl">${f.presets ? 'Custom' : (f.boundLabel || (f.dual ? 'Between' : 'At least'))}</div>
     ${body}</div>`;
 }
 
 function popoverHTML(f) {
   const rows = optionRows(f, true);
   const isSlider = f.kind === 'slider';
-  const list = isSlider ? '' : rows.length
+  const list = (isSlider && !rows.length) ? '' : rows.length
     ? `<div class="pop__list" id="popList">${rows.map(r => optHTML(f, r)).join('')}</div>`
     : `<div class="pop__list"><div class="opt" data-empty="true"><span class="opt__label">No match for “${esc(pop.search)}”</span></div></div>`;
   return `<div class="pop" id="pop" role="${f.kind === 'multi' ? 'listbox' : 'dialog'}"
@@ -2742,6 +2756,10 @@ product.addEventListener('click', e => {
 function applyOption(f, key) {
   if (f.kind === 'multi') toggleMulti(f, key);
   else if (f.kind === 'choice') chooseOne(f, key);
+  else if (f.kind === 'slider') {
+    const pr = (f.presets || []).find(x => x.id === key);
+    if (pr) setVal(f.id, f.dual ? { min:pr.min, max:pr.max } : { min:pr.min });
+  }
   else setPreset(f, key);
   if (f.onSet) f.onSet(val(f.id));      // Analysis ⇄ Data/Calculation, Universe → Symbols
   state.flow = null;
