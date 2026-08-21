@@ -27,8 +27,14 @@
   --qx-neutral-0:#FFFFFF; --qx-neutral-50:#F6F6F6; --qx-neutral-100:#EEEEEE;
   --qx-neutral-200:#E3E3E3; --qx-neutral-300:#A7A7A7; --qx-neutral-400:#707070;
   --qx-neutral-500:#575757; --qx-neutral-600:#444444; --qx-neutral-800:#222222; --qx-neutral-950:#111111;
-  --qx-up-500:#2B7F45; --qx-up-100:#D6EBDE; --qx-up-200:#B4DBC3; --qx-up-300:#8ECBA5;
-  --qx-down-500:#D02A48; --qx-down-100:#FAD3DB; --qx-down-200:#F4AEBC; --qx-down-300:#EC8598;
+  --qx-up-500:#2B7F45; --qx-up-50:#F1F8F4; --qx-up-100:#D6EBDE; --qx-up-200:#B4DBC3; --qx-up-300:#8ECBA5;
+  --qx-down-500:#D02A48; --qx-down-50:#FDEEF1; --qx-down-100:#FAD3DB; --qx-down-200:#F4AEBC; --qx-down-300:#EC8598;
+  --qx-sky-100:#DCEEFB; --qx-sky-700:#0B5FA5;
+  --qx-amber-100:#FDF0CF; --qx-amber-700:#8A5A00;
+  /* Strategy-family accent. Qmodii has one green, one red, and reserves slate for
+     chart states — there is no categorical ramp, so this violet is a stand-in
+     matching the analyzer screenshots. Flagged in the notes, not a DS token. */
+  --qx-strat-income:#7C5CD6; --qx-strat-bull:var(--qx-up-500); --qx-strat-bear:var(--qx-down-500);
   --qx-hold:#F5C63F; --qx-hold-border:#E0A800;
 
   --qx-primary:var(--qx-brand-700); --qx-primary-hover:var(--qx-brand-600);
@@ -114,6 +120,10 @@ button{font:inherit;color:inherit}
 .flow[aria-pressed="true"]{background:#22303C;color:var(--lab-fg)}
 .flow[aria-pressed="true"] .flow__n{color:var(--lab-accent)}
 .flow__n{font-family:var(--lab-mono);font-size:10.5px;color:var(--lab-fg-3)}
+.flow__g{
+  margin:14px 0 4px;padding:0 8px;font-size:10px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--lab-fg-3);border-top:1px solid var(--lab-rule);padding-top:12px;
+}
 .flow__t{font-size:12.5px;line-height:1.35}
 .flow__d{display:block;font-size:11px;color:var(--lab-fg-3);margin-top:1px}
 .reset{
@@ -443,7 +453,7 @@ button{font:inherit;color:inherit}
 .accbody[hidden]{display:none}
 
 /* ---- result table -------------------------------------------------------- */
-.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;color:var(--qx-text-primary)}
 .tbl th,.tbl td{padding:7px 10px;text-align:right;white-space:nowrap}
 .tbl th:first-child,.tbl td:first-child,.tbl th.l,.tbl td.l{text-align:left}
 .tbl thead th{
@@ -463,6 +473,12 @@ button{font:inherit;color:inherit}
 .rtg[data-r="Sell"]{background:var(--qx-down-200)}
 .tbl__foot{padding:8px 12px;font-size:12px;color:var(--qx-text-muted);border-top:1px solid var(--qx-border-color)}
 .tblwrap{overflow-x:auto}
+.scroller{max-height:432px;overflow:auto}
+.scroller .chain thead th,.scroller .strat thead th{
+  position:sticky;top:0;z-index:2;background:var(--qx-surface-0);
+}
+.scroller .chain thead .chgrp th{top:0}
+.scroller .chain thead .cols th{top:22px}
 .empty{padding:40px 20px;text-align:center}
 .empty h4{margin:0 0 4px;font-size:14px;font-weight:500}
 .empty p{margin:0 0 12px;font-size:13px;color:var(--qx-text-secondary)}
@@ -516,6 +532,287 @@ button{font:inherit;color:inherit}
 .note p{margin:0 0 8px;font-size:12.5px;color:var(--lab-fg-2);line-height:1.5}
 .note code{font-family:var(--lab-mono);font-size:11.5px;color:var(--lab-accent)}
 
+
+/* ==========================================================================
+   Shared controls for the chain / analyzer surfaces — labelled selects,
+   portalled listboxes, sliders, icon buttons.
+   ========================================================================== */
+.ctl{
+  display:flex;align-items:flex-end;gap:16px;min-width:0;overflow:hidden;
+  padding:10px 12px;border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-0);
+}
+.ctl__right{display:flex;align-items:center;gap:8px;margin-left:auto;flex:0 0 auto;padding-bottom:1px}
+.fld{display:flex;flex-direction:column;gap:4px;flex:0 0 auto;min-width:0}
+.fld__lbl{font-size:12px;color:var(--qx-text-secondary);line-height:1.2;white-space:nowrap}
+.fld.is-withdrawn,.iconbtn.is-withdrawn{display:none}
+
+.qxsel{
+  display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 8px 0 10px;
+  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  font-size:13px;color:var(--qx-text-primary);cursor:pointer;white-space:nowrap;
+  transition:border-color var(--qx-dur-fast) var(--qx-ease);
+}
+.qxsel:hover{border-color:var(--qx-border-color-hover)}
+.qxsel:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.qxsel[aria-expanded="true"]{border-color:var(--qx-primary)}
+.qxsel__v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.qxsel__chev{color:var(--qx-text-muted);flex:0 0 auto;transition:transform var(--qx-dur-fast) var(--qx-ease)}
+.qxsel[aria-expanded="true"] .qxsel__chev{transform:rotate(180deg)}
+
+.sellist{
+  position:absolute;z-index:60;background:var(--qx-surface-0);border:1px solid var(--qx-border-color);
+  border-radius:var(--qx-radius-sm);box-shadow:var(--qx-shadow-md);padding:4px;
+  max-height:264px;overflow-y:auto;min-width:120px;
+}
+.selopt{
+  display:flex;align-items:center;gap:8px;width:100%;min-height:32px;padding:6px 10px;
+  background:none;border:0;border-radius:var(--qx-radius-sm);text-align:left;cursor:pointer;
+  font-size:13px;color:var(--qx-text-primary);white-space:nowrap;
+}
+.selopt:hover{background:var(--qx-surface-50)}
+.selopt:focus-visible{outline:2px solid var(--qx-primary);outline-offset:-2px}
+.selopt[aria-selected="true"]{background:var(--qx-state-selected-bg);color:var(--qx-state-selected-fg)}
+.selopt__c{margin-left:auto;font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums}
+
+.iconbtn{
+  display:inline-grid;place-items:center;width:32px;height:32px;flex:0 0 auto;position:relative;
+  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  color:var(--qx-text-secondary);cursor:pointer;
+}
+.iconbtn:hover{background:var(--qx-surface-50);border-color:var(--qx-border-color-hover);color:var(--qx-text-primary)}
+.iconbtn:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.iconbtn[aria-pressed="true"],.iconbtn[aria-expanded="true"]{
+  background:var(--qx-state-selected-bg);border-color:var(--qx-state-selected-border);color:var(--qx-primary);
+}
+.iconbtn__badge{
+  position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 3px;
+  border-radius:var(--qx-radius-full);background:var(--qx-primary);color:#fff;
+  font-size:10px;font-weight:700;line-height:16px;
+}
+.tip{position:relative}
+.tip::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);right:0;z-index:70;
+  padding:4px 8px;border-radius:var(--qx-radius-sm);background:var(--qx-neutral-950);color:#fff;
+  font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity var(--qx-dur-fast) var(--qx-ease);
+}
+.tip:hover::after,.tip:focus-visible::after{opacity:1}
+
+/* sliders — single value and dual range */
+.sld{display:flex;align-items:center;gap:8px}
+.sld input[type="range"]{
+  -webkit-appearance:none;appearance:none;height:32px;margin:0;background:none;cursor:pointer;
+  width:var(--sw,150px);min-width:60px;
+}
+.sld input[type="range"]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--trk,var(--qx-surface-200))}
+.sld input[type="range"]::-moz-range-track{height:4px;border-radius:2px;background:var(--qx-surface-200)}
+.sld input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:16px;height:16px;margin-top:-6px;border-radius:50%;
+  background:var(--qx-surface-0);border:2px solid var(--qx-primary);box-shadow:var(--qx-shadow-xs,0 1px 2px rgba(0,0,0,.06));
+}
+.sld input[type="range"]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:var(--qx-surface-0);border:2px solid var(--qx-primary);
+}
+.sld input[type="range"]:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px;border-radius:4px}
+.sld__box{
+  width:56px;height:32px;padding:0 6px;font:inherit;font-size:13px;text-align:center;
+  font-variant-numeric:tabular-nums;border:1px solid var(--qx-border-color);
+  border-radius:var(--qx-radius-sm);background:var(--qx-surface-0);color:var(--qx-text-primary);
+}
+.sld__box:focus{border-color:var(--qx-primary);outline:none}
+.rsld{position:relative;height:32px;width:var(--sw,140px);min-width:60px;flex:0 0 auto}
+.rsld input[type="range"]{position:absolute;inset:0;width:100%;pointer-events:none;background:none}
+.rsld input[type="range"]::-webkit-slider-runnable-track{background:transparent}
+.rsld input[type="range"]::-moz-range-track{background:transparent}
+.rsld input[type="range"]::-webkit-slider-thumb{pointer-events:auto}
+.rsld input[type="range"]::-moz-range-thumb{pointer-events:auto}
+.rsld__trk{position:absolute;top:14px;left:0;right:0;height:4px;border-radius:2px;background:var(--qx-surface-200)}
+.rsld__fill{position:absolute;top:14px;height:4px;border-radius:2px;background:var(--qx-primary)}
+
+/* ==========================================================================
+   Options chain
+   ========================================================================== */
+.exps{position:relative;border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-0)}
+.exps__scroll{
+  display:flex;gap:8px;padding:8px 12px;overflow-x:auto;scroll-behavior:smooth;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.exps__scroll::-webkit-scrollbar{display:none}
+.exp{
+  display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;flex:0 0 auto;
+  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  font-size:13px;color:var(--qx-text-primary);cursor:pointer;white-space:nowrap;
+}
+.exp:hover{background:var(--qx-surface-50);border-color:var(--qx-border-color-hover)}
+.exp:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.exp__dte{
+  font-size:11.5px;color:var(--qx-text-muted);font-variant-numeric:tabular-nums;
+  padding-left:8px;border-left:1px solid var(--qx-surface-200);
+}
+.exp[aria-selected="true"]{
+  background:var(--qx-neutral-950);border-color:var(--qx-neutral-950);color:#fff;font-weight:500;
+}
+.exp[aria-selected="true"] .exp__dte{color:rgba(255,255,255,.7);border-left-color:rgba(255,255,255,.25)}
+.exps__arrow{
+  position:absolute;top:8px;width:34px;height:34px;display:grid;place-items:center;
+  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  color:var(--qx-text-secondary);cursor:pointer;
+}
+.exps__arrow:hover{background:var(--qx-surface-50)}
+.exps__arrow:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+.exps__arrow[hidden]{display:none}
+.exps__arrow--r{right:8px;box-shadow:-10px 0 10px -6px rgba(0,0,0,.10)}
+.exps__arrow--l{left:8px;box-shadow:10px 0 10px -6px rgba(0,0,0,.10)}
+
+.chain{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;
+  color:var(--qx-text-primary);background:var(--qx-surface-0)}
+.chain td{color:var(--qx-text-primary)}
+.chain th,.chain td{padding:6px 8px;text-align:right;white-space:nowrap}
+.chain thead .chgrp th{
+  font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--qx-text-secondary);text-align:center;padding-bottom:2px;
+}
+.chain thead .cols th{
+  font-size:11.5px;font-weight:400;color:var(--qx-text-secondary);
+  border-bottom:1px solid var(--qx-border-color);padding-bottom:6px;
+}
+.chain thead .cols th span{border-bottom:1px dotted var(--qx-surface-300);cursor:help}
+.chain tbody tr{border-bottom:1px solid var(--qx-surface-100)}
+.chain tbody tr:hover td{background:var(--qx-surface-50)}
+.chain .k{
+  text-align:center;font-weight:700;color:var(--qx-text-primary);
+  border-left:1px solid var(--qx-border-color);border-right:1px solid var(--qx-border-color);
+  background:var(--qx-surface-0);
+}
+.chain thead .k{border-left:1px solid var(--qx-border-color);border-right:1px solid var(--qx-border-color)}
+.chain .itm-c{background:var(--qx-up-50)}
+.chain .itm-p{background:var(--qx-down-50)}
+.chain tbody tr:hover .itm-c{background:#E9F3ED}
+.chain tbody tr:hover .itm-p{background:#F9E3E8}
+.chain .up{color:var(--qx-up-500)}
+.chain .dn{color:var(--qx-down-500)}
+.chain .mut{color:var(--qx-text-muted)}
+/* volume bar, anchored toward the strike column so the two sides read as one distribution */
+.vol{background-repeat:no-repeat;background-size:var(--v,0%) 17px;background-position-y:center;min-width:92px}
+.vol--c{background-image:linear-gradient(var(--vb,var(--qx-up-200)),var(--vb,var(--qx-up-200)));background-position-x:right}
+.vol--p{background-image:linear-gradient(var(--vb,var(--qx-down-200)),var(--vb,var(--qx-down-200)));background-position-x:left}
+.ns{
+  margin-left:4px;padding:0 3px;border-radius:2px;background:var(--qx-amber-100);
+  color:var(--qx-amber-700);font-size:9.5px;font-weight:700;vertical-align:1px;
+}
+.spot td{padding:0;height:16px;border:0;position:relative}
+.spot td::before{
+  content:"";position:absolute;left:0;right:0;top:50%;border-top:1px dashed var(--qx-neutral-800);
+}
+.spot__pill{
+  position:absolute;left:var(--px,50%);top:50%;transform:translate(-50%,-50%);
+  padding:2px 7px;border-radius:var(--qx-radius-sm);background:var(--qx-neutral-950);color:#fff;
+  font-size:11.5px;font-weight:500;white-space:nowrap;z-index:2;
+}
+.stacked__h{
+  padding:10px 12px 4px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--qx-text-secondary);border-top:1px solid var(--qx-surface-100);
+}
+@container (max-width:1080px){ .ch-1080{display:none} }
+@container (max-width:900px){ .ch-900{display:none} }
+@container (max-width:720px){ .ch-720{display:none} }
+@container (max-width:560px){ .ch-560{display:none} }
+
+/* settings panel body */
+.setp{padding:4px 0}
+.setp__sec{padding:10px 12px 14px;border-bottom:1px solid var(--qx-surface-100)}
+.setp__sec:last-child{border-bottom:0}
+.setp__lbl{
+  font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--qx-text-secondary);margin-bottom:8px;
+}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fgrid .fld{min-width:0}
+.fgrid .fld--full{grid-column:1 / -1}
+.fgrid .qxsel{width:100%}
+.setp__help{margin:8px 0 0;font-size:12px;color:var(--qx-text-muted);line-height:1.45}
+
+/* ==========================================================================
+   Options analyzer
+   ========================================================================== */
+.uline{
+  display:flex;align-items:center;gap:24px;padding:8px 12px;flex-wrap:wrap;
+  border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-50);
+}
+.uline__id{display:flex;flex-direction:column;line-height:1.3}
+.uline__sym{font-size:14px;font-weight:700;color:var(--qx-text-primary)}
+.uline__nm{display:block;font-size:12px;color:var(--qx-text-secondary)}
+.uline__m{display:flex;flex-direction:column;gap:1px}
+.uline__k{font-size:11.5px;color:var(--qx-text-secondary)}
+.uline__v{font-size:14px;font-weight:500;color:var(--qx-text-primary);font-variant-numeric:tabular-nums}
+.regime{
+  display:inline-flex;align-self:flex-start;padding:2px 7px;border-radius:var(--qx-radius-xs);
+  background:var(--qx-sky-100);color:var(--qx-sky-700);font-size:10.5px;font-weight:700;letter-spacing:.05em;
+}
+.regime[data-r="high"]{background:var(--qx-amber-100);color:var(--qx-amber-700)}
+
+.strat{width:100%;border-collapse:collapse;font-size:13px;color:var(--qx-text-primary);background:var(--qx-surface-0)}
+.strat td{color:var(--qx-text-primary)}
+.strat th,.strat td{padding:6px 10px;text-align:right;vertical-align:top;white-space:nowrap}
+.strat th:first-child,.strat td:first-child,.strat .l{text-align:left}
+.strat thead th{
+  font-size:11.5px;font-weight:400;color:var(--qx-text-secondary);
+  border-bottom:1px solid var(--qx-border-color);
+}
+.strat tbody tr{border-bottom:1px solid var(--qx-surface-100)}
+.strat tbody tr:hover{background:var(--qx-surface-50)}
+.strat td:first-child{position:relative;padding-left:20px}
+.strat td:first-child::before{
+  content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;border-radius:2px;
+  background:var(--acc,var(--qx-surface-300));
+}
+.strat__nm{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.glyph{
+  display:grid;place-items:center;width:22px;height:20px;border-radius:var(--qx-radius-xs);
+  background:var(--qx-surface-0);border:1px solid var(--qx-border-color);color:var(--qx-text-secondary);
+  cursor:pointer;
+}
+.glyph:hover{border-color:var(--qx-border-color-hover);color:var(--qx-text-primary)}
+.glyph:focus-visible{outline:2px solid var(--qx-primary);outline-offset:1px}
+.glyph--info{border-color:var(--qx-brand-200);color:var(--qx-primary);background:var(--qx-primary-subtle)}
+.legs{display:flex;flex-direction:column;gap:4px}
+.leg{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.side{
+  min-width:44px;padding:2px 6px;border-radius:var(--qx-radius-xs);text-align:center;
+  font-size:10.5px;font-weight:700;letter-spacing:.04em;
+}
+.side[data-s="BUY"]{background:var(--qx-up-100);color:var(--qx-up-500)}
+.side[data-s="SELL"]{background:var(--qx-down-100);color:var(--qx-down-500)}
+.leg__d{color:var(--qx-text-secondary);font-size:12.5px}
+.leg__k{font-weight:700}
+.kind{
+  padding:2px 6px;border-radius:var(--qx-radius-xs);background:var(--qx-surface-100);
+  color:var(--qx-text-secondary);font-size:10.5px;font-weight:700;letter-spacing:.04em;
+}
+.prob{
+  display:inline-block;min-width:46px;padding:2px 7px;border-radius:var(--qx-radius-xs);
+  font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;text-align:center;
+}
+.prob[data-b="hi"]{background:var(--qx-up-100);color:var(--qx-up-500)}
+.prob[data-b="mid"]{background:var(--qx-amber-100);color:var(--qx-amber-700)}
+.prob[data-b="lo"]{background:var(--qx-surface-100);color:var(--qx-text-secondary)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:10px;padding:12px}
+.card{
+  position:relative;border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  padding:10px 12px 12px 14px;background:var(--qx-surface-0);display:flex;flex-direction:column;gap:8px;
+}
+.card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  border-radius:var(--qx-radius-sm) 0 0 var(--qx-radius-sm);background:var(--acc,var(--qx-surface-300));
+}
+.card__h{display:flex;align-items:center;gap:6px}
+.card__m{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--qx-surface-100);padding-top:8px}
+.card__k{font-size:11px;color:var(--qx-text-secondary);display:block}
+.card__v{font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+.disc{padding:10px 12px 14px;border-top:1px solid var(--qx-border-color)}
+.disc p{margin:0 0 6px;font-size:11.5px;color:var(--qx-text-muted);line-height:1.45;font-style:italic}
+.disc a{font-size:12px;color:var(--qx-text-link,#002C5A);text-decoration:underline}
+@container (max-width:640px){ .an-640{display:none} }
+
 @media (max-width:1000px){
   .lab{grid-template-columns:1fr}
   .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--lab-rule)}
@@ -529,7 +826,7 @@ button{font:inherit;color:inherit}
   <aside class="rail">
     <div class="brand">
       <div class="brand__mark">QX-FilterBar <em>/ flows</em></div>
-      <div class="brand__sub">Live prototype of the responsive spec. Drag the container edge — collapse runs on a real <code>ResizeObserver</code>, not breakpoints.</div>
+      <div class="brand__sub">Three experiences on one control surface. Drag the container edge — collapse runs on a real <code>ResizeObserver</code>, not breakpoints.</div>
     </div>
 
     <div class="grp">
@@ -669,6 +966,17 @@ button{font:inherit;color:inherit}
           <p><b>Applied state below the fold.</b> Without the tray, a withdrawn filter that holds a value has no on-screen representation beyond the trigger's tint and count. The spec's own reasoning — applied state is what stops users reading a filtered table as the full universe — now rests entirely on that one affordance plus the result count. Worth a usability check at 360px before this ships.</p>
           <p><b>Component name</b> is still an assumption — this prototype treats the bar and the panel as one component with two skins.</p>
         </div>
+        <div class="note">
+          <h3>Chain and analyzer — where they diverge</h3>
+          <ul>
+            <li><b>Labelled selects, not chips.</b> Both surfaces put the caption above the field and carry state inside it. No chip, no tray, no Clear. If QX-FilterBar is meant to cover these tools it needs a second trigger skin; otherwise they stay bespoke and the spec should say so.</li>
+            <li><b>A gear replaces All filters.</b> The chain's route to the full set is an unlabelled icon with a count badge. The spec pins a labelled trigger precisely because it is the only guaranteed route — an icon fails that at a glance.</li>
+            <li><b>No live result count.</b> The chain's count sits in the table footer, the analyzer has none. The spec requires one adjacent to the bar, and it is the compensation for not seeing inside a filter before opening it.</li>
+            <li><b>Expiry is navigation and filter at once.</b> The strip selects one expiry — navigation, which the spec keeps off the bar — while the Expiry select filters which expiries the strip offers. That reading is an assumption from the screenshots; confirm it.</li>
+            <li><b>A control that cannot shrink.</b> The analyzer's sliders have a hard minimum width and the collapse algorithm has no rule for them. This prototype withdraws sliders before selects, into the panel. The spec should decide.</li>
+            <li><b>Purple is not in the palette.</b> Strategy families are colour-coded, but Qmodii ships one green, one red, and reserves slate for chart states. The violet here is a stand-in — a categorical accent ramp is the real gap.</li>
+          </ul>
+        </div>
       </section>
     </div>
   </main>
@@ -683,6 +991,14 @@ const $ = (s, r = document) => r.querySelector(s);
 const I = {
   sliders: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h11M17 6h4M3 12h4M10 12h11M3 18h11M17 18h4"/><circle cx="15.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="8.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="15.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg>',
   chev: '<svg class="qxc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+  gear: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.9"/><path d="M19.1 14.4a1.6 1.6 0 00.32 1.76l.06.06a1.94 1.94 0 11-2.74 2.74l-.06-.06a1.6 1.6 0 00-1.76-.32 1.6 1.6 0 00-.97 1.46v.16a1.94 1.94 0 11-3.88 0v-.08a1.6 1.6 0 00-1.05-1.46 1.6 1.6 0 00-1.76.32l-.06.06A1.94 1.94 0 114.46 16.4l.06-.06a1.6 1.6 0 00.32-1.76 1.6 1.6 0 00-1.46-.97H3.2a1.94 1.94 0 110-3.88h.08a1.6 1.6 0 001.46-1.05 1.6 1.6 0 00-.32-1.76l-.06-.06A1.94 1.94 0 117.1 4.12l.06.06a1.6 1.6 0 001.76.32h.08A1.6 1.6 0 0010 3.04V2.9a1.94 1.94 0 113.88 0v.08a1.6 1.6 0 00.97 1.46 1.6 1.6 0 001.76-.32l.06-.06a1.94 1.94 0 112.74 2.74l-.06.06a1.6 1.6 0 00-.32 1.76v.08a1.6 1.6 0 001.46.97h.16a1.94 1.94 0 110 3.88h-.08a1.6 1.6 0 00-1.46.97z"/></svg>',
+  chevR2: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  grid: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>',
+  rows: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  payoffFlat: '<svg width="13" height="11" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 10l5-6 4 3h7"/></svg>',
+  payoffDown: '<svg width="13" height="11" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h7l4 6"/></svg>',
+  payoffSpread: '<svg width="13" height="11" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 10h5l3-6 3 6h5"/></svg>',
+  help: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .3c0 1.7-2.5 2-2.5 3.7M12 17v.5"/></svg>',
   chevL: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>',
   chevR: '<svg class="acc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
   lock: '<svg class="qxc__lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
@@ -732,6 +1048,7 @@ const SYMBOLS = [
   R('K','Kinross Gold Corp.','TSX','Materials',22,14.6,0.94,17.85,1.42,12.8,1.34,1.9,'Buy',T60),
   R('ARX','ARC Resources Ltd.','TSX','Energy',14,10.2,2.86,24.10,-0.42,3.2,1.38,2.2,'Buy',TC),
   R('LSPD','Lightspeed Commerce','TSX','Technology',2.1,null,0,18.40,-1.24,1.4,2.48,6.2,'Hold',TC),
+  R('ADBE','Adobe Inc.','NASDAQ','Technology',138,24.6,0,311.51,1.96,2.8,1.28,1.4,'Buy',NQ),
   R('PMET','Patriot Battery Metals','TSXV','Materials',0.68,null,0,5.60,-2.14,1.1,2.02,5.4,'Hold',[]),
   R('NEXT','NextSource Materials','TSXV','Materials',0.32,null,0,2.14,3.38,0.6,1.86,4.8,'Hold',[])
 ];
@@ -791,14 +1108,14 @@ const GROUPS = ['Fundamentals','Market','Profile'];
 /* ---------------------------------------------------------------- state */
 const TABS = [
   { id:'screener', label:'Screener' },
-  { id:'chain',    label:'Options chain',    soon:true },
-  { id:'analyzer', label:'Options analyzer', soon:true }
+  { id:'chain',    label:'Options chain' },
+  { id:'analyzer', label:'Options analyzer' }
 ];
 const state = {
   tab:'screener', input:'pointer',
   skin:'full', density:'comfortable', sim:'default', promotedCount:6,
   pro:false, options:false, showCount:true,
-  values:{}, panelOpen:false, popOpen:null, gateOpen:null,
+  values:{}, panelOpen:false, popOpen:null, gateOpen:null, openSelect:null,
   drill:null, panelOpenFilter:null,
   width:1180, flow:'default'
 };
@@ -941,6 +1258,8 @@ function appliedOffBar() {
 /* ---------------------------------------------------------------- collapse */
 const GAP = 8;
 function layout() {
+  if (state.tab === 'chain') return layoutChain();
+  if (state.tab === 'analyzer') return layoutAnalyzer();
   const row = $('#row');
   if (!row) {                                   // a tab with no bar yet
     telemetry = {};
@@ -1031,6 +1350,94 @@ function layout() {
 
   const h = Math.round(row.getBoundingClientRect().height);
   telemetry.rowH = h; heights.add(h);
+  renderTelemetry();
+}
+
+
+/* ---------------------------------------------------------------- chain / analyzer fit */
+function measureRow(row) {
+  const cs = getComputedStyle(row);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  return { padX, rowW: row.clientWidth - padX, gap: parseFloat(cs.columnGap) || 16 };
+}
+const wOf = el => Math.ceil(el.getBoundingClientRect().width);
+
+function layoutChain() {
+  const row = $('#row'); if (!row) return;
+  const { padX, rowW, gap } = measureRow(row);
+  const right = $('#right') || row.querySelector('.ctl__right');
+  const fields = [...row.querySelectorAll('.fld')];
+  const rightW = right ? wOf(right) : 0;
+  const consumed = fields.reduce((a, f) => a + wOf(f) + gap, 0);
+
+  // preserve the expiry strip's scroll across re-renders, then set the arrows
+  const strip = $('#expScroll');
+  let tabsVisible = 0, tabsTotal = 0, canL = false, canR = false;
+  if (strip) {
+    const prev = strip.style.scrollBehavior;
+    strip.style.scrollBehavior = 'auto';
+    strip.scrollLeft = chain.expScroll;
+    strip.style.scrollBehavior = prev;
+    const tabs = [...strip.querySelectorAll('.exp')];
+    tabsTotal = tabs.length;
+    const l = strip.scrollLeft, r = l + strip.clientWidth;
+    tabsVisible = tabs.filter(t => t.offsetLeft >= l - 1 && t.offsetLeft + t.offsetWidth <= r + 1).length;
+    canL = strip.scrollLeft > 2;
+    canR = strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2;
+    const bl = $('#expL'), br = $('#expR');
+    if (bl) bl.hidden = !canL;
+    if (br) br.hidden = !canR;
+    if (bl) strip.style.paddingLeft = canL ? '50px' : '12px';
+    if (br) strip.style.paddingRight = canR ? '50px' : '12px';
+  }
+
+  const { rows, total } = chRows();
+  const h = Math.round(row.getBoundingClientRect().height);
+  heights.add(h);
+  telemetry = {
+    surface:'chain', rowW: row.clientWidth, padX, rowH:h, budget: rowW - rightW - gap,
+    consumed, rightW, fields: fields.length, withdrawn:[], visible:[],
+    tabsVisible, tabsTotal, canL, canR,
+    strikes: rows.length, strikesTotal: total, applied: chFiltersApplied()
+  };
+  renderTelemetry();
+}
+
+/* The analyzer is the hard case for "the control row never wraps": two of its
+   four controls are sliders with a hard minimum usable width. Same rule as the
+   chips — measure, then withdraw right-to-left into the settings panel. */
+const AN_ORDER = ['fldDte', 'fldProb', 'fldStrategy', 'fldView'];
+function layoutAnalyzer() {
+  const row = $('#row'); if (!row) return;
+  const fields = AN_ORDER.map(id => $('#' + id)).filter(Boolean);
+  fields.forEach(f => f.classList.remove('is-withdrawn'));
+  const { padX, rowW, gap } = measureRow(row);
+  const right = $('#right');
+  const rightW = right ? wOf(right) : 0;
+  const widths = new Map(fields.map(f => [f.id, wOf(f)]));
+
+  const budget = rowW - rightW - gap;
+  let visible = new Set(fields.map(f => f.id));
+  const cost = () => [...visible].reduce((a, id) => a + widths.get(id) + gap, 0);
+  const withdrawn = [];
+  let i = 0;
+  while (cost() > budget && i < AN_ORDER.length) {
+    const id = AN_ORDER[i++];
+    if (!visible.has(id)) continue;
+    visible.delete(id); withdrawn.push(id);
+  }
+  fields.forEach(f => { if (!visible.has(f.id)) f.classList.add('is-withdrawn'); });
+
+  const badge = $('#anBadge');
+  if (badge) { badge.textContent = withdrawn.length; badge.hidden = withdrawn.length === 0; }
+
+  const h = Math.round(row.getBoundingClientRect().height);
+  heights.add(h);
+  telemetry = {
+    surface:'analyzer', rowW: row.clientWidth, padX, rowH:h, budget, consumed: cost(), rightW,
+    widths, withdrawn, visible:[...visible], order: AN_ORDER,
+    strats: anRows().length, stratsTotal: AN.STRATS.length
+  };
   renderTelemetry();
 }
 
@@ -1237,9 +1644,30 @@ function panelHintText() {
 }
 function panelHTML() {
   const touch = isTouch();
+  const enter = panelEntering ? ' is-entering' : '';
+
+  if (state.tab !== 'screener') {                       // chain / analyzer settings
+    const chainTab = state.tab === 'chain';
+    const n = chainTab ? chRows().rows.length : anRows().length;
+    return `<div class="scrim" id="scrim"></div>
+      <div class="panel${enter}" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
+           role="dialog" aria-modal="true" aria-label="${chainTab ? 'Chain settings' : 'Constraints'}">
+        <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
+        <div class="panel__head"><span class="panel__title">${chainTab ? 'Chain settings' : 'Constraints'}</span>
+          <span class="pop__hint" id="panelHint">${chainTab
+            ? `${chFiltersApplied()} of 5 applied` : `${anRows().length} of ${AN.STRATS.length} strategies`}</span>
+          <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close settings">${I.x}</button>
+        </div>
+        <div class="panel__body">${chainTab ? chainSettingsHTML() : analyzerSettingsHTML()}</div>
+        <div class="panel__foot">
+          <button class="qxbtn qxbtn--text" type="button" id="panelReset">Reset</button>
+          <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${n.toLocaleString()} ${
+            chainTab ? (n === 1 ? 'strike' : 'strikes') : (n === 1 ? 'strategy' : 'strategies')}</button>
+        </div></div>`;
+  }
+
   const drilled = touch && state.drill ? F(state.drill) : null;
   const n = results().length;
-  const enter = panelEntering ? ' is-entering' : '';
 
   const head = drilled
     ? `<div class="panel__head">
@@ -1289,6 +1717,535 @@ function closePanel() {
   const t = $('#allTrigger'); if (t) t.focus();
 }
 
+/* ---------------------------------------------------------------- select component */
+/* One custom listbox serves the bar selects and the panel fields. The list is
+   rendered in the product's overlay layer, not inside the field, so it escapes
+   the settings panel's own scroll container — see the Near dropdown in the specs. */
+const SELECTS = {};
+function selTrigger(id, value, opts, minW) {
+  SELECTS[id] = opts;
+  const cur = opts.find(o => String(o[0]) === String(value));
+  const open = state.openSelect === id;
+  return `<button class="qxsel" type="button" data-sel="${id}" role="combobox"
+    aria-haspopup="listbox" aria-expanded="${open}"
+    ${minW ? `style="min-width:${minW}px"` : ''}>
+    <span class="qxsel__v">${esc(cur ? cur[1] : String(value))}</span>
+    <svg class="qxsel__chev" width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>`;
+}
+function selListHTML() {
+  const id = state.openSelect; if (!id) return '';
+  const opts = SELECTS[id] || [];
+  const value = selGet(id);
+  return `<div class="sellist" id="sellist" role="listbox" aria-label="Options">${
+    opts.map(o => `<button class="selopt" type="button" role="option" data-selopt="${esc(String(o[0]))}"
+      aria-selected="${String(o[0]) === String(value)}">${esc(o[1])}</button>`).join('')
+  }</div>`;
+}
+function selGet(id) {
+  const [ns, key] = id.split('.');
+  return ns === 'ch' ? chain[key] : an[key];
+}
+function selSet(id, raw) {
+  const [ns, key] = id.split('.');
+  const opts = SELECTS[id] || [];
+  const match = opts.find(o => String(o[0]) === raw);
+  const v = match ? match[0] : raw;
+  if (ns === 'ch') {
+    chain[key] = v;
+    if (key === 'expiryType') { const e = chExpiries()[0]; chain.expiry = e ? e.id : null; }
+  } else { an[key] = v; }
+}
+function placeSelList() {
+  const el = $('#sellist'); if (!el) return;
+  const btn = $(`[data-sel="${state.openSelect}"]`); if (!btn) { state.openSelect = null; return; }
+  const p = $('#product').getBoundingClientRect(), a = btn.getBoundingClientRect();
+  el.style.minWidth = Math.max(120, Math.round(a.width)) + 'px';
+  const r = el.getBoundingClientRect();
+  let left = Math.max(8, Math.min(a.left - p.left, p.width - r.width - 8));
+  const below = p.height - (a.bottom - p.top) - 12;
+  let top;
+  if (r.height <= below) top = a.bottom - p.top + 4;
+  else if (r.height <= (a.top - p.top) - 12) top = a.top - p.top - r.height - 4;
+  else { top = a.bottom - p.top + 4; el.style.maxHeight = Math.max(140, below) + 'px'; }
+  el.style.left = left + 'px'; el.style.top = top + 'px';
+}
+function openSelect(id) {
+  state.openSelect = state.openSelect === id ? null : id;
+  render();
+  if (state.openSelect) requestAnimationFrame(() => {
+    const l = $('#sellist'); if (!l) return;
+    (l.querySelector('[aria-selected="true"]') || l.querySelector('.selopt'))?.focus();
+  });
+}
+function closeSelect(refocus) {
+  const id = state.openSelect;
+  state.openSelect = null;
+  render();
+  if (refocus && id) { const b = $(`[data-sel="${id}"]`); if (b) b.focus(); }
+}
+
+/* ---------------------------------------------------------------- options analyzer */
+const AN = (() => {
+  const spot = 483.04;
+  const EXP = [['August 26, 2026',5],['August 28, 2026',7],['August 31, 2026',10],['September 4, 2026',14],
+               ['September 18, 2026',28],['September 25, 2026',35],['October 2, 2026',42],['October 16, 2026',56],
+               ['November 20, 2026',91],['January 15, 2027',147]];
+  const FAM = {
+    'Covered Call':      { view:'Neutral', acc:'income', glyph:'payoffFlat',   legs:'stock+call' },
+    'Short Put':         { view:'Bullish', acc:'bull',   glyph:'payoffDown',   legs:'put' },
+    'Put Credit Spread': { view:'Bullish', acc:'bull',   glyph:'payoffSpread', legs:'put2' },
+    'Call Credit Spread':{ view:'Bearish', acc:'bear',   glyph:'payoffSpread', legs:'call2' },
+    'Iron Condor':       { view:'Neutral', acc:'income', glyph:'payoffSpread', legs:'condor' },
+    'Long Call':         { view:'Bullish', acc:'bull',   glyph:'payoffFlat',   legs:'call', debit:true },
+    'Long Put':          { view:'Bearish', acc:'bear',   glyph:'payoffDown',   legs:'put',  debit:true }
+  };
+  const noise = (a, b) => { const x = Math.sin(a * 91.7 + b * 47.3) * 21841.13; return x - Math.floor(x); };
+  const r2 = v => Math.round(v * 100) / 100;
+  const out = [];
+  let n = 0;
+  Object.entries(FAM).forEach(([name, fam], fi) => {
+    for (let i = 0; i < 7; i++) {
+      n++;
+      const [date, dte] = EXP[(fi * 3 + i) % EXP.length];
+      const otm = 2 + i * 1.6 + fi * 0.7;                       // % out of the money
+      const dir = fam.view === 'Bearish' ? 1 : -1;
+      const k1 = Math.round((spot * (1 + dir * -otm / 100)) / 2.5) * 2.5;
+      const k2 = Math.round((k1 + (fam.view === 'Bearish' ? 5 : -5)) / 2.5) * 2.5;
+      // Credit strategies profit from time; debit strategies need the move, so
+      // their probability of profit is structurally low. Same model, two bands.
+      const prob = fam.debit
+        ? Math.max(18, Math.round(46 - otm * 1.1 - dte * 0.02 + noise(fi, i) * 8))
+        : Math.min(96, Math.round(62 + otm * 1.9 - dte * 0.035 + noise(fi, i) * 7));
+      const width = Math.abs(k1 - k2);
+      let credit = spot * 0.0016 * (1 + dte / 35) * Math.exp(-otm / 14) * (0.8 + noise(i, fi) * 0.6);
+      if (fam.legs === 'put2' || fam.legs === 'call2' || fam.legs === 'condor')
+        credit = Math.min(credit, width * 0.35);        // a spread cannot collect more than its width
+      credit = r2(Math.max(0.05, credit));
+      const prem = Math.round(credit * 100);
+      let inv;
+      if (fam.legs === 'stock+call') inv = spot;
+      else if (fam.debit) inv = r2(credit);                       // a debit is the whole cost
+      else if (fam.legs === 'put') inv = r2(k1 * 0.135 + noise(i, fi) * 8);
+      else inv = r2(width - credit);
+      out.push({ id:'s' + n, name, fam, date, dte, k1, k2, prob, prem, inv:Math.max(1, inv), credit });
+    }
+  });
+  return { sym:'MSFT', name:'Microsoft Corporation', spot, iv:26.03, regime:'LOW VOLATILITY',
+           STRATS:out.sort((a, b) => b.prob - a.prob || a.dte - b.dte),
+           FAMS:Object.keys(FAM) };
+})();
+
+const an = {
+  marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90,
+  view:'table', settingsOpen:false
+};
+const AN_OPTS = {
+  marketView:[['Any','Any'],['Bullish','Bullish'],['Neutral','Neutral'],['Bearish','Bearish']],
+  strategy:[['All','All'], ...AN.FAMS.map(f => [f, f])]
+};
+function anRows() {
+  return AN.STRATS.filter(s =>
+    (an.marketView === 'Any' || s.fam.view === an.marketView) &&
+    (an.strategy === 'All' || s.name === an.strategy) &&
+    s.prob >= an.minProb && s.dte >= an.dteMin && s.dte <= an.dteMax);
+}
+const probBand = p => p >= 90 ? 'hi' : p >= 80 ? 'mid' : 'lo';
+const usd = v => '$' + v.toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
+
+function legsHTML(s) {
+  const L = [];
+  const kind = s.name.includes('Call') && s.fam.legs !== 'stock+call' ? 'CALL'
+            : s.fam.legs === 'stock+call' ? 'CALL' : s.name.includes('Put') ? 'PUT' : 'CALL';
+  const leg = (side, date, k, tag) => `<div class="leg"><span class="side" data-s="${side}">${side}</span>
+    ${date ? `<span class="leg__d">${date}</span>` : ''}<span class="leg__k">${k}</span>
+    <span class="kind">${tag}</span></div>`;
+  if (s.fam.legs === 'stock+call') {
+    L.push(leg('BUY', '', (AN.spot - 0.005).toFixed(3), 'STOCK'));
+    L.push(leg('SELL', s.date, s.k1, 'CALL'));
+  } else if (s.fam.legs === 'put' && s.name === 'Short Put') {
+    L.push(leg('SELL', s.date, s.k1, 'PUT'));
+  } else if (s.fam.legs === 'put' && s.name === 'Long Put') {
+    L.push(leg('BUY', s.date, s.k1, 'PUT'));
+  } else if (s.fam.legs === 'call') {
+    L.push(leg('BUY', s.date, s.k1, 'CALL'));
+  } else if (s.fam.legs === 'put2') {
+    L.push(leg('SELL', s.date, s.k1, 'PUT'));
+    L.push(leg('BUY', s.date, s.k2, 'PUT'));
+  } else if (s.fam.legs === 'call2') {
+    L.push(leg('SELL', s.date, s.k1, 'CALL'));
+    L.push(leg('BUY', s.date, s.k2, 'CALL'));
+  } else {
+    L.push(leg('SELL', s.date, s.k1, 'PUT'));
+    L.push(leg('BUY', s.date, s.k2, 'PUT'));
+    L.push(leg('SELL', s.date, s.k1 + 40, 'CALL'));
+    L.push(leg('BUY', s.date, s.k2 + 50, 'CALL'));
+  }
+  return `<div class="legs">${L.join('')}</div>`;
+}
+
+function analyzerHTML() {
+  const rows = anRows();
+  const sliders = `
+    <label class="fld" id="fldProb"><span class="fld__lbl">Min Probability</span>
+      <div class="sld">
+        <input type="range" id="anProb" min="50" max="99" value="${an.minProb}"
+          aria-label="Minimum probability of profit"
+          style="--sw:150px;--trk:linear-gradient(to right,var(--qx-primary) ${(an.minProb - 50) / 49 * 100}%,var(--qx-surface-200) ${(an.minProb - 50) / 49 * 100}%)">
+        <input class="sld__box" id="anProbBox" type="text" value="${an.minProb}%" aria-label="Minimum probability value">
+      </div></label>
+    <label class="fld" id="fldDte"><span class="fld__lbl">Days to Exp</span>
+      <div class="sld">
+        <input class="sld__box" id="anDteMin" type="text" value="${an.dteMin}" aria-label="Minimum days to expiry">
+        <div class="rsld" style="--sw:140px">
+          <div class="rsld__trk"></div>
+          <div class="rsld__fill" style="left:${an.dteMin / 365 * 100}%;right:${100 - an.dteMax / 365 * 100}%"></div>
+          <input type="range" id="anDteA" min="0" max="365" value="${an.dteMin}" aria-label="Days to expiry, from">
+          <input type="range" id="anDteB" min="0" max="365" value="${an.dteMax}" aria-label="Days to expiry, to">
+        </div>
+        <input class="sld__box" id="anDteMax" type="text" value="${an.dteMax}" aria-label="Maximum days to expiry">
+      </div></label>`;
+
+  const ctl = `<div class="ctl" id="row">
+    <label class="fld" id="fldView"><span class="fld__lbl">Market View</span>
+      ${selTrigger('an.marketView', an.marketView, AN_OPTS.marketView, 96)}</label>
+    ${sliders}
+    <label class="fld" id="fldStrategy"><span class="fld__lbl">Strategy</span>
+      ${selTrigger('an.strategy', an.strategy, AN_OPTS.strategy, 104)}</label>
+    <div class="ctl__right" id="right">
+      <button class="iconbtn tip" type="button" id="anGear" data-tip="Constraints"
+        aria-haspopup="dialog" aria-expanded="${state.panelOpen}" aria-label="Constraints">
+        ${I.gear}<span class="iconbtn__badge" id="anBadge" hidden>0</span></button>
+      <button class="iconbtn tip" type="button" id="anView"
+        data-tip="${an.view === 'table' ? 'Card view' : 'Table view'}" aria-pressed="${an.view === 'cards'}"
+        aria-label="${an.view === 'table' ? 'Switch to card view' : 'Switch to table view'}">
+        ${an.view === 'table' ? I.grid : I.rows}</button>
+    </div></div>`;
+
+  const strip = `<div class="uline">
+    <div class="uline__id"><span class="uline__sym">${AN.sym}</span><span class="uline__nm">${AN.name}</span></div>
+    <div class="uline__m"><span class="uline__k">Price</span><span class="uline__v">${usd(AN.spot)}</span></div>
+    <div class="uline__m"><span class="uline__k">IV</span><span class="uline__v">${AN.iv.toFixed(2)}%</span></div>
+    <div class="uline__m"><span class="uline__k">Vol Regime</span><span class="regime">${AN.regime}</span></div>
+  </div>`;
+
+  const body = !rows.length
+    ? `<div class="empty"><h4>No strategies clear these constraints.</h4>
+        <p>Lowering minimum probability or widening days to expiry is the usual fix.</p>
+        <button class="qxbtn" type="button" id="anReset">Reset constraints</button></div>`
+    : an.view === 'cards'
+      ? `<div class="cards scroller">${rows.map(s => `<article class="card" style="--acc:var(--qx-strat-${s.fam.acc})">
+          <div class="card__h"><span class="strat__nm">${s.name}</span>
+            <span class="prob" data-b="${probBand(s.prob)}" style="margin-left:auto">${s.prob}%</span></div>
+          ${legsHTML(s)}
+          <div class="card__m">
+            <span><span class="card__k">Premium</span><span class="card__v">$${s.prem.toFixed(2)}</span></span>
+            <span><span class="card__k">Investment</span><span class="card__v">${usd(s.inv)}</span></span>
+          </div></article>`).join('')}</div>`
+      : `<div class="tblwrap scroller"><table class="strat">
+          <thead><tr><th class="l">Strategy</th><th class="l">Trade</th><th>Premium</th>
+            <th class="an-640">Investment</th><th>Probability</th></tr></thead>
+          <tbody>${rows.map(s => `<tr style="--acc:var(--qx-strat-${s.fam.acc})">
+            <td><span class="strat__nm">${s.name}
+              <button class="glyph" type="button" aria-label="${s.name} payoff shape">${I[s.fam.glyph]}</button>
+              <button class="glyph glyph--info" type="button" aria-label="What is a ${s.name}?">${I.help}</button>
+            </span></td>
+            <td class="l">${legsHTML(s)}</td>
+            <td>$${s.prem.toFixed(2)}</td>
+            <td class="an-640">${usd(s.inv)}</td>
+            <td><span class="prob" data-b="${probBand(s.prob)}">${s.prob}%</span></td>
+          </tr>`).join('')}</tbody></table></div>`;
+
+  return ctl + strip + body + `<div class="disc">
+      <p>Results are model-based and derived from external data sources. ‘Probability of profit’ is an
+      estimate only and not a guarantee. Actual results may differ, and losses may be significant.
+      This tool does not provide investment advice.</p>
+      <a href="#" onclick="return false">View term definitions</a></div>`;
+}
+
+function analyzerSettingsHTML() {
+  return `<div class="setp">
+    <div class="setp__sec"><div class="setp__lbl">Probability</div>
+      <label class="fld"><span class="fld__lbl">Minimum probability of profit</span>
+        <div class="sld">
+          <input type="range" id="anProb" min="50" max="99" value="${an.minProb}" aria-label="Minimum probability of profit"
+            style="--sw:100%;--trk:linear-gradient(to right,var(--qx-primary) ${(an.minProb - 50) / 49 * 100}%,var(--qx-surface-200) ${(an.minProb - 50) / 49 * 100}%)">
+          <input class="sld__box" id="anProbBox" type="text" value="${an.minProb}%" aria-label="Minimum probability value">
+        </div></label></div>
+    <div class="setp__sec"><div class="setp__lbl">Days to expiry</div>
+      <div class="sld">
+        <input class="sld__box" id="anDteMin" type="text" value="${an.dteMin}" aria-label="Minimum days to expiry">
+        <div class="rsld" style="--sw:100%;flex:1">
+          <div class="rsld__trk"></div>
+          <div class="rsld__fill" style="left:${an.dteMin / 365 * 100}%;right:${100 - an.dteMax / 365 * 100}%"></div>
+          <input type="range" id="anDteA" min="0" max="365" value="${an.dteMin}" aria-label="Days to expiry, from">
+          <input type="range" id="anDteB" min="0" max="365" value="${an.dteMax}" aria-label="Days to expiry, to">
+        </div>
+        <input class="sld__box" id="anDteMax" type="text" value="${an.dteMax}" aria-label="Maximum days to expiry">
+      </div></div>
+    <div class="setp__sec"><div class="setp__lbl">Strategy</div>
+      <div class="fgrid">
+        <label class="fld fld--full"><span class="fld__lbl">Market View</span>${selTrigger('an.marketView', an.marketView, AN_OPTS.marketView)}</label>
+        <label class="fld fld--full"><span class="fld__lbl">Strategy</span>${selTrigger('an.strategy', an.strategy, AN_OPTS.strategy)}</label>
+      </div></div></div>`;
+}
+
+/* ---------------------------------------------------------------- options chain */
+/* Static as-of data: DTE is measured from Aug 21 2026, so nothing here is
+   clock-driven — the numbers read the same whenever the prototype is opened. */
+const CH = (() => {
+  const spot = 311.51, dayMove = 6.02;
+  const EXPIRIES = [
+    ['Aug 21, 2026', 0, 'Weekly'], ['Aug 24, 2026', 3, 'Weekly'], ['Aug 26, 2026', 5, 'Weekly'],
+    ['Aug 28, 2026', 7, 'Weekly'], ['Aug 31, 2026', 10, 'Weekly'], ['Sep 2, 2026', 12, 'Weekly'],
+    ['Sep 4, 2026', 14, 'Weekly'], ['Sep 11, 2026', 21, 'Weekly'], ['Sep 18, 2026', 28, 'Monthly'],
+    ['Sep 30, 2026', 40, 'Quarterly'], ['Oct 16, 2026', 56, 'Monthly'], ['Nov 20, 2026', 91, 'Monthly'],
+    ['Dec 18, 2026', 119, 'Quarterly'], ['Jan 15, 2027', 147, 'Monthly'], ['Mar 19, 2027', 210, 'Quarterly'],
+    ['Jun 17, 2027', 300, 'Monthly'], ['Jan 21, 2028', 518, 'LEAPS']
+  ].map(([date, dte, type], i) => ({ id:'e' + i, date, dte, type }));
+
+  const STRIKES = [];
+  for (let k = 260; k <= 360; k += 2.5) STRIKES.push(Math.round(k * 10) / 10);
+
+  // deterministic jitter — same numbers on every load, no Math.random
+  const noise = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); };
+  const r2 = v => Math.round(v * 100) / 100;
+
+  const rows = {};
+  EXPIRIES.forEach((e, ei) => {
+    const t = Math.max(e.dte, 0.35) / 365;
+    rows[e.id] = STRIKES.map(k => {
+      const m = (k - spot) / spot;
+      const iv = 0.26 + 0.55 * Math.abs(m) + 0.04 * Math.sqrt(t);
+      const sd = spot * iv * Math.sqrt(t);
+      const d = (k - spot) / sd;
+      const delta = 1 / (1 + Math.exp(1.72 * d));              // ≈ N(−d), the call delta
+      const tv = sd * 0.40 * Math.exp(-0.5 * d * d);
+      const cLast = r2(Math.max(0.01, Math.max(0, spot - k) + tv));
+      const pLast = r2(Math.max(0.01, Math.max(0, k - spot) + tv));
+      // A bid/ask gap comes from uncertainty, so it scales with time value and
+      // distance from the money — never with intrinsic value.
+      const spr = v => r2(Math.max(0.02, 0.02 + 0.07 * Math.sqrt(Math.max(0, v))
+        * (1 + 0.45 * Math.min(Math.abs(d), 3)) + 0.02 * noise(ei, k)));
+      const cSpr = spr(tv), pSpr = spr(tv);
+      const liq = Math.exp(-0.5 * Math.pow(d / 1.25, 2)) * (1.5 / (1 + e.dte / 45));
+      const vBase = liq * 92000;
+      return {
+        k, m,
+        ns: (ei === 8 || ei === 12) && Math.abs((k * 10) % 25) < 0.01 && noise(k, ei) > 0.72,
+        iv: Math.round(iv * 1000) / 10,
+        call: { last:cLast, bid:r2(Math.max(0.01, cLast - cSpr / 2)), ask:r2(cLast + cSpr / 2),
+                chg:r2(delta * dayMove), vol:Math.round(vBase * (0.55 + noise(ei, k) * 0.9)),
+                oi:Math.round(vBase * (0.6 + noise(k, ei) * 1.5)), spr:cSpr },
+        put:  { last:pLast, bid:r2(Math.max(0.01, pLast - pSpr / 2)), ask:r2(pLast + pSpr / 2),
+                chg:r2((delta - 1) * dayMove), vol:Math.round(vBase * (0.45 + noise(k, ei + 7) * 0.9)),
+                oi:Math.round(vBase * (0.5 + noise(ei + 3, k) * 1.6)), spr:pSpr }
+      };
+    });
+  });
+  return { sym:'ADBE', name:'Adobe Inc.', spot, dayMove, chgPct:1.96, EXPIRIES, STRIKES, rows };
+})();
+
+const chain = {
+  expiryType:'All', expiry:'e0', window:5,
+  near:'spot', nearPct:'all', minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all',
+  view:'side', settingsOpen:false, expScroll:0
+};
+const CH_OPTS = {
+  expiryType:[['All','All'],['Weekly','Weekly'],['Monthly','Monthly'],['Quarterly','Quarterly'],['LEAPS','LEAPS']],
+  window:[[5,'±5'],[10,'±10'],[20,'±20'],['all','All']],
+  view:[['side','Side-by-Side'],['stack','Stacked'],['calls','Calls'],['puts','Puts']],
+  nearPct:[['all','All'],[2,'2%'],[5,'5%'],[10,'10%'],[15,'15%'],[20,'20%'],[25,'25%'],['custom','Custom…']],
+  minVol:[['all','All'],[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
+  minOi:[['all','All'],[100,'100'],[500,'500'],[1000,'1,000'],[5000,'5,000'],[10000,'10,000']],
+  maxSpread:[['all','All'],[5,'Tight (< 5%)'],[15,'Normal (< 15%)'],[30,'Wide (< 30%)'],['custom','Custom…']],
+  deliverables:[['all','All'],['std','Standard only'],['ns','Non-standard only']]
+};
+const chExpiries = () => CH.EXPIRIES.filter(e => chain.expiryType === 'All' || e.type === chain.expiryType);
+const chExpiry = () => chExpiries().find(e => e.id === chain.expiry) || chExpiries()[0];
+const chAnchor = () => chain.near === 'spot' ? CH.spot : Number(chain.near);
+const chNearLabel = () => chain.near === 'spot' ? `Spot (${CH.spot})` : String(chain.near);
+
+/* Strike window first (a count around the anchor), then the value filters. */
+function chRows() {
+  const e = chExpiry(); if (!e) return { rows:[], total:0, windowed:0 };
+  const all = CH.rows[e.id];
+  const anchor = chAnchor();
+  let win = all;
+  if (chain.window !== 'all') {
+    let nearest = 0;
+    all.forEach((r, i) => { if (Math.abs(r.k - anchor) < Math.abs(all[nearest].k - anchor)) nearest = i; });
+    const below = all.filter(r => r.k <= anchor).slice(-chain.window);
+    const above = all.filter(r => r.k > anchor).slice(0, chain.window);
+    win = [...below, ...above];
+  }
+  const pass = win.filter(r => {
+    if (chain.nearPct !== 'all' && chain.nearPct !== 'custom'
+        && Math.abs((r.k - anchor) / anchor) * 100 > chain.nearPct) return false;
+    if (chain.minVol !== 'all' && Math.max(r.call.vol, r.put.vol) < chain.minVol) return false;
+    if (chain.minOi !== 'all' && Math.max(r.call.oi, r.put.oi) < chain.minOi) return false;
+    if (chain.maxSpread !== 'all' && chain.maxSpread !== 'custom') {
+      const cp = r.call.spr / r.call.last * 100, pp = r.put.spr / r.put.last * 100;
+      if (Math.min(cp, pp) > chain.maxSpread) return false;
+    }
+    if (chain.deliverables === 'std' && r.ns) return false;
+    if (chain.deliverables === 'ns' && !r.ns) return false;
+    return true;
+  });
+  return { rows:pass, total:all.length, windowed:win.length };
+}
+const chFiltersApplied = () => ['nearPct','minVol','minOi','maxSpread','deliverables']
+  .filter(k => chain[k] !== 'all').length;
+
+const num = v => v.toLocaleString();
+const px = v => v.toFixed(2);
+const pct = v => (v >= 0 ? '+' : '') + (v * 100).toFixed(2) + '%';
+
+function chainHTML() {
+  const { rows, total } = chRows();
+  const e = chExpiry();
+  const maxC = Math.max(1, ...rows.map(r => r.call.vol));
+  const maxP = Math.max(1, ...rows.map(r => r.put.vol));
+  const applied = chFiltersApplied();
+
+  const ctl = `<div class="ctl" id="row">
+    <label class="fld"><span class="fld__lbl">Expiry</span>
+      ${selTrigger('ch.expiryType', chain.expiryType, CH_OPTS.expiryType, 96)}</label>
+    <label class="fld"><span class="fld__lbl">Strikes</span>
+      ${selTrigger('ch.window', chain.window, CH_OPTS.window, 92)}</label>
+    <div class="ctl__right">
+      <button class="iconbtn tip" type="button" id="chGear" data-tip="Chain settings"
+        aria-haspopup="dialog" aria-expanded="${state.panelOpen}" aria-label="Chain settings${applied ? ', ' + applied + ' applied' : ''}">
+        ${I.gear}${applied ? `<span class="iconbtn__badge">${applied}</span>` : ''}</button>
+    </div></div>`;
+
+  const strip = `<div class="exps">
+    <div class="exps__scroll" id="expScroll" role="tablist" aria-label="Expiry">
+      ${chExpiries().map(x => `<button class="exp" type="button" role="tab" data-exp="${x.id}"
+        aria-selected="${e && x.id === e.id}">
+        <span>${x.date}</span><span class="exp__dte">${x.dte} DTE</span></button>`).join('')}
+    </div>
+    <button class="exps__arrow exps__arrow--l" type="button" id="expL" aria-label="Earlier expiries" hidden>${I.chevL}</button>
+    <button class="exps__arrow exps__arrow--r" type="button" id="expR" aria-label="Later expiries" hidden>${I.chevR2}</button>
+  </div>`;
+
+  const body = rows.length
+    ? (chain.view === 'side' ? chainSide(rows, maxC, maxP)
+      : chain.view === 'stack' ? chainOne(rows, 'call', maxC) + chainOne(rows, 'put', maxP)
+      : chainOne(rows, chain.view === 'calls' ? 'call' : 'put', chain.view === 'calls' ? maxC : maxP))
+    : `<div class="empty"><h4>No strikes match these settings.</h4>
+        <p>The liquidity filters are the usual cause — ${applied} applied.</p>
+        <button class="qxbtn" type="button" id="chReset">Reset chain settings</button></div>`;
+
+  return ctl + strip + `<div class="tblwrap scroller">${body}</div>
+    <div class="tbl__foot">Showing ${rows.length} of ${total} strikes${
+      applied ? ` · ${applied} setting${applied === 1 ? '' : 's'} applied` : ''
+    } · ${e ? e.date + ' · ' + e.dte + ' DTE' : ''} · ${CH.sym} ${px(CH.spot)}
+      <span class="up">▲ ${CH.chgPct.toFixed(2)}%</span> · delayed 15m, as of Aug 21 2026</div>`;
+}
+
+const volCell = (v, maxVol, side) => {
+  const w = Math.round(v / maxVol * 100);
+  return `<td class="vol vol--${side === 'call' ? 'c' : 'p'}" style="--v:${w < 3 ? 0 : w}%;--vb:var(--qx-${side === 'call' ? 'up' : 'down'}-200)">${num(v)}</td>`;
+};
+const chgCls = v => v > 0 ? 'up' : v < 0 ? 'dn' : 'mut';
+
+function chainSide(rows, maxC, maxP) {
+  const spotIdx = rows.findIndex(r => r.k > CH.spot);
+  const body = rows.map((r, i) => {
+    const cItm = r.k < CH.spot, pItm = r.k > CH.spot;
+    const c = cItm ? ' itm-c' : '', p = pItm ? ' itm-p' : '';
+    const row = `<tr>
+      <td class="ch-1080${c}">${num(r.call.oi)}</td>
+      <td class="ch-900${c}">${r.iv.toFixed(1)}%</td>
+      <td class="ch-720${c}">${pct(r.m)}</td>
+      ${volCell(r.call.vol, maxC, 'call').replace('class="vol', `class="vol${c} vol`)}
+      <td class="${chgCls(r.call.chg)}${c}">${r.call.chg >= 0 ? '' : '−'}${Math.abs(r.call.chg).toFixed(2)}</td>
+      <td class="${c}">${px(r.call.last)}</td>
+      <td class="ch-560${c}">${px(r.call.ask)}</td>
+      <td class="ch-560${c}">${px(r.call.bid)}</td>
+      <td class="k">${r.k}${r.ns ? '<span class="ns">NS</span>' : ''}</td>
+      <td class="ch-560${p}">${px(r.put.bid)}</td>
+      <td class="ch-560${p}">${px(r.put.ask)}</td>
+      <td class="${p}">${px(r.put.last)}</td>
+      <td class="${chgCls(r.put.chg)}${p}">${r.put.chg >= 0 ? '' : '−'}${Math.abs(r.put.chg).toFixed(2)}</td>
+      ${volCell(r.put.vol, maxP, 'put').replace('class="vol', `class="vol${p} vol`)}
+      <td class="ch-720${p}">${pct(r.m)}</td>
+      <td class="ch-900${p}">${r.iv.toFixed(1)}%</td>
+      <td class="ch-1080${p}">${num(r.put.oi)}</td>
+    </tr>`;
+    return i === spotIdx
+      ? `<tr class="spot"><td colspan="17"><span class="spot__pill">${px(CH.spot)}</span></td></tr>` + row
+      : row;
+  }).join('');
+  const h = (t, cls) => `<th class="${cls || ''}"><span>${t}</span></th>`;
+  return `<table class="chain">
+    <thead>
+      <tr class="chgrp"><th colspan="8">Call</th><th class="k">Strike</th><th colspan="8">Put</th></tr>
+      <tr class="cols">
+        ${h('Open int','ch-1080')}${h('IV','ch-900')}${h('Moneyness','ch-720')}${h('Volume')}${h('$ Chg')}${h('Last')}${h('Ask','ch-560')}${h('Bid','ch-560')}
+        <th class="k"></th>
+        ${h('Bid','ch-560')}${h('Ask','ch-560')}${h('Last')}${h('$ Chg')}${h('Volume')}${h('Moneyness','ch-720')}${h('IV','ch-900')}${h('Open int','ch-1080')}
+      </tr>
+    </thead><tbody>${body}</tbody></table>`;
+}
+
+function chainOne(rows, side, maxVol) {
+  const spotIdx = rows.findIndex(r => r.k > CH.spot);
+  const label = side === 'call' ? 'Calls' : 'Puts';
+  const body = rows.map((r, i) => {
+    const q = r[side];
+    const itm = side === 'call' ? r.k < CH.spot : r.k > CH.spot;
+    const tint = itm ? (side === 'call' ? ' itm-c' : ' itm-p') : '';
+    const row = `<tr>
+      <td class="k">${r.k}${r.ns ? '<span class="ns">NS</span>' : ''}</td>
+      <td class="${tint}">${px(q.bid)}</td>
+      <td class="${tint}">${px(q.ask)}</td>
+      <td class="${tint}">${px(q.last)}</td>
+      <td class="${chgCls(q.chg)}${tint}">${q.chg >= 0 ? '' : '−'}${Math.abs(q.chg).toFixed(2)}</td>
+      ${volCell(q.vol, maxVol, side).replace('class="vol', `class="vol${tint} vol`)}
+      <td class="ch-720${tint}">${num(q.oi)}</td>
+      <td class="ch-900${tint}">${r.iv.toFixed(1)}%</td>
+      <td class="ch-720${tint}">${pct(r.m)}</td>
+    </tr>`;
+    return i === spotIdx
+      ? `<tr class="spot"><td colspan="9"><span class="spot__pill" style="--px:34px">${px(CH.spot)}</span></td></tr>` + row
+      : row;
+  }).join('');
+  return (chain.view === 'stack' ? `<div class="stacked__h">${label}</div>` : '') +
+    `<table class="chain">
+      <thead><tr class="cols">
+        <th class="k">Strike</th><th><span>Bid</span></th><th><span>Ask</span></th><th><span>Last</span></th>
+        <th><span>$ Chg</span></th><th><span>Volume</span></th><th class="ch-720"><span>Open int</span></th>
+        <th class="ch-900"><span>IV</span></th><th class="ch-720"><span>Moneyness</span></th>
+      </tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function chainSettingsHTML() {
+  const f = (id, label, value, opts, full) =>
+    `<label class="fld${full ? ' fld--full' : ''}"><span class="fld__lbl">${label}</span>
+      ${selTrigger(id, value, opts)}</label>`;
+  const nearOpts = [['spot', `Spot (${CH.spot})`], ...CH.STRIKES.map(k => [String(k), String(k)])];
+  return `<div class="setp">
+    <div class="setp__sec"><div class="setp__lbl">View</div>
+      <div class="fgrid">${f('ch.view', 'Layout', chain.view, CH_OPTS.view, true)}</div></div>
+    <div class="setp__sec"><div class="setp__lbl">Strikes</div>
+      <div class="fgrid">
+        ${f('ch.nearPct', 'Near Money %', chain.nearPct, CH_OPTS.nearPct)}
+        ${f('ch.near', 'Near', chain.near, nearOpts)}
+      </div></div>
+    <div class="setp__sec"><div class="setp__lbl">Liquidity</div>
+      <div class="fgrid">
+        ${f('ch.minVol', 'Min Volume', chain.minVol, CH_OPTS.minVol)}
+        ${f('ch.minOi', 'Min Open Interest', chain.minOi, CH_OPTS.minOi)}
+        ${f('ch.maxSpread', 'Max Spread', chain.maxSpread, CH_OPTS.maxSpread)}
+      </div></div>
+    <div class="setp__sec"><div class="setp__lbl">Contract</div>
+      <div class="fgrid">${f('ch.deliverables', 'Deliverables', chain.deliverables, CH_OPTS.deliverables, true)}</div>
+      <p class="setp__help">Non-standard (adjusted) contracts come from splits or mergers and are usually illiquid.</p>
+    </div></div>`;
+}
+
 /* ---------------------------------------------------------------- render */
 let announceTimer = null, lastAnnounced = -1;
 function announce() {
@@ -1311,12 +2268,16 @@ function render() {
         <span class="tool__title">${tab.label}</span>
         <span class="tool__meta">${state.sim === 'readonly' ? 'Shared view — read-only' : 'North America'}</span></div>
       ${tabsHTML()}
-      ${state.tab === 'screener' ? barHTML() + tableHTML() : stubHTML(tab)}
+      ${state.tab === 'screener' ? barHTML() + tableHTML()
+        : state.tab === 'chain' ? chainHTML()
+        : state.tab === 'analyzer' ? analyzerHTML() : stubHTML(tab)}
     </div>
     ${openId ? (state.gateOpen ? gateHTML(F(openId)) : popoverHTML(F(openId))) : ''}
-    ${state.panelOpen ? panelHTML() : ''}`;
+    ${state.panelOpen ? panelHTML() : ''}
+    ${selListHTML()}`;
   layout();
   if (openId) placePopover();
+  if (state.openSelect) placeSelList();
   // Entry animations are one-shot: the next render (a section expanding, an
   // option toggling) must not replay them.
   panelEntering = false; drillAnim = null;
@@ -1327,6 +2288,7 @@ function render() {
 /* ---------------------------------------------------------------- telemetry */
 function renderTelemetry() {
   const t = telemetry;
+  if (t.surface === 'chain' || t.surface === 'analyzer') return renderTelemetryAlt(t);
   $('#mW').textContent = Math.round(t.rowW) + 'px';
   $('#mH').textContent = t.rowH + 'px';
   $('#mT').textContent = roTicks;
@@ -1385,6 +2347,72 @@ function renderTelemetry() {
     `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
 }
 
+
+/* Same fit arithmetic, reported for the two non-chip surfaces. */
+function renderTelemetryAlt(t) {
+  $('#mW').textContent = Math.round(t.rowW) + 'px';
+  $('#mH').textContent = t.rowH + 'px';
+  $('#mT').textContent = roTicks;
+  const line = (k, v, op) => `<div><span class="op">${op || ''}</span>${k}<b>${v}</b></div>`;
+  $('#kvMath').innerHTML =
+    line('container', Math.round(t.rowW) + 'px') +
+    line('row padding', '−' + t.padX) +
+    line(t.surface === 'chain' ? 'settings + gap' : 'gear + view toggle', '−' + t.rightW) +
+    `<div class="eq">control budget<b>${t.budget}px</b></div>` +
+    line('consumed', t.consumed + 'px') +
+    line('headroom', (t.budget - t.consumed) + 'px');
+
+  if (t.surface === 'chain') {
+    $('#pillsChips').innerHTML =
+      `<span class="pill" data-t="in">expiry select</span><span class="pill" data-t="in">strikes select</span>` +
+      `<span class="pill" data-t="in">settings gear</span>`;
+    $('#kvCounts').innerHTML =
+      line('expiry tabs', t.tabsTotal) +
+      line('tabs in view', t.tabsVisible) +
+      `<div class="eq">strikes shown<b>${t.strikes} / ${t.strikesTotal}</b></div>` +
+      line('settings applied', t.applied);
+    const stable = heights.size === 1;
+    const as = [
+      [stable, `Control row is one line — <b>${t.rowH}px</b>, two selects plus the gear${stable ? ', unchanged at every width' : ', ' + heights.size + ' heights seen'}`],
+      [t.tabsVisible < t.tabsTotal ? t.canR || t.canL : true,
+        t.tabsVisible < t.tabsTotal
+          ? `Expiry strip scrolls: <b>${t.tabsVisible} of ${t.tabsTotal}</b> tabs in view, arrow shown on the ${t.canR ? 'right' : 'left'}`
+          : `All <b>${t.tabsTotal}</b> expiry tabs fit — no scroll affordance needed`],
+      [true, `Strike window and the liquidity filters compose: <code>${t.strikes} of ${t.strikesTotal}</code> strikes on this expiry`],
+      [t.applied === 0 || true, t.applied
+        ? `<b>${t.applied} setting${t.applied === 1 ? '' : 's'}</b> applied — the gear badge is the only signal, there are no chips here`
+        : 'No settings applied — the gear carries no badge'],
+      [false, `The chain shows <b>no live result count</b> in the control row. The spec requires one adjacent to the bar; here it sits in the table footer instead.`]
+    ];
+    $('#asserts').innerHTML = as.map(([ok, txt]) =>
+      `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
+    return;
+  }
+
+  const label = { fldView:'Market View', fldProb:'Min Probability', fldDte:'Days to Exp', fldStrategy:'Strategy' };
+  $('#pillsChips').innerHTML = ['fldView', 'fldProb', 'fldDte', 'fldStrategy'].map(id => {
+    const out = t.withdrawn.includes(id);
+    return `<span class="pill" data-t="${out ? 'out' : 'in'}">${label[id]}
+      <span class="op">${t.widths.get(id) || '—'}</span></span>`;
+  }).join('');
+  $('#kvCounts').innerHTML =
+    line('withdrawn', t.withdrawn.length) +
+    `<div class="eq">gear badge<b>${t.withdrawn.length}</b></div>` +
+    line('strategies', t.strats + ' / ' + t.stratsTotal);
+  const stable = heights.size === 1;
+  const as = [
+    [stable, `Control row is one line — <b>${t.rowH}px</b>${stable ? ', unchanged whether the sliders are shown or withdrawn' : ', ' + heights.size + ' heights seen'}`],
+    [true, t.withdrawn.length
+      ? `Withdrawn right-to-left: <code>${t.withdrawn.map(id => label[id]).join(' → ')}</code> — each one still reachable in the panel`
+      : `All four controls fit — nothing withdrawn`],
+    [true, `Sliders have a hard minimum width, so they are withdrawn <b>before</b> the two selects — the reverse of the chip case, where authored order decides`],
+    [true, `<b>${t.strats} of ${t.stratsTotal}</b> strategies clear the constraints`],
+    [false, `The spec has no rule for a control that cannot shrink. This withdrawal order is the prototype's proposal, not the spec's.`]
+  ];
+  $('#asserts').innerHTML = as.map(([ok, txt]) =>
+    `<div class="as"><span class="as__i" style="${ok ? '' : 'color:var(--lab-warn)'}">${ok ? I.tick : I.warn}</span><span>${txt}</span></div>`).join('');
+}
+
 /* ---------------------------------------------------------------- mutations */
 function toggleMulti(f, key) {
   const cur = (val(f.id) || []).slice();
@@ -1407,11 +2435,62 @@ product.addEventListener('click', e => {
   const t = e.target;
   const hit = s => t.closest(s);
 
+  // ---- shared custom select ----
+  const selBtn = hit('[data-sel]');
+  if (selBtn) { openSelect(selBtn.dataset.sel); return; }
+  const selOpt = hit('[data-selopt]');
+  if (selOpt) {
+    const id = state.openSelect;
+    selSet(id, selOpt.dataset.selopt);
+    state.openSelect = null; state.flow = null;
+    render();
+    const back = $(`[data-sel="${id}"]`); if (back) back.focus();
+    return;
+  }
+  if (state.openSelect && !hit('#sellist')) { closeSelect(false); if (!hit('[data-sel]')) return; }
+
+  // ---- options chain ----
+  if (hit('#chGear') || hit('#anGear')) {
+    if (state.panelOpen) closePanel(); else openPanel(null);
+    return;
+  }
+  const expTab = hit('[data-exp]');
+  if (expTab) { chain.expiry = expTab.dataset.exp; state.flow = null; render(); return; }
+  if (hit('#expR') || hit('#expL')) {
+    const strip = $('#expScroll');
+    if (strip) {
+      const dir = hit('#expR') ? 1 : -1;
+      const target = Math.max(0, Math.min(strip.scrollWidth - strip.clientWidth,
+        strip.scrollLeft + dir * Math.max(200, strip.clientWidth * 0.7)));
+      chain.expScroll = target;                    // commit the target, not the animating value
+      strip.scrollTo({ left: target, behavior: 'smooth' });
+      const bl = $('#expL'), br = $('#expR');
+      if (bl) bl.hidden = target <= 2;
+      if (br) br.hidden = target + strip.clientWidth >= strip.scrollWidth - 2;
+    }
+    return;
+  }
+  if (hit('#chReset')) {
+    Object.assign(chain, { nearPct:'all', minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all' });
+    state.flow = null; render(); return;
+  }
+
+  // ---- options analyzer ----
+  if (hit('#anView')) { an.view = an.view === 'table' ? 'cards' : 'table'; state.flow = null; render(); return; }
+  if (hit('#anReset')) { Object.assign(an, { marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90 }); state.flow = null; render(); return; }
+  if (hit('#panelReset')) {
+    if (state.tab === 'chain') Object.assign(chain, { nearPct:'all', minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all', near:'spot' });
+    else Object.assign(an, { marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90 });
+    state.flow = null; render(); return;
+  }
+  if (hit('.glyph')) return;                     // payoff / explain affordances are inert here
+
   const tab = hit('[data-tab]');
   if (tab) {
     if (state.tab === tab.dataset.tab) return;
     state.tab = tab.dataset.tab;
-    state.panelOpen = false; state.drill = null; closePopover(true);
+    heights.clear();
+    state.panelOpen = false; state.drill = null; state.openSelect = null; closePopover(true);
     state.flow = null; render(); return;
   }
 
@@ -1484,7 +2563,17 @@ product.addEventListener('click', e => {
 });
 
 product.addEventListener('input', e => {
-  if (e.target.id === 'popSearch') {
+  const id = e.target.id;
+  if (id === 'anProb' || id === 'anDteA' || id === 'anDteB') {
+    const v = Number(e.target.value);
+    if (id === 'anProb') an.minProb = v;
+    if (id === 'anDteA') an.dteMin = Math.min(v, an.dteMax);
+    if (id === 'anDteB') an.dteMax = Math.max(v, an.dteMin);
+    state.flow = null; render();
+    const again = $('#' + id); if (again) again.focus();
+    return;
+  }
+  if (id === 'popSearch') {
     pop.search = e.target.value;
     const caret = e.target.selectionStart;
     render();
@@ -1492,7 +2581,8 @@ product.addEventListener('input', e => {
     if (s2) { s2.focus(); s2.setSelectionRange(caret, caret); }
     return;
   }
-  if (e.target.id === 'rMin' || e.target.id === 'rMax') {
+  if (id === 'anProbBox' || id === 'anDteMin' || id === 'anDteMax') return;   // committed on change
+  if (id === 'rMin' || id === 'rMax') {
     const f = F(state.popOpen || state.drill || state.panelOpenFilter); if (!f) return;
     const min = $('#rMin').value === '' ? null : Number($('#rMin').value);
     const max = $('#rMax').value === '' ? null : Number($('#rMax').value);
@@ -1505,7 +2595,38 @@ product.addEventListener('input', e => {
   }
 });
 
+/* The three number boxes commit on change, not per keystroke, so a partially
+   typed value never re-filters the list. */
+product.addEventListener('change', e => {
+  const id = e.target.id;
+  if (id !== 'anProbBox' && id !== 'anDteMin' && id !== 'anDteMax') return;
+  const n = parseFloat(String(e.target.value).replace(/[^0-9.-]/g, ''));
+  if (isNaN(n)) { render(); return; }
+  if (id === 'anProbBox') an.minProb = Math.max(50, Math.min(99, Math.round(n)));
+  if (id === 'anDteMin') an.dteMin = Math.max(0, Math.min(an.dteMax, Math.round(n)));
+  if (id === 'anDteMax') an.dteMax = Math.min(365, Math.max(an.dteMin, Math.round(n)));
+  state.flow = null;
+  render();
+  const again = $('#' + id); if (again) again.focus();
+});
+
 document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && /^(anProbBox|anDteMin|anDteMax)$/.test(e.target.id || '')) {
+    e.preventDefault(); e.target.dispatchEvent(new Event('change', { bubbles:true })); return;
+  }
+  if (state.openSelect) {
+    if (e.key === 'Escape') { e.preventDefault(); closeSelect(true); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const opts = [...document.querySelectorAll('#sellist .selopt')];
+      if (opts.length) {
+        e.preventDefault();
+        const cur = opts.indexOf(document.activeElement);
+        const nx = e.key === 'ArrowDown' ? Math.min(opts.length - 1, cur + 1) : Math.max(0, cur - 1);
+        opts[cur < 0 ? 0 : nx].focus();
+      }
+      return;
+    }
+  }
   if (e.key === 'Escape') {
     if (state.popOpen || state.gateOpen) { e.preventDefault(); closePopover(); return; }
     if (state.panelOpen) { e.preventDefault(); closePanel(); return; }
@@ -1589,12 +2710,17 @@ const SET7 = () => { SET3(); Object.assign(state.values, { pe:{ preset:'value', 
 const base = () => {
   Object.assign(state, { tab:'screener', input:'pointer', skin:'full', density:'comfortable',
     sim:'default', promotedCount:6, pro:false, options:false, showCount:true, values:{},
-    panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
+    panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null, openSelect:null });
+  Object.assign(chain, { expiryType:'All', expiry:'e0', window:5, near:'spot', nearPct:'all',
+    minVol:'all', minOi:'all', maxSpread:'all', deliverables:'all', view:'side', expScroll:0 });
+  Object.assign(an, { marketView:'Any', strategy:'All', minProb:70, dteMin:0, dteMax:90, view:'table' });
   panelEntering = false; drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
 };
+const chainBase = () => { base(); state.tab = 'chain'; };
+const anBase = () => { base(); state.tab = 'analyzer'; };
 const FLOWS = [
-  { id:'default', t:'Default', d:'Control row at rest, six chips', w:1180, run:base },
+  { id:'default', g:'Screener', t:'Default', d:'Control row at rest, six chips', w:1180, run:base },
   { id:'overflow', t:'Overflowing', d:'Chips withdraw, badge counts them', w:820, run:base },
   { id:'filtered', t:'Filtered', d:'Three filters, state in the labels', w:1024, run:() => { base(); SET3(); } },
   { id:'squeezed', t:'Squeezed + filtered', d:'Longer labels withdraw sooner', w:700, run:() => { base(); SET3(); } },
@@ -1626,10 +2752,45 @@ const FLOWS = [
     run:() => { base(); state.values = { exchange:['NASDAQ'], ctry:['Canada'] }; } },
   { id:'zero', t:'Zero promoted', d:'Every filter behind the trigger', w:1180,
     run:() => { base(); state.promotedCount = 0; } },
-  { id:'chain', t:'Options chain', d:'Awaiting the filter set', w:1180,
-    run:() => { base(); state.tab = 'chain'; } }
+  // ---- Options chain ----
+  { id:'ch-side', g:'Options chain', t:'Side-by-side', d:'±5 strikes around spot', w:1180, run:chainBase },
+  { id:'ch-wide', t:'All strikes', d:'41 strikes, spot line holds', w:1180,
+    run:() => { chainBase(); chain.window = 'all'; } },
+  { id:'ch-exp', t:'Expiry strip overflow', d:'17 expiries, scroll arrow', w:820, run:chainBase },
+  { id:'ch-set', t:'Chain settings', d:'View, strikes, liquidity, contract', w:1180,
+    run:() => { chainBase(); state.panelOpen = true; panelEntering = true; } },
+  { id:'ch-liq', t:'Liquid strikes only', d:'Min volume and spread applied', w:1180,
+    run:() => { chainBase(); chain.window = 'all'; chain.minVol = 1000; chain.maxSpread = 15; } },
+  { id:'ch-near', t:'Near money 5%', d:'Anchored on a strike, not spot', w:1180,
+    run:() => { chainBase(); chain.window = 'all'; chain.nearPct = 5; chain.near = '315'; } },
+  { id:'ch-stack', t:'Stacked view', d:'Calls then puts, one column set', w:900,
+    run:() => { chainBase(); chain.view = 'stack'; } },
+  { id:'ch-calls', t:'Calls only', d:'Single side, strike leads', w:700,
+    run:() => { chainBase(); chain.view = 'calls'; } },
+  { id:'ch-mob', t:'Chain on mobile', d:'Touch, columns drop out', w:400,
+    run:() => { chainBase(); state.input = 'touch'; chain.view = 'calls'; } },
+  { id:'ch-empty', t:'No strikes match', d:'Liquidity filters too tight', w:1180,
+    run:() => { chainBase(); chain.minVol = 10000; chain.maxSpread = 5; chain.nearPct = 2; } },
+
+  // ---- Options analyzer ----
+  { id:'an-table', g:'Options analyzer', t:'Ranked table', d:'Sorted by probability', w:1180, run:anBase },
+  { id:'an-cards', t:'Card view', d:'Same rows, card layout', w:1180,
+    run:() => { anBase(); an.view = 'cards'; } },
+  { id:'an-bull', t:'Bullish, 85%+', d:'Constraints narrow the list', w:1180,
+    run:() => { anBase(); an.marketView = 'Bullish'; an.minProb = 85; } },
+  { id:'an-wide', t:'Full expiry range', d:'0 to 365 days', w:1180,
+    run:() => { anBase(); an.dteMax = 365; an.minProb = 60; } },
+  { id:'an-squeeze', t:'Sliders withdraw', d:'Days to Exp goes to the panel', w:768, run:anBase },
+  { id:'an-mob', t:'Analyzer on mobile', d:'Both sliders withdrawn', w:400,
+    run:() => { anBase(); an.view = 'cards'; } },
+  { id:'an-set', t:'Constraints panel', d:'Withdrawn controls, full size', w:768,
+    run:() => { anBase(); state.panelOpen = true; panelEntering = true; } },
+  { id:'an-empty', t:'Nothing clears', d:'Probability floor too high', w:1180,
+    run:() => { anBase(); an.minProb = 97; } }
 ];
-$('#flows').innerHTML = FLOWS.map((f, i) => `<button class="flow" type="button" data-flow="${f.id}" aria-pressed="false">
+$('#flows').innerHTML = FLOWS.map((f, i) =>
+  (f.g ? `<div class="flow__g">${f.g}</div>` : '') +
+  `<button class="flow" type="button" data-flow="${f.id}" aria-pressed="false">
   <span class="flow__n">${String(i + 1).padStart(2, '0')}</span>
   <span class="flow__t">${f.t}<span class="flow__d">${f.d}</span></span></button>`).join('');
 $('#flows').addEventListener('click', e => {
@@ -1654,6 +2815,15 @@ const ro = new ResizeObserver(() => {
   });
 });
 ro.observe($('.viewport__inner'));
+
+product.addEventListener('scroll', e => {
+  if (e.target.id === 'expScroll') {
+    chain.expScroll = e.target.scrollLeft;
+    const bl = $('#expL'), br = $('#expR'), st = e.target;
+    if (bl) bl.hidden = st.scrollLeft <= 2;
+    if (br) br.hidden = st.scrollLeft + st.clientWidth >= st.scrollWidth - 2;
+  }
+}, true);
 
 const grip = $('#grip');
 grip.addEventListener('pointerdown', e => {
