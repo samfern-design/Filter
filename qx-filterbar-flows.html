@@ -90,6 +90,7 @@ button{font:inherit;color:inherit}
 }
 .seg button:hover{color:var(--lab-fg);background:#2A2F36}
 .seg button[aria-pressed="true"]{background:var(--lab-accent-deep);color:#fff;font-weight:500}
+.grp__note{font-size:11px;color:var(--lab-fg-3);line-height:1.45}
 .chks{display:flex;flex-direction:column;gap:6px}
 .chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--lab-fg-2);cursor:pointer}
 .chk input{accent-color:var(--lab-accent-deep);margin:0;width:14px;height:14px}
@@ -243,39 +244,45 @@ button{font:inherit;color:inherit}
 .qxbtn--overflow{display:none}
 .qxfb__actions.is-collapsed .qxbtn--overflow{display:inline-flex}
 
-/* ---- applied-chip tray (row 2 — wraps, capped at 2 rows) ----------------- */
-.qxfb__tray{
-  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
-  padding:0 12px 10px;border-top:0;
+/* ---- tool tabs (experience switch) --------------------------------------- */
+.tabs{display:flex;gap:2px;padding:0 12px;border-bottom:1px solid var(--qx-border-color);
+  background:var(--qx-surface-0);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  position:relative;background:none;border:0;padding:9px 10px 8px;cursor:pointer;white-space:nowrap;
+  font-size:13px;color:var(--qx-text-secondary);
 }
-.qxfb[data-density="compact"] .qxfb__tray{padding:0 10px 8px}
-.qxfb__tray[hidden]{display:none}
-.qxac{
-  display:inline-flex;align-items:center;height:26px;padding:0 2px 0 8px;flex:0 0 auto;
-  background:var(--qx-state-selected-bg);border:1px solid var(--qx-state-selected-border);
-  border-radius:var(--qx-radius-sm);color:var(--qx-state-selected-fg);font-size:12.5px;line-height:1;
-  max-width:240px;
+.tab:hover{color:var(--qx-text-primary)}
+.tab:focus-visible{outline:2px solid var(--qx-primary);outline-offset:-2px}
+.tab[aria-selected="true"]{color:var(--qx-primary);font-weight:600}
+.tab[aria-selected="true"]::after{
+  content:"";position:absolute;left:6px;right:6px;bottom:-1px;height:2px;background:var(--qx-primary);
 }
-.qxac:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
-.qxac__label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qxac__x{
-  display:grid;place-items:center;width:20px;height:20px;margin-left:2px;flex:0 0 auto;
-  background:none;border:0;border-radius:var(--qx-radius-xs);color:var(--qx-brand-800);cursor:pointer;
+.tab__soon{
+  margin-left:6px;padding:1px 4px;border-radius:var(--qx-radius-xs);background:var(--qx-surface-100);
+  color:var(--qx-text-muted);font-size:10px;font-weight:700;letter-spacing:.05em;
 }
-.qxac__x:hover{background:var(--qx-primary-subtle-2)}
-.qxac__x:focus-visible{outline:2px solid var(--qx-primary);outline-offset:1px}
-.qxac[data-readonly="true"] .qxac__x{display:none}
-.qxac[data-readonly="true"]{padding-right:8px}
-.tray__more{
-  background:none;border:0;padding:4px 6px;border-radius:var(--qx-radius-sm);
-  font-size:12.5px;color:var(--qx-primary);cursor:pointer;
+
+/* ---- inline clear (replaces the removed applied-chip tray) --------------- */
+.qxfb__clear{
+  background:none;border:0;padding:4px 6px;border-radius:var(--qx-radius-sm);flex:0 0 auto;
+  font-size:12.5px;color:var(--qx-primary);cursor:pointer;white-space:nowrap;
 }
-.tray__more:hover{background:var(--qx-primary-subtle)}
-.tray__clearwrap{margin-left:auto;display:flex}
-.tray__clear{background:none;border:0;padding:4px 6px;border-radius:var(--qx-radius-sm);
-  font-size:12.5px;color:var(--qx-text-secondary);cursor:pointer;
+.qxfb__clear:hover{background:var(--qx-primary-subtle)}
+.qxfb__clear:focus-visible{outline:2px solid var(--qx-primary);outline-offset:2px}
+
+/* ---- awaiting-spec stub for the unbuilt experiences ---------------------- */
+.stub{padding:28px 24px 34px;max-width:560px}
+.stub__tag{
+  display:inline-flex;padding:2px 6px;border-radius:var(--qx-radius-xs);
+  background:var(--qx-message-info-bg,#F2F8FE);color:var(--qx-brand-800);
+  font-size:10.5px;font-weight:700;letter-spacing:.06em;
 }
-.tray__clear:hover{background:var(--qx-surface-50);color:var(--qx-text-primary)}
+.stub h3{margin:10px 0 6px;font-size:16px;font-weight:500;color:var(--qx-text-primary)}
+.stub p{margin:0 0 14px;font-size:13px;color:var(--qx-text-secondary);line-height:1.5}
+.stub ol{margin:0;padding-left:20px;font-size:13px;color:var(--qx-text-primary);line-height:1.6}
+.stub ol li{margin-bottom:4px}
+.stub ol li span{color:var(--qx-text-secondary)}
 
 /* ---- popover ------------------------------------------------------------- */
 .pop{
@@ -344,28 +351,81 @@ button{font:inherit;color:inherit}
 .gate p{margin:0 0 12px;font-size:12.5px;color:var(--qx-text-secondary);line-height:1.4}
 .gate__row{display:flex;gap:8px}
 
-/* ---- panel (drawer ≥640cqw / sheet below) -------------------------------- */
-.scrim{position:absolute;inset:0;background:var(--qx-mask-bg);z-index:50;animation:fade 150ms var(--qx-ease)}
+/* ---- All filters surface ------------------------------------------------- */
+/* Pointer input  → side drawer, sections expand in place (no re-entry animation).
+   Touch input    → bottom sheet, drill-down list → options → back.            */
+.scrim{position:absolute;inset:0;background:var(--qx-mask-bg);z-index:50}
+.scrim.is-entering{animation:fade 150ms var(--qx-ease)}
 @keyframes fade{from{opacity:0}to{opacity:1}}
+
 .panel{
   position:absolute;z-index:51;background:var(--qx-surface-0);display:flex;flex-direction:column;
   top:0;right:0;bottom:0;width:376px;max-width:calc(100% - 32px);
   border-left:1px solid var(--qx-border-color);box-shadow:var(--qx-shadow-lg);
-  animation:slideIn 400ms cubic-bezier(.05,.7,.1,1);
 }
+.panel.is-entering{animation:slideIn 400ms cubic-bezier(.05,.7,.1,1)}
 @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.panel[data-mode="touch"]{
+  inset:auto 14px 14px 14px;width:auto;max-width:none;max-height:calc(100% - 42px);
+  border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-lg);
+  box-shadow:var(--qx-shadow-sheet);
+}
+.panel[data-mode="touch"].is-entering{animation:sheetIn 400ms cubic-bezier(.05,.7,.1,1)}
+@keyframes sheetIn{from{transform:translateY(102%)}to{transform:translateY(0)}}
+.panel__handle{display:none;padding:8px 0 4px;flex:0 0 auto;cursor:grab}
+.panel[data-mode="touch"] .panel__handle{display:block}
+.panel__handle::after{content:"";display:block;width:36px;height:4px;border-radius:2px;
+  background:var(--qx-surface-300);margin:0 auto}
+
 .panel__head{
   display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--qx-border-color);
+  flex:0 0 auto;
 }
 .panel__title{font-size:14px;font-weight:600}
 .panel__x{margin-left:auto}
-.panel__body{flex:1;overflow-y:auto;padding:4px 0}
+.panel__body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 0}
 .panel__foot{
   display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--qx-border-color);
-  background:var(--qx-surface-50);
+  background:var(--qx-surface-50);flex:0 0 auto;
 }
 .panel__foot .qxbtn--primary{margin-left:auto}
+.panel__back{
+  display:flex;align-items:center;gap:6px;background:none;border:0;padding:4px 6px;margin-left:-6px;
+  border-radius:var(--qx-radius-sm);font-size:13px;color:var(--qx-primary);cursor:pointer;
+}
+.panel__back:hover{background:var(--qx-primary-subtle)}
+
+/* drill step transition — the one animation touch mode keeps */
+.drill{display:flex;flex-direction:column;gap:2px;padding:4px 0}
+.drill.is-entering{animation:drillIn 220ms var(--qx-ease)}
+@keyframes drillIn{from{transform:translateX(14%);opacity:.4}to{transform:translateX(0);opacity:1}}
+.drill--back.is-entering{animation:drillBack 220ms var(--qx-ease)}
+@keyframes drillBack{from{transform:translateX(-14%);opacity:.4}to{transform:translateX(0);opacity:1}}
+.drill__row{
+  display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 12px;
+  background:none;border:0;text-align:left;cursor:pointer;font-size:14px;color:var(--qx-text-primary);
+}
+.drill__row:hover{background:var(--qx-surface-50)}
+.drill__row:focus-visible{outline:2px solid var(--qx-primary);outline-offset:-2px}
+.drill__row[data-disabled="true"]{color:var(--qx-surface-300);cursor:not-allowed}
+.drill__state{margin-left:auto;font-size:12.5px;color:var(--qx-text-muted);max-width:44%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drill__state[data-on="true"]{color:var(--qx-primary)}
+.drill__chev{color:var(--qx-text-muted);flex:0 0 auto}
+.drill .opt{min-height:44px;padding:8px 12px;border-radius:0;font-size:14px}
+.drill__search{padding:8px 12px}
+.drill__search input{
+  width:100%;height:38px;padding:0 10px;font:inherit;font-size:14px;
+  border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-sm);
+  background:var(--qx-surface-0);color:var(--qx-text-primary);
+}
+.drill__search input:focus{border-color:var(--qx-primary);outline:none}
+.drill__custom{padding:8px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.drill__custom .lbl{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--qx-text-muted)}
+.drill__custom .range input{height:38px;font-size:14px}
+
 .grp2{border-bottom:1px solid var(--qx-surface-100)}
+.grp2:last-child{border-bottom:0}
 .grp2__label{
   padding:10px 12px 4px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
   color:var(--qx-text-secondary);
@@ -373,6 +433,7 @@ button{font:inherit;color:inherit}
 .acc{border:0;background:none;width:100%;display:flex;align-items:center;gap:8px;
   padding:9px 12px;cursor:pointer;text-align:left;font-size:13px;color:var(--qx-text-primary)}
 .acc:hover{background:var(--qx-surface-50)}
+.acc:focus-visible{outline:2px solid var(--qx-primary);outline-offset:-2px}
 .acc__state{margin-left:auto;font-size:12px;color:var(--qx-text-muted);max-width:150px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .acc__state[data-on="true"]{color:var(--qx-primary)}
@@ -382,19 +443,6 @@ button{font:inherit;color:inherit}
 .acc__lock{color:var(--qx-text-muted);flex:0 0 auto}
 .accbody{padding:0 12px 10px;display:flex;flex-direction:column;gap:2px}
 .accbody[hidden]{display:none}
-
-@container (max-width:639px){
-  .panel{
-    inset:auto 14px 14px 14px;width:auto;max-width:none;max-height:calc(100% - 42px);
-    border:1px solid var(--qx-border-color);border-radius:var(--qx-radius-lg);
-    box-shadow:var(--qx-shadow-sheet);animation:sheetIn 400ms cubic-bezier(.05,.7,.1,1);
-  }
-  .panel__handle{display:block}
-}
-@keyframes sheetIn{from{transform:translateY(102%)}to{transform:translateY(0)}}
-.panel__handle{display:none;padding:8px 0 4px;flex:0 0 auto;cursor:grab}
-.panel__handle::after{content:"";display:block;width:36px;height:4px;border-radius:2px;
-  background:var(--qx-surface-300);margin:0 auto}
 
 /* ---- result table -------------------------------------------------------- */
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
@@ -533,8 +581,16 @@ button{font:inherit;color:inherit}
         <label class="chk"><input type="checkbox" id="cbPro"> Entitled to Pro (ungates Analyst rating)</label>
         <label class="chk"><input type="checkbox" id="cbOptions"> Options asset class (P/E, Div yield, Rating inapplicable)</label>
         <label class="chk"><input type="checkbox" id="cbCount" checked> Show result count</label>
-        <label class="chk"><input type="checkbox" id="cbTray" checked> Show applied tray</label>
       </div>
+    </div>
+
+    <div class="grp">
+      <div class="grp__label">Input mode</div>
+      <div class="seg" id="segInput">
+        <button data-v="pointer" aria-pressed="true">Pointer</button>
+        <button data-v="touch" aria-pressed="false">Touch</button>
+      </div>
+      <div class="grp__note">Pointer opens filters as anchored popovers and All filters as a drawer with expanding sections. Touch opens both as a bottom sheet with drill-down.</div>
     </div>
 
     <div class="grp">
@@ -590,27 +646,29 @@ button{font:inherit;color:inherit}
         <div class="note">
           <h3>Keyboard</h3>
           <dl>
-            <dt>Tab</dt><dd>All filters → visible promoted chips → action group → applied chips → Clear all. Result count is skipped.</dd>
+            <dt>Tab</dt><dd>All filters → visible promoted chips → Clear → action group. Result count is skipped.</dd>
             <dt>Enter / Space</dt><dd>Opens the chip's popover and moves focus into it.</dd>
             <dt>↑ ↓</dt><dd>Moves within the open option list only — chips are independent controls, not a composite widget.</dd>
             <dt>Esc</dt><dd>Closes the popover, returns focus to the originating chip.</dd>
-            <dt>Backspace</dt><dd>On a focused applied chip: removes that filter, focus moves to the next chip, or Clear all if it was last.</dd>
+            <dt>Esc / Back</dt><dd>In touch mode, Back returns from an options step to the filter list; Esc closes the sheet outright.</dd>
           </dl>
         </div>
         <div class="note">
           <h3>What the prototype resolves</h3>
           <ul>
-            <li><b>Filter inputs collapse, filter state wraps.</b> Row 1 never wraps at any width; row 2 wraps and caps at two rows.</li>
+            <li><b>The control row is the only row.</b> With the applied tray removed, state lives in the chip labels — and in the trigger, which takes the selected treatment whenever an applied filter is off the bar.</li>
             <li><b>Gated chips outlast ungated ones.</b> Analyst rating is withdrawn last, after every ungated chip — watch the pills as you narrow.</li>
             <li><b>Actions collapse before filters.</b> On the Actions skin the group folds to one overflow button while all six chips are still showing.</li>
             <li><b>The trigger width is reserved</b> at its worst-case two-digit badge, so growing the count never forces a second pass.</li>
-            <li><b>Applying a filter doesn't reposition neighbours</b> — a chip grows in place; the withdrawal boundary moves, the order never does.</li>
+            <li><b>One surface, two presentations.</b> Pointer gets popovers and a drawer whose sections expand in place; touch gets a sheet that drills down. Switch Input mode to compare at the same width.</li>
+            <li><b>Expanding a section is not re-opening the panel.</b> Entry transitions fire only on the render that opens an overlay, so a section expands without the drawer sliding in again.</li>
+            <li><b>The bar is one component across experiences.</b> Options chain and analyzer are tabs on the same surface awaiting their filter sets — what changes per experience is the filter list and the result surface, not the bar.</li>
           </ul>
         </div>
         <div class="note">
           <h3>Open against the spec</h3>
           <p><b>Label re-measurement.</b> The spec caches intrinsic widths at mount and re-measures on locale or density change only — but a chip growing from <code>Sector</code> to <code>Sector: Financials +2</code> changes width too. This prototype re-measures on label change and reports it in the telemetry; the spec should say so explicitly.</p>
-          <p><b>Result count at the end state.</b> With zero chips fitting, the row is the trigger plus the count. At 320px that still fits, so the count is never the thing that gets dropped. Worth confirming there is no narrower deployment.</p>
+          <p><b>Applied state below the fold.</b> Without the tray, a withdrawn filter that holds a value has no on-screen representation beyond the trigger's tint and count. The spec's own reasoning — applied state is what stops users reading a filtered table as the full universe — now rests entirely on that one affordance plus the result count. Worth a usability check at 360px before this ships.</p>
           <p><b>Component name</b> is still an assumption — this prototype treats the bar and the panel as one component with two skins.</p>
         </div>
       </section>
@@ -627,6 +685,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const I = {
   sliders: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h11M17 6h4M3 12h4M10 12h11M3 18h11M17 18h4"/><circle cx="15.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="8.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="15.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg>',
   chev: '<svg class="qxc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+  chevL: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>',
   chevR: '<svg class="acc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
   lock: '<svg class="qxc__lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
   x: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
@@ -732,13 +791,22 @@ const INAPPLICABLE_OPTIONS = ['pe','dy','rating'];
 const GROUPS = ['Fundamentals','Market','Profile'];
 
 /* ---------------------------------------------------------------- state */
+const TABS = [
+  { id:'screener', label:'Screener' },
+  { id:'chain',    label:'Options chain',    soon:true },
+  { id:'analyzer', label:'Options analyzer', soon:true }
+];
 const state = {
+  tab:'screener', input:'pointer',
   skin:'full', density:'comfortable', sim:'default', promotedCount:6,
-  pro:false, options:false, showCount:true, showTray:true,
-  values:{}, panelOpen:false, popOpen:null, gateOpen:null, trayExpanded:false,
-  width:1180, flow:'default', panelGroups:{Fundamentals:true,Market:false,Profile:false},
-  panelOpenFilter:null
+  pro:false, options:false, showCount:true,
+  values:{}, panelOpen:false, popOpen:null, gateOpen:null,
+  drill:null, panelOpenFilter:null,
+  width:1180, flow:'default'
 };
+// Animation gates: an overlay animates only on the render that opens it, so
+// expanding a section inside the panel never replays the entry transition.
+let panelEntering = false, drillAnim = null;
 const heights = new Set();
 let roTicks = 0, telemetry = {}, measuredLabels = new Map(), remeasures = 0;
 
@@ -752,6 +820,7 @@ const hasValue = f => {
   return f.kind === 'multi' ? v.length > 0 : (v.min != null || v.max != null);
 };
 const activeFilters = () => FILTERS.filter(f => hasValue(f) && !isDisabled(f));
+const isTouch = () => state.input === 'touch';
 
 /* ---------------------------------------------------------------- matching */
 function matches(row, f, v) {
@@ -796,6 +865,27 @@ function fullLabel(f) {
 }
 
 /* ---------------------------------------------------------------- bar DOM */
+function tabsHTML() {
+  return `<div class="tabs" role="tablist" aria-label="Experience">${TABS.map(t => `
+    <button class="tab" type="button" role="tab" data-tab="${t.id}"
+      aria-selected="${state.tab === t.id}">${t.label}${t.soon ? '<span class="tab__soon">SOON</span>' : ''}</button>`).join('')}</div>`;
+}
+function stubHTML(tab) {
+  const need = tab.id === 'chain'
+    ? ['The filter set and its authored order <span>— expiry, strike range, moneyness, open interest, volume, IV, and which of them are promoted.</span>',
+       'The result surface <span>— calls / puts side-by-side or stacked, and which columns are fixed.</span>',
+       'What the bar controls versus what the chain header controls <span>— expiry selection in particular reads as navigation, not filtering.</span>']
+    : ['The analysis inputs <span>— strategy, legs, underlying price range, date range, volatility assumptions.</span>',
+       'The result surface <span>— payoff chart, greeks table, or both.</span>',
+       'Whether inputs belong on a filter bar at all <span>— a strategy builder is a form, and the spec cautions against using the bar as a general toolbar.</span>'];
+  return `<div class="stub">
+    <span class="stub__tag">AWAITING SPEC</span>
+    <h3>${tab.label}</h3>
+    <p>The bar is the same component here — what differs is the filter set, the result surface, and which filters are promoted. Three things to send and this tab gets built:</p>
+    <ol>${need.map(n => `<li>${n}</li>`).join('')}</ol>
+  </div>`;
+}
+
 function barHTML() {
   const readonly = state.sim === 'readonly';
   const promoted = promotedList();
@@ -805,7 +895,7 @@ function barHTML() {
     return `<button class="qxc" type="button" data-chip="${f.id}"
       data-selected="${sel}" data-gated="${gated}" data-disabled="${dis}" data-readonly="${readonly}"
       ${dis ? 'aria-disabled="true"' : ''}
-      ${readonly || dis ? '' : `aria-haspopup="${f.kind === 'multi' ? 'listbox' : 'dialog'}" aria-expanded="${state.popOpen === f.id}"`}
+      ${readonly || dis ? '' : `aria-haspopup="${isTouch() ? 'dialog' : (f.kind === 'multi' ? 'listbox' : 'dialog')}" aria-expanded="${state.popOpen === f.id || (isTouch() && state.panelOpen && state.drill === f.id)}"`}
       aria-label="${esc(fullLabel(f))}${gated ? ', upgrade required' : ''}${dis ? ', not applicable to options' : ''}">
       <span class="qxc__label">${esc(chipLabel(f))}</span>${trailing}</button>`;
   }).join('');
@@ -818,6 +908,8 @@ function barHTML() {
       <span class="qxfb__badge" id="allBadge" ${hidden ? '' : 'hidden'}>${hidden}</span></button>`;
 
   const n = results().length;
+  const clear = (activeFilters().length && !readonly)
+    ? `<button class="qxfb__clear" type="button" id="barClear">Clear</button>` : '';
   const count = state.showCount ? `<div class="qxfb__count" id="count">${
     state.sim === 'loading' ? '<span class="skel"></span>' : `<b>${n.toLocaleString()}</b> result${n === 1 ? '' : 's'}`
   }</div>` : '';
@@ -832,9 +924,8 @@ function barHTML() {
   return `<div class="qxfb" data-density="${state.density}" data-skin="${state.skin}" data-state="${state.sim}">
     <div class="qxfb__row" id="row" role="group" aria-label="Filters">
       ${trigger}${chips}
-      <div class="qxfb__right" id="right">${count}${actions}</div>
+      <div class="qxfb__right" id="right">${clear}${count}${actions}</div>
     </div>
-    ${state.skin === 'compact' || !state.showTray ? '' : '<ul class="qxfb__tray" id="tray"></ul>'}
   </div>`;
 }
 function hiddenCount() {
@@ -843,56 +934,26 @@ function hiddenCount() {
   const never = FILTERS.filter(f => !promoted.includes(f.id) && !isDisabled(f)).length;
   return withdrawn + never;
 }
-
-/* ---------------------------------------------------------------- tray */
-function trayHTML() {
-  const readonly = state.sim === 'readonly';
-  const active = activeFilters();
-  if (!active.length) return '';
-  const chips = active.map(f => `<li class="qxac" tabindex="0" data-applied="${f.id}"
-      data-readonly="${readonly}" aria-label="${esc(fullLabel(f))}">
-      <span class="qxac__label">${esc(chipLabel(f))}</span>
-      ${readonly ? '' : `<button class="qxac__x" type="button" tabindex="-1"
-        aria-label="Remove ${esc(f.label)}: ${esc(chipLabel(f).replace(f.label + ': ', ''))}">${I.x}</button>`}
-    </li>`).join('');
-  const more = `<li><button class="tray__more" type="button" id="trayMore" hidden></button></li>`;
-  const clear = readonly ? '' : `<li class="tray__clearwrap"><button class="tray__clear" type="button" id="clearAll">Clear all</button></li>`;
-  return chips + more + clear;
-}
-function trayLayout() {
-  const tray = $('#tray'); if (!tray) return { rows: 0, hiddenN: 0 };
-  const items = [...tray.querySelectorAll('.qxac')];
-  const more = $('#trayMore');
-  items.forEach(i => { i.hidden = false; });
-  if (more) { more.hidden = true; more.textContent = ''; }
-  if (!items.length) return { rows: 0, hiddenN: 0 };
-  let rows = new Set(items.map(i => i.offsetTop)).size;
-  if (state.trayExpanded || rows <= 2) return { rows, hiddenN: 0 };
-  // cap at two rows, then "+N more"
-  more.hidden = false;
-  let hiddenN = 0, guard = 0;
-  while (guard++ < 40) {
-    const tops = [...new Set(items.filter(i => !i.hidden).map(i => i.offsetTop))].sort((a, b) => a - b);
-    if (tops.length <= 2) break;
-    const cut = tops[2];
-    let changed = false;
-    for (let k = items.length - 1; k >= 0; k--) {
-      const it = items[k];
-      if (!it.hidden && it.offsetTop >= cut) { it.hidden = true; hiddenN++; changed = true; break; }
-    }
-    more.textContent = '+' + hiddenN + ' more';
-    if (!changed) break;
-  }
-  more.textContent = '+' + hiddenN + ' more';
-  more.setAttribute('aria-label', hiddenN + ' more applied filters, show all');
-  rows = new Set(items.filter(i => !i.hidden).map(i => i.offsetTop)).size;
-  return { rows, hiddenN };
+// Applied filters with no chip on the bar — the state the removed tray used to carry.
+function appliedOffBar() {
+  const onBar = telemetry.visible || [];
+  return activeFilters().filter(f => !onBar.includes(f.id));
 }
 
 /* ---------------------------------------------------------------- collapse */
 const GAP = 8;
 function layout() {
-  const row = $('#row'); if (!row) return;
+  const row = $('#row');
+  if (!row) {                                   // a tab with no bar yet
+    telemetry = {};
+    $('#mW').textContent = '—'; $('#mH').textContent = '—'; $('#mT').textContent = roTicks;
+    $('#kvMath').innerHTML = '<div>no filter bar on this tab</div>';
+    $('#pillsChips').innerHTML = '<span class="pill" data-t="out">awaiting spec</span>';
+    $('#kvCounts').innerHTML = '';
+    $('#asserts').innerHTML = '<div class="as"><span class="as__i">' + I.tick +
+      '</span><span>Nothing to measure — send the filter set for this experience and the same assertions run against it.</span></div>';
+    return;
+  }
   const chipEls = [...row.querySelectorAll('[data-chip]')];
   const right = $('#right'), actions = $('#actions'), badge = $('#allBadge'), trigger = $('#allTrigger');
 
@@ -914,10 +975,9 @@ function layout() {
   const widths = new Map();
   chipEls.forEach(el => {
     const id = el.dataset.chip, key = state.density + '|' + el.querySelector('.qxc__label').textContent;
-    const w = wOf(el);
+    widths.set(id, wOf(el));
     if (measuredLabels.has(id) && measuredLabels.get(id) !== key) remeasures++;
     measuredLabels.set(id, key);
-    widths.set(id, w);
   });
 
   let rightW = wOf(right);
@@ -959,11 +1019,17 @@ function layout() {
   const hidden = hiddenCount();
   badge.textContent = hidden;
   badge.hidden = hidden === 0;
-  trigger.setAttribute('aria-label', 'All filters' + (hidden ? ', ' + hidden + ' more available' : ''));
 
-  const tray = trayLayout();
-  telemetry.trayRows = tray.rows;
-  telemetry.trayHidden = tray.hiddenN;
+  // With no applied-chip tray, the trigger carries every value that has no chip.
+  const off = appliedOffBar();
+  telemetry.appliedOffBar = off.map(f => f.id);
+  telemetry.appliedTotal = activeFilters().length;
+  trigger.dataset.selected = String(off.length > 0);
+  trigger.setAttribute('aria-label', 'All filters'
+    + (hidden ? ', ' + hidden + ' more available' : '')
+    + (off.length ? ', ' + off.length + ' applied and not shown on the bar' : ''));
+
+  const ph = $('#panelHint'); if (ph) ph.textContent = panelHintText();
 
   const h = Math.round(row.getBoundingClientRect().height);
   telemetry.rowH = h; heights.add(h);
@@ -1003,49 +1069,32 @@ function tableHTML() {
 }
 
 /* ---------------------------------------------------------------- popover */
-const pop = { search:'', focus:-1 };
+const pop = { search:'' };
 function optionRows(f, useSearch) {
   const v = val(f.id) || (f.kind === 'multi' ? [] : {});
   if (f.kind === 'multi') {
     const q = useSearch ? pop.search.trim().toLowerCase() : '';
-    return f.options.filter(o => !q || o.toLowerCase().includes(q)).map(o => {
-      const on = (v || []).includes(o);
-      const n = rowsMatching(f.id, { f, v:[o] }).length;
-      return { key:o, label:o, count:n, on, type:'check' };
-    });
+    return f.options.filter(o => !q || o.toLowerCase().includes(q)).map(o => ({
+      key:o, label:o, count:rowsMatching(f.id, { f, v:[o] }).length,
+      on:(v || []).includes(o), type:'check'
+    }));
   }
-  return f.presets.map(p => {
-    const on = v.preset === p.id;
-    const n = rowsMatching(f.id, { f, v:{ min:p.min, max:p.max } }).length;
-    return { key:p.id, label:p.label, count:n, on, type:'radio' };
-  });
+  return f.presets.map(p => ({
+    key:p.id, label:p.label, count:rowsMatching(f.id, { f, v:{ min:p.min, max:p.max } }).length,
+    on:v.preset === p.id, type:'radio'
+  }));
 }
 function popoverHTML(f) {
   const rows = optionRows(f, true);
-  const v = val(f.id);
-  const list = rows.length ? rows.map((r, i) => `<button class="opt" type="button" role="option"
-      aria-selected="${r.on}" data-opt="${esc(r.key)}" data-i="${i}" data-empty="${r.count === 0}">
-      ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>`
-                           : `<span class="opt__radio"></span>`}
-      <span class="opt__label">${esc(r.label)}</span>
-      <span class="opt__count">${r.count}</span></button>`).join('')
+  const list = rows.length ? rows.map(r => optHTML(f, r)).join('')
     : `<div class="opt" data-empty="true"><span class="opt__label">No match for “${esc(pop.search)}”</span></div>`;
-
-  const custom = f.kind === 'range' ? `<div class="pop__custom">
-      <div class="lbl">Custom range</div>
-      <div class="range">
-        <input type="number" id="rMin" placeholder="Min" value="${v && !v.preset && v.min != null ? v.min : ''}" aria-label="Minimum ${esc(f.label)}">
-        <span>to</span>
-        <input type="number" id="rMax" placeholder="Max" value="${v && !v.preset && v.max != null ? v.max : ''}" aria-label="Maximum ${esc(f.label)}">
-      </div></div>` : '';
-
   return `<div class="pop" id="pop" role="${f.kind === 'multi' ? 'listbox' : 'dialog'}"
       ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
     <div class="pop__head"><span class="pop__title">${esc(f.label)}</span>
       <span class="pop__hint">matches</span></div>
     ${f.search ? `<div class="pop__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
     <div class="pop__list" id="popList">${list}</div>
-    ${custom}
+    ${f.kind === 'range' ? customHTML(f, 'pop__custom') : ''}
     <div class="pop__foot">
       <button class="qxbtn qxbtn--text" type="button" id="popClear">Clear</button>
       <button class="qxbtn qxbtn--primary" type="button" id="popDone">Done</button>
@@ -1081,11 +1130,22 @@ function placePopover() {
   else { top = a.bottom - p.top + 10; el.style.maxHeight = Math.max(180, below) + 'px'; }
   el.style.left = left + 'px'; el.style.top = top + 'px';
 }
-function openPopover(id) {
+
+/* One entry point for "the user activated a filter chip". Pointer gets an
+   anchored popover; touch gets the sheet, opened straight at that filter. */
+function openFilter(id) {
   const f = F(id);
   if (isDisabled(f) || state.sim === 'readonly') return;
+  if (isGated(f)) {
+    closePopover(true); state.panelOpen = false; state.drill = null; state.gateOpen = id;
+    render();
+    requestAnimationFrame(() => { const g = $('#gateUp'); if (g) g.focus(); });
+    return;
+  }
+  if (isTouch()) { openPanel(id); return; }
   closePopover(true);
-  if (isGated(f)) { state.gateOpen = id; } else { state.popOpen = id; pop.search = ''; pop.focus = -1; }
+  state.panelOpen = false;
+  state.popOpen = id; pop.search = '';
   render();
   requestAnimationFrame(() => {
     const el = $('#pop'); if (!el) return;
@@ -1104,44 +1164,131 @@ function closePopover(silent) {
 }
 
 /* ---------------------------------------------------------------- panel */
-function panelHTML() {
-  const hidden = hiddenCount();
-  const groups = GROUPS.map(g => {
+function panelRows() {
+  return GROUPS.map(g => {
     const fs = FILTERS.filter(f => f.group === g);
     if (!fs.length) return '';
-    const items = fs.map(f => {
+    return { g, fs };
+  }).filter(Boolean);
+}
+function filterState(f) {
+  if (isDisabled(f)) return 'n/a for options';
+  return hasValue(f) ? chipLabel(f).replace(f.label + ': ', '') : 'Any';
+}
+
+/* Pointer: sections expand in place. Only the panel's first render animates. */
+function accordionHTML() {
+  return panelRows().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
+    fs.map(f => {
       const gated = isGated(f), dis = isDisabled(f);
-      const openF = state.panelOpenFilter === f.id;
-      const stateTxt = dis ? 'n/a for options'
-        : hasValue(f) ? chipLabel(f).replace(f.label + ': ', '') : 'Any';
-      const body = openF && !dis && !gated ? `<div class="accbody" role="listbox"${f.kind==='multi'?' aria-multiselectable="true"':''} aria-label="${esc(f.label)}">${
-        optionRows(f, false).map(r => `<button class="opt" type="button" role="option" aria-selected="${r.on}"
-          data-popt="${f.id}" data-opt="${esc(r.key)}">
-          ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>` : `<span class="opt__radio"></span>`}
-          <span class="opt__label">${esc(r.label)}</span><span class="opt__count">${r.count}</span></button>`).join('')
-      }</div>` : '';
+      const open = state.panelOpenFilter === f.id;
+      const body = open && !dis && !gated ? `<div class="accbody" role="listbox"${f.kind === 'multi' ? ' aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">${
+        optionRows(f, false).map(r => optHTML(f, r)).join('')
+      }${f.kind === 'range' ? customHTML(f, 'pop__custom') : ''}</div>` : '';
       return `<button class="acc" type="button" data-pfilter="${f.id}" data-disabled="${dis}"
-          ${dis ? 'aria-disabled="true"' : ''} aria-expanded="${openF}">
+          ${dis ? 'aria-disabled="true"' : ''} aria-expanded="${open}">
           ${I.chevR}<span>${esc(f.label)}</span>${gated ? I.lock : ''}
-          <span class="acc__state" data-on="${hasValue(f) && !dis}">${esc(stateTxt)}</span>
+          <span class="acc__state" data-on="${hasValue(f) && !dis}">${esc(filterState(f))}</span>
         </button>${body}`;
-    }).join('');
-    return `<div class="grp2"><div class="grp2__label">${g}</div>${items}</div>`;
-  }).join('');
+    }).join('')
+  }</div>`).join('');
+}
+
+/* Touch: one level of filters, one level of options, a Back that returns. */
+function drillListHTML() {
+  return `<div class="drill${drillAnim === 'back' ? ' drill--back is-entering' : ''}">${
+    panelRows().map(({ g, fs }) => `<div class="grp2"><div class="grp2__label">${g}</div>${
+      fs.map(f => {
+        const dis = isDisabled(f);
+        return `<button class="drill__row" type="button" data-drill="${f.id}" data-disabled="${dis}"
+          ${dis ? 'aria-disabled="true"' : ''}>
+          <span>${esc(f.label)}</span>${isGated(f) ? I.lock : ''}
+          <span class="drill__state" data-on="${hasValue(f) && !dis}">${esc(filterState(f))}</span>
+          ${dis ? '' : I.chevR}</button>`;
+      }).join('')
+    }</div>`).join('')
+  }</div>`;
+}
+function drillOptionsHTML(f) {
+  return `<div class="drill${drillAnim === 'in' ? ' is-entering' : ''}" role="listbox"
+      ${f.kind === 'multi' ? 'aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">
+    ${f.search ? `<div class="drill__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
+    ${optionRows(f, true).map(r => optHTML(f, r)).join('')}
+    ${f.kind === 'range' ? customHTML(f, 'drill__custom') : ''}</div>`;
+}
+function optHTML(f, r) {
+  return `<button class="opt" type="button" role="option" aria-selected="${r.on}"
+    data-popt="${f.id}" data-opt="${esc(r.key)}" data-empty="${r.count === 0}">
+    ${r.type === 'check' ? `<span class="opt__box">${r.on ? I.check : ''}</span>` : `<span class="opt__radio"></span>`}
+    <span class="opt__label">${esc(r.label)}</span><span class="opt__count">${r.count}</span></button>`;
+}
+function customHTML(f, cls) {
+  const v = val(f.id);
+  return `<div class="${cls}"><div class="lbl">Custom range</div>
+    <div class="range">
+      <input type="number" id="rMin" placeholder="Min" value="${v && !v.preset && v.min != null ? v.min : ''}" aria-label="Minimum ${esc(f.label)}">
+      <span>to</span>
+      <input type="number" id="rMax" placeholder="Max" value="${v && !v.preset && v.max != null ? v.max : ''}" aria-label="Maximum ${esc(f.label)}">
+    </div></div>`;
+}
+
+function panelHintText() {
+  const applied = activeFilters().length;
+  return `${FILTERS.length} filters · ${hiddenCount()} not on the bar`
+    + (applied ? ` · ${applied} applied` : '');
+}
+function panelHTML() {
+  const touch = isTouch();
+  const drilled = touch && state.drill ? F(state.drill) : null;
   const n = results().length;
-  return `<div class="scrim" id="scrim"></div>
-    <div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="All filters">
+  const enter = panelEntering ? ' is-entering' : '';
+
+  const head = drilled
+    ? `<div class="panel__head">
+         <button class="panel__back" type="button" id="panelBack">${I.chevL}<span>All filters</span></button>
+         <span class="panel__title" style="margin-left:8px">${esc(drilled.label)}</span>
+         <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
+       </div>`
+    : `<div class="panel__head"><span class="panel__title">All filters</span>
+         <span class="pop__hint" id="panelHint">${panelHintText()}</span>
+         <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
+       </div>`;
+
+  const body = touch ? (drilled ? drillOptionsHTML(drilled) : drillListHTML()) : accordionHTML();
+
+  return `<div class="scrim${enter}" id="scrim"></div>
+    <div class="panel${enter}" id="panel" data-mode="${touch ? 'touch' : 'pointer'}"
+         role="dialog" aria-modal="true" aria-label="All filters">
       <div class="panel__handle" id="sheetHandle" aria-hidden="true"></div>
-      <div class="panel__head"><span class="panel__title">All filters</span>
-        <span class="pop__hint">${FILTERS.length} filters · ${hidden} not on the bar</span>
-        <button class="qxbtn qxbtn--icon panel__x" type="button" id="panelX" aria-label="Close all filters">${I.x}</button>
-      </div>
-      <div class="panel__body">${groups}</div>
+      ${head}
+      <div class="panel__body">${body}</div>
       <div class="panel__foot">
         <button class="qxbtn qxbtn--text" type="button" id="panelClear">Clear all</button>
-        <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${n.toLocaleString()} result${n===1?'':'s'}</button>
+        <button class="qxbtn qxbtn--primary" type="button" id="panelDone">Show ${n.toLocaleString()} result${n === 1 ? '' : 's'}</button>
       </div>
     </div>`;
+}
+function openPanel(drillTo) {
+  const wasOpen = state.panelOpen, cameFrom = state.drill;
+  closePopover(true);
+  panelEntering = !wasOpen;
+  drillAnim = drillTo ? 'in' : (cameFrom ? 'back' : null);
+  state.panelOpen = true;
+  state.drill = drillTo || null;
+  if (drillTo) { pop.search = ''; state.panelOpenFilter = drillTo; }
+  render();
+  requestAnimationFrame(() => {
+    // Never leave focus on a node this render destroyed.
+    const el = drillTo ? $('#panelBack')
+      : cameFrom ? ($(`[data-drill="${cameFrom}"]`) || $('#panelX'))
+      : (wasOpen ? null : $('#panelX'));
+    if (el) el.focus();
+  });
+}
+function closePanel() {
+  state.panelOpen = false; state.drill = null; panelEntering = false; drillAnim = null;
+  render();
+  const t = $('#allTrigger'); if (t) t.focus();
 }
 
 /* ---------------------------------------------------------------- render */
@@ -1157,21 +1304,24 @@ function announce() {
 }
 function render() {
   const p = $('#product');
+  const tab = TABS.find(t => t.id === state.tab);
   const openId = state.popOpen || state.gateOpen;
   p.className = 'qx-root product' + (state.sim === 'loading' ? ' is-loading' : '');
+  p.dataset.input = state.input;
   p.innerHTML = `<div class="tool">
       <div class="tool__head"><span class="tool__icon">${I.sliders}</span>
-        <span class="tool__title">Equity screener</span>
+        <span class="tool__title">${tab.label}</span>
         <span class="tool__meta">${state.sim === 'readonly' ? 'Shared view — read-only' : 'North America'}</span></div>
-      ${barHTML()}
-      ${tableHTML()}
+      ${tabsHTML()}
+      ${state.tab === 'screener' ? barHTML() + tableHTML() : stubHTML(tab)}
     </div>
     ${openId ? (state.gateOpen ? gateHTML(F(openId)) : popoverHTML(F(openId))) : ''}
     ${state.panelOpen ? panelHTML() : ''}`;
-  const tray = $('#tray');
-  if (tray) { tray.innerHTML = trayHTML(); tray.hidden = !tray.innerHTML; }
   layout();
   if (openId) placePopover();
+  // Entry animations are one-shot: the next render (a section expanding, an
+  // option toggling) must not replay them.
+  panelEntering = false; drillAnim = null;
   announce();
   syncControls();
 }
@@ -1207,6 +1357,8 @@ function renderTelemetry() {
     line('withdrawn', t.withdrawn.length) +
     line('never promoted', never) +
     `<div class="eq">All filters badge<b>${t.withdrawn.length + never}</b></div>` +
+    line('applied', t.appliedTotal || 0) +
+    line('applied, no chip', (t.appliedOffBar || []).length) +
     line('re-measures', remeasures);
 
   const as = [];
@@ -1221,9 +1373,12 @@ function renderTelemetry() {
     t.gatedIds.length === 0 ? 'No gated filters at this entitlement'
     : gatedOut.length ? `Gated chip withdrawn only after all ungated ones — <b>${ungatedIn.length} ungated remain</b>`
     : `Gated chip <b>${t.gatedIds.map(id => F(id).label).join(', ')}</b> held on the bar`]);
-  as.push([t.trayRows <= 2, state.skin === 'compact' || !state.showTray
-    ? 'Applied tray off — state lives in the trigger chip labels'
-    : `Applied tray wraps, capped at two rows — <b>${t.trayRows} row${t.trayRows === 1 ? '' : 's'}</b>${t.trayHidden ? `, ${t.trayHidden} behind “+N more”` : ''}`]);
+  const off = t.appliedOffBar || [];
+  as.push([off.length === 0, t.appliedTotal === 0
+    ? 'No filters applied — trigger is at rest'
+    : off.length === 0
+      ? `<b>${t.appliedTotal} applied</b>, every one of them visible as a chip on the bar`
+      : `<b>${t.appliedTotal} applied, ${off.length} with no chip on the bar</b> — <code>${off.map(id => F(id).label).join(', ')}</code>. Only the trigger's tint carries it.`]);
   as.push([true, state.skin === 'actions'
     ? (t.actionsCollapsed ? `Action group collapsed to overflow (was <code>${t.rightExpandedW}px</code>, now <code>${t.rightW}px</code>) before any chip was withdrawn`
                           : 'Action group intact — it collapses before any filter chip')
@@ -1245,7 +1400,7 @@ function setPreset(f, id) {
   const p = f.presets.find(x => x.id === id);
   setVal(f.id, { preset: id, min: p.min, max: p.max });
 }
-function clearAll() { state.values = {}; state.trayExpanded = false; }
+function clearAll() { state.values = {}; }
 
 /* ---------------------------------------------------------------- events */
 const product = $('#product');
@@ -1254,15 +1409,28 @@ product.addEventListener('click', e => {
   const t = e.target;
   const hit = s => t.closest(s);
 
-  if (hit('#scrim')) { state.panelOpen = false; render(); $('#allTrigger').focus(); return; }
-  if (hit('#panelX') || hit('#panelDone')) {
-    state.panelOpen = false; render(); $('#allTrigger').focus(); return;
+  const tab = hit('[data-tab]');
+  if (tab) {
+    if (state.tab === tab.dataset.tab) return;
+    state.tab = tab.dataset.tab;
+    state.panelOpen = false; state.drill = null; closePopover(true);
+    state.flow = null; render(); return;
   }
+
+  if (hit('#scrim') || hit('#panelX') || hit('#panelDone')) { closePanel(); return; }
   if (hit('#panelClear')) { clearAll(); render(); return; }
+  if (hit('#panelBack')) { openPanel(null); return; }
   if (hit('#allTrigger')) {
-    closePopover(true); state.panelOpen = !state.panelOpen; state.panelOpenFilter = null; render();
-    if (state.panelOpen) requestAnimationFrame(() => { const x = $('#panelX'); if (x) x.focus(); });
+    if (state.panelOpen) closePanel(); else openPanel(null);
     return;
+  }
+
+  const drill = hit('[data-drill]');
+  if (drill) {
+    if (drill.dataset.disabled === 'true') return;
+    const id = drill.dataset.drill;
+    if (isGated(F(id))) { state.panelOpen = false; state.drill = null; state.gateOpen = id; render(); return; }
+    openPanel(id); return;
   }
 
   const acc = hit('.acc');
@@ -1271,13 +1439,19 @@ product.addEventListener('click', e => {
     const id = acc.dataset.pfilter;
     if (isGated(F(id))) { state.panelOpen = false; state.gateOpen = id; render(); return; }
     state.panelOpenFilter = state.panelOpenFilter === id ? null : id;
-    render(); return;
+    render();
+    const again = $(`.acc[data-pfilter="${id}"]`); if (again) again.focus();
+    return;
   }
+
   const popt = hit('[data-popt]');
   if (popt) {
     const f = F(popt.dataset.popt), key = popt.dataset.opt;
     f.kind === 'multi' ? toggleMulti(f, key) : setPreset(f, key);
-    render(); return;
+    render();
+    const again = $(`[data-popt="${f.id}"][data-opt="${CSS.escape(key)}"]`);
+    if (again) again.focus();
+    return;
   }
 
   const chip = hit('[data-chip]');
@@ -1285,7 +1459,8 @@ product.addEventListener('click', e => {
     const id = chip.dataset.chip;
     if (chip.dataset.disabled === 'true' || state.sim === 'readonly') return;
     if (state.popOpen === id || state.gateOpen === id) closePopover();
-    else { state.panelOpen = false; openPopover(id); }
+    else if (isTouch() && state.panelOpen && state.drill === id) closePanel();
+    else openFilter(id);
     return;
   }
 
@@ -1303,18 +1478,11 @@ product.addEventListener('click', e => {
   if (hit('#gateNo')) { closePopover(); return; }
   if (hit('#gateUp')) { state.pro = true; closePopover(); return; }
 
-  const x = hit('.qxac__x');
-  if (x) {
-    const li = x.closest('.qxac');
-    const all = [...document.querySelectorAll('.qxac')];
-    const i = all.indexOf(li);
-    setVal(li.dataset.applied, null); render();
-    const after = [...document.querySelectorAll('.qxac')];
-    (after[Math.min(i, after.length - 1)] || $('#clearAll') || $('#allTrigger'))?.focus();
+  if (hit('#barClear') || hit('#emptyClear')) {
+    clearAll(); render();
+    const t2 = $('#allTrigger'); if (t2) t2.focus();
     return;
   }
-  if (hit('#trayMore')) { state.trayExpanded = true; render(); return; }
-  if (hit('#clearAll') || hit('#emptyClear')) { clearAll(); render(); $('#allTrigger').focus(); return; }
 });
 
 product.addEventListener('input', e => {
@@ -1322,12 +1490,12 @@ product.addEventListener('input', e => {
     pop.search = e.target.value;
     const caret = e.target.selectionStart;
     render();
-    const s = $('#popSearch');
-    if (s) { s.focus(); s.setSelectionRange(caret, caret); }
+    const s2 = $('#popSearch');
+    if (s2) { s2.focus(); s2.setSelectionRange(caret, caret); }
     return;
   }
   if (e.target.id === 'rMin' || e.target.id === 'rMax') {
-    const f = F(state.popOpen); if (!f) return;
+    const f = F(state.popOpen || state.drill || state.panelOpenFilter); if (!f) return;
     const min = $('#rMin').value === '' ? null : Number($('#rMin').value);
     const max = $('#rMax').value === '' ? null : Number($('#rMax').value);
     const which = e.target.id;
@@ -1339,23 +1507,14 @@ product.addEventListener('input', e => {
   }
 });
 
-product.addEventListener('keydown', e => {
+document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     if (state.popOpen || state.gateOpen) { e.preventDefault(); closePopover(); return; }
-    if (state.panelOpen) { e.preventDefault(); state.panelOpen = false; render(); $('#allTrigger').focus(); return; }
+    if (state.panelOpen) { e.preventDefault(); closePanel(); return; }
   }
-  const li = e.target.closest && e.target.closest('.qxac');
-  if (li && (e.key === 'Backspace' || e.key === 'Delete')) {
-    e.preventDefault();
-    const all = [...document.querySelectorAll('.qxac')];
-    const i = all.indexOf(li);
-    setVal(li.dataset.applied, null); render();
-    const after = [...document.querySelectorAll('.qxac')];
-    (after[Math.min(i, after.length - 1)] || $('#clearAll') || $('#allTrigger'))?.focus();
-    return;
-  }
-  if (state.popOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-    const opts = [...document.querySelectorAll('#pop .opt[data-opt]')];
+  if ((state.popOpen || state.panelOpen) && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+    const scope = state.popOpen ? '#pop' : '#panel';
+    const opts = [...document.querySelectorAll(`${scope} .opt[role="option"]`)];
     if (!opts.length) return;
     e.preventDefault();
     const cur = opts.findIndex(o => o === document.activeElement);
@@ -1394,13 +1553,18 @@ function seg(id, key, cast) {
     const b = e.target.closest('[data-v]'); if (!b) return;
     state[key] = cast ? cast(b.dataset.v) : b.dataset.v;
     if (key === 'density' || key === 'skin') { heights.clear(); measuredLabels.clear(); }
+    if (key === 'input') {
+      // The two presentations are different surfaces; don't carry an open one across.
+      closePopover(true);
+      if (state.panelOpen) { state.drill = null; panelEntering = true; }
+    }
     state.flow = null; render();
   });
 }
 seg('#segSkin', 'skin'); seg('#segDensity', 'density'); seg('#segState', 'sim');
-seg('#segPromoted', 'promotedCount', Number);
+seg('#segPromoted', 'promotedCount', Number); seg('#segInput', 'input');
 
-const CB = { cbPro:'pro', cbOptions:'options', cbCount:'showCount', cbTray:'showTray' };
+const CB = { cbPro:'pro', cbOptions:'options', cbCount:'showCount' };
 Object.entries(CB).forEach(([id, key]) => {
   $('#' + id).addEventListener('change', e => { state[key] = e.target.checked; state.flow = null; render(); });
 });
@@ -1411,6 +1575,7 @@ function syncControls() {
     .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(v))));
   set('#segSkin', state.skin); set('#segDensity', state.density);
   set('#segState', state.sim); set('#segPromoted', state.promotedCount);
+  set('#segInput', state.input);
   Object.entries(CB).forEach(([id, key]) => { $('#' + id).checked = state[key]; });
   [...$('#widths').querySelectorAll('[data-w]')]
     .forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.w) === state.width)));
@@ -1424,25 +1589,36 @@ const SET3 = () => { state.values = { exchange:['TSX'], sector:['Financials','En
 const SET7 = () => { SET3(); Object.assign(state.values, { pe:{ preset:'value', max:15 },
   dy:{ preset:'mid', min:3, max:5 }, vol:{ preset:'thin', max:5 }, ctry:['Canada'] }); };
 const base = () => {
-  Object.assign(state, { skin:'full', density:'comfortable', sim:'default', promotedCount:6,
-    pro:false, options:false, showCount:true, showTray:true, values:{}, panelOpen:false,
-    popOpen:null, gateOpen:null, trayExpanded:false, panelOpenFilter:null });
+  Object.assign(state, { tab:'screener', input:'pointer', skin:'full', density:'comfortable',
+    sim:'default', promotedCount:6, pro:false, options:false, showCount:true, values:{},
+    panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
+  panelEntering = false; drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
 };
 const FLOWS = [
   { id:'default', t:'Default', d:'Control row at rest, six chips', w:1180, run:base },
   { id:'overflow', t:'Overflowing', d:'Chips withdraw, badge counts them', w:820, run:base },
-  { id:'filtered', t:'Filtered', d:'Three filters, tray present', w:1024, run:() => { base(); SET3(); } },
+  { id:'filtered', t:'Filtered', d:'Three filters, state in the labels', w:1024, run:() => { base(); SET3(); } },
   { id:'squeezed', t:'Squeezed + filtered', d:'Longer labels withdraw sooner', w:700, run:() => { base(); SET3(); } },
-  { id:'traycap', t:'Tray overflow', d:'Seven filters, capped at two rows', w:640, run:() => { base(); SET7(); } },
-  { id:'mobile', t:'Mobile end state', d:'Trigger + count only', w:360, run:base },
-  { id:'sheet', t:'Mobile sheet', d:'All filters in a bottom sheet', w:360,
-    run:() => { base(); SET3(); state.panelOpen = true; state.panelOpenFilter = 'mcap'; } },
+  { id:'hidden', t:'Applied, no chip', d:'Seven filters, none of them visible', w:360,
+    run:() => { base(); SET7(); } },
+  { id:'popover', t:'Pointer popover', d:'Anchored dropdown, counts per option', w:1024,
+    run:() => { base(); SET3(); state.popOpen = 'sector'; } },
+  { id:'drawer', t:'Pointer drawer', d:'Sections expand in place', w:1024,
+    run:() => { base(); SET3(); state.panelOpen = true; state.panelOpenFilter = 'mcap'; panelEntering = true; } },
+  { id:'sheet', t:'Touch sheet', d:'Drill-down level one', w:400,
+    run:() => { base(); state.input = 'touch'; SET3(); state.panelOpen = true; panelEntering = true; } },
+  { id:'drill', t:'Touch drill-down', d:'Level two, Back returns', w:400,
+    run:() => { base(); state.input = 'touch'; SET3(); state.panelOpen = true; state.drill = 'sector';
+                state.panelOpenFilter = 'sector'; panelEntering = true; } },
+  { id:'touchchip', t:'Touch chip', d:'A chip opens the sheet, not a popover', w:640,
+    run:() => { base(); state.input = 'touch'; state.panelOpen = true; state.drill = 'mcap';
+                state.panelOpenFilter = 'mcap'; panelEntering = true; } },
   { id:'gated', t:'Gated chip', d:'Lock glyph opens the upgrade gate', w:900,
     run:() => { base(); state.gateOpen = 'rating'; } },
   { id:'actions', t:'Actions collapse', d:'Group folds to overflow, chips stay', w:1024,
     run:() => { base(); state.skin = 'actions'; } },
-  { id:'compact', t:'Compact skin', d:'No tray — state in the labels', w:480,
+  { id:'compact', t:'Compact skin', d:'Dense row, state in the labels', w:480,
     run:() => { base(); state.skin = 'compact'; SET3(); } },
   { id:'loading', t:'Loading', d:'Skeleton on the count, bar live', w:1024,
     run:() => { base(); SET3(); state.sim = 'loading'; } },
@@ -1451,7 +1627,9 @@ const FLOWS = [
   { id:'empty', t:'Empty result', d:'Bar stays interactive', w:1024,
     run:() => { base(); state.values = { exchange:['NASDAQ'], ctry:['Canada'] }; } },
   { id:'zero', t:'Zero promoted', d:'Every filter behind the trigger', w:1180,
-    run:() => { base(); state.promotedCount = 0; } }
+    run:() => { base(); state.promotedCount = 0; } },
+  { id:'chain', t:'Options chain', d:'Awaiting the filter set', w:1180,
+    run:() => { base(); state.tab = 'chain'; } }
 ];
 $('#flows').innerHTML = FLOWS.map((f, i) => `<button class="flow" type="button" data-flow="${f.id}" aria-pressed="false">
   <span class="flow__n">${String(i + 1).padStart(2, '0')}</span>
