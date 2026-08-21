@@ -728,6 +728,29 @@ button{font:inherit;color:inherit}
 .setp__help{margin:8px 0 0;font-size:12px;color:var(--qx-text-muted);line-height:1.45}
 
 /* ==========================================================================
+   Performance matrix — symbol selection row
+   ========================================================================== */
+.symrow{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:8px 12px;border-bottom:1px solid var(--qx-border-color);background:var(--qx-surface-0);
+}
+.symrow__set{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0;padding:0;list-style:none}
+.symrow__none{font-size:12.5px;color:var(--qx-text-muted)}
+.symchip{
+  display:inline-flex;align-items:center;height:26px;padding:0 2px 0 8px;
+  background:var(--qx-surface-50);border:1px solid var(--qx-border-color);
+  border-radius:var(--qx-radius-sm);font-size:12.5px;font-weight:500;color:var(--qx-text-primary);
+}
+.symchip__t{font-variant-numeric:tabular-nums}
+.symchip__x{
+  display:grid;place-items:center;width:20px;height:20px;margin-left:2px;
+  background:none;border:0;border-radius:var(--qx-radius-xs);color:var(--qx-text-muted);cursor:pointer;
+}
+.symchip__x:hover{background:var(--qx-surface-200);color:var(--qx-text-primary)}
+.symchip__x:focus-visible{outline:2px solid var(--qx-primary);outline-offset:1px}
+.symrow__add{height:26px;padding:0 8px}
+
+/* ==========================================================================
    Performance matrix
    ========================================================================== */
 .pmx{
@@ -741,7 +764,7 @@ button{font:inherit;color:inherit}
   color:var(--qx-text-muted);border-bottom:1px solid var(--qx-border-color);
 }
 .pmx thead th.sumcol{background:var(--qx-surface-50)}
-.pmx__sym{
+.pmx th.pmx__sym,.pmx td.pmx__sym{
   position:sticky;left:0;z-index:1;text-align:left;background:var(--qx-surface-0);
   border-right:1px solid var(--qx-border-color);min-width:86px;
 }
@@ -1018,6 +1041,8 @@ button{font:inherit;color:inherit}
           <ul>
             <li><b>One component, four filter sets.</b> Every tab runs the same bar — pinned All filters trigger, promoted chips in authored order, the same popovers on pointer and sheet drill-down on touch, one collapse algorithm, one live count. A tab contributes only its filters, its rows and its result surface: 14 filters for the screener, 8 for the chain, 4 for the analyzer, 8 for the matrix.</li>
             <li><b>The matrix showed where the concept stretches.</b> Five of its chips are parameters, not filters — Frequency, Year, Analysis, Data and Calculation change what is measured rather than narrowing a set, so the badge counts six the moment you arrive. They are also mandatory: re-picking the current option is a no-op rather than a clear, and Clear all leaves them alone and empties only the symbol selection. Worth deciding whether a parameter belongs in a filter bar at all, or wants a row of its own. Their labels are also long enough that seven chips will not fit on one line at any width the prototype allows — so Symbols and Highlighting, the two a user reaches for most, are the first withdrawn. Either they move earlier in the authored order or the bar needs the scroll strategy here.</li>
+            <li><b>Choosing what to compare is not filtering.</b> The universe and the compared symbols sit in their own row under the bar, as removable chips with a Compare picker — the reference's second row, and the one place the removable-chip pattern earns its keep. An empty set there means none rather than "no constraint", so clearing the row empties the matrix instead of showing all eight.</li>
+            <li><b>Daily means weekday.</b> 252 date columns would not be a matrix, so daily frequency reduces by day of week — the effect a daily seasonality view exists to show. Day-of-month is the other reading; worth confirming which one the tool means.</li>
             <li><b>One chip can drive another.</b> Choosing an Analysis sets Data and Calculation together; touching either of those drops Analysis back to Custom, exactly as the reference implies. Universe does the same to Symbols. That coupling had to be added to the engine — the spec assumes filters are independent.</li>
             <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
             <li><b>Expiry sits below the bar</b>, at the team's direction. The spec puts navigation above the bar, so this is a deliberate departure: filters read first, then the expiry you are looking at. The strip still scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
@@ -1052,6 +1077,7 @@ const I = {
   payoffDown: '<svg width="13" height="11" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 4h7l4 6"/></svg>',
   payoffSpread: '<svg width="13" height="11" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 10h5l3-6 3 6h5"/></svg>',
   help: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 .3c0 1.7-2.5 2-2.5 3.7M12 17v.5"/></svg>',
+  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   chevL: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>',
   chevR: '<svg class="acc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
   lock: '<svg class="qxc__lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
@@ -1337,6 +1363,7 @@ const PM = (() => {
   };
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const QUARTERS = [['Q1',[0,1,2]],['Q2',[3,4,5]],['Q3',[6,7,8]],['Q4',[9,10,11]]];
+  const WEEKDAYS = ['MON','TUE','WED','THU','FRI'];
   const YEARS = [2022, 2023, 2024, 2025];
   const seed = s => [...s].reduce((a, c) => a + c.charCodeAt(0) * 31, 0);
 
@@ -1367,13 +1394,13 @@ const PM = (() => {
     max:  a => Math.max(...a),
     count:a => a.length
   };
-  return { UNIVERSES, NAMES, MONTHS, QUARTERS, YEARS, series, REDUCE };
+  return { UNIVERSES, NAMES, MONTHS, QUARTERS, WEEKDAYS, YEARS, series, REDUCE };
 })();
 
 /* ---- filter set ---- */
 const PM_FILTERS = [
   { id:'freq', label:'Frequency', kind:'choice', promoted:1, scoped:true, noAll:null,
-    options:[['month','Monthly'],['quarter','Quarterly']] },
+    options:[['day','Daily'],['month','Monthly'],['quarter','Quarterly']] },
   { id:'year', label:'Year', kind:'choice', promoted:2, scoped:true, noAll:null,
     options:PM.YEARS.map(y => [String(y), String(y)]) },
   /* Picking an analysis sets Data and Calculation together; touching either of
@@ -1392,26 +1419,36 @@ const PM_FILTERS = [
     options:[['pos','% positive'],['avg','Average'],['med','Median'],
              ['min','Min'],['max','Max'],['count','Count']],
     onSet:() => setVal('analysis', 'custom') },
-  { id:'symbols', label:'Symbols', kind:'multi', promoted:6,
+  /* Choosing what to compare is a selection, not a filter, so it gets its own
+     row below the bar — and an empty set means none, not "no constraint". */
+  { id:'symbols', label:'Symbols', kind:'multi', own:true, emptyMeansNone:true,
     options:() => PM.UNIVERSES[val('universe') || 'Global indices'],
     test:(row, v) => v.includes(row) },
   /* Re-maps the colour scale; it hides no data, so it is a display control. */
-  { id:'highlight', label:'Highlighting', kind:'slider', dual:true, promoted:7, display:true,
+  { id:'highlight', label:'Highlighting', kind:'slider', dual:true, promoted:6, display:true,
     min:0, max:100, step:1, fmt:v => v + '%' },
-  { id:'universe', label:'Universe', kind:'choice', scoped:true, noAll:null,
+  { id:'universe', label:'Universe', kind:'choice', own:true, scoped:true, noAll:null,
     options:Object.keys(PM.UNIVERSES).map(u => [u, u]),
     onSet:v => setVal('symbols', PM.UNIVERSES[v].slice(0, 5)) }
 ];
 
 /* ---- the matrix itself ---- */
+const ALL_MONTHS = [0,1,2,3,4,5,6,7,8,9,10,11];
+/* Daily reads as day-of-week: 252 date columns would not be a matrix, and the
+   weekday effect is what a daily seasonality view is for. Day-of-month is the
+   other reading — flagged in the notes as a question. */
 function pmCols() {
-  return val('freq') === 'quarter'
-    ? PM.QUARTERS.map(([k, ms]) => ({ key:k, months:ms }))
-    : PM.MONTHS.map((k, i) => ({ key:k, months:[i] }));
+  const f = val('freq');
+  if (f === 'quarter') return PM.QUARTERS.map(([k, ms]) => ({ key:k, months:ms }));
+  if (f === 'day') return PM.WEEKDAYS.map((k, i) => ({ key:k, months:ALL_MONTHS, wd:i }));
+  return PM.MONTHS.map((k, i) => ({ key:k, months:[i] }));
 }
 function pmCell(sym, col) {
   const year = Number(val('year')), kind = val('data'), calc = val('calc');
-  const obs = col.months.flatMap(mi => PM.series(sym, year, mi, kind));
+  const obs = col.months.flatMap(mi => {
+    const ser = PM.series(sym, year, mi, kind);
+    return col.wd == null ? ser : ser.filter((_, i) => i % 5 === col.wd);
+  });
   return PM.REDUCE[calc](obs);
 }
 const PM_AGG = [['Avg', 'avg'], ['Min', 'min'], ['Max', 'max']];
@@ -1465,6 +1502,31 @@ function matrixResults() {
       </div>
     </div>`;
 }
+/* A dedicated selection row: the universe it draws from, the symbols currently
+   compared as removable chips, and the way to add more. */
+function symbolRowHTML() {
+  const uf = F('universe'), sf = F('symbols');
+  const picked = val('symbols') || [];
+  const pool = PM.UNIVERSES[val('universe') || 'Global indices'];
+  const readonly = state.sim === 'readonly';
+  return `<div class="symrow">
+    <button class="qxc" type="button" data-chip="universe" aria-haspopup="dialog"
+        aria-expanded="${state.popOpen === 'universe'}"
+        aria-label="Universe, ${esc(String(val('universe')))}">
+      <span class="qxc__label">${esc(uf.label)}: ${esc(String(val('universe')))}</span>${I.chev}</button>
+    <ul class="symrow__set">
+      ${picked.map(sym => `<li class="symchip" title="${esc(PM.NAMES[sym] || sym)}">
+        <span class="symchip__t">${sym}</span>
+        ${readonly ? '' : `<button class="symchip__x" type="button" data-symrm="${sym}"
+          aria-label="Remove ${sym} from the comparison">${I.x}</button>`}</li>`).join('')}
+      ${picked.length ? '' : '<li class="symrow__none">No symbols compared</li>'}
+    </ul>
+    ${readonly ? '' : `<button class="qxbtn qxbtn--text symrow__add" type="button" data-chip="symbols"
+      aria-haspopup="listbox" aria-expanded="${state.popOpen === 'symbols'}"
+      aria-label="Add symbols to compare, ${picked.length} of ${pool.length} selected">
+      ${I.plus}<span>Compare</span></button>`}
+  </div>`;
+}
 function matrixContext() {
   const d = PM_FILTERS.find(f => f.id === 'data'), c = PM_FILTERS.find(f => f.id === 'calc');
   return `<div class="uline">
@@ -1476,7 +1538,8 @@ function matrixContext() {
     <div class="uline__m"><span class="uline__k">Reduced by</span>
       <span class="uline__v">${esc(optLabel(c, val('calc')))}</span></div>
     <div class="uline__m"><span class="uline__k">Period</span>
-      <span class="uline__v">${val('year')} · ${val('freq') === 'quarter' ? 'quarterly' : 'monthly'}</span></div>
+      <span class="uline__v">${val('year')} · ${
+        { day:'by weekday', quarter:'quarterly', month:'monthly' }[val('freq')]}</span></div>
   </div>`;
 }
 
@@ -1616,7 +1679,7 @@ const SURFACES = {
     label:'Performance matrix', filters:PM_FILTERS,
     base:() => PM.UNIVERSES[val('universe') || 'Global indices'],
     unit:n => n === 1 ? 'symbol' : 'symbols',
-    below:matrixContext,
+    below:() => symbolRowHTML() + matrixContext(),
     results:matrixResults,
     actions:() => [{ i:'dl', t:'Export' }]
   },
@@ -1683,7 +1746,8 @@ const pairs = f => optsOf(f).map(o => Array.isArray(o) ? o : [o, o]);
 
 const isGated = f => !!f.gated && !state.pro;
 const isDisabled = f => state.options && (surf().inapplicable || []).includes(f.id);
-const promotedList = () => surf().filters.filter(f => f.promoted)
+const barFilters = () => surf().filters.filter(f => !f.own);
+const promotedList = () => barFilters().filter(f => f.promoted)
   .sort((a, b) => a.promoted - b.promoted).slice(0, state.promotedCount);
 const isTouch = () => state.input === 'touch';
 
@@ -1694,7 +1758,7 @@ function hasValue(f) {
   if (f.kind === 'choice') return true;
   return v.min != null || v.max != null;               // range + slider
 }
-const activeFilters = () => surf().filters.filter(f => !f.display && hasValue(f) && !isDisabled(f));
+const activeFilters = () => surf().filters.filter(f => !f.display && !f.own && hasValue(f) && !isDisabled(f));
 
 /* ---------------------------------------------------------------- matching */
 function testRow(f, row, v) {
@@ -1718,9 +1782,10 @@ function rowsFor(exceptId, extra) {
     if (extra && extra.f.id === id) return extra.v;
     if (id === exceptId) return null;
     const f = F(id), v = vals()[id];
+    if (f && f.emptyMeansNone && f.kind === 'multi' && v == null) return [];
     if (!f || v == null) return null;
     if (isDisabled(f)) return null;
-    if (f.kind === 'multi' && !v.length) return null;
+    if (f.kind === 'multi' && !v.length) return f.emptyMeansNone ? [] : null;
     return v;
   };
   let rows = s.base(get);
@@ -1824,7 +1889,7 @@ function setSlider(f, which, n) {
 /* Clear all clears the selection, not the parameters: a control the surface
    cannot run without keeps its value. */
 function clearAll() {
-  surf().filters.forEach(f => { if (!f.display && !mandatory(f)) delete vals()[f.id]; });
+  surf().filters.forEach(f => { if (!f.display && !f.own && !mandatory(f)) delete vals()[f.id]; });
 }
 
 /* ---------------------------------------------------------------- bar DOM */
@@ -1892,7 +1957,7 @@ function barHTML() {
 function hiddenCount() {
   const promoted = promotedList().map(f => f.id);
   const withdrawn = telemetry.withdrawn ? telemetry.withdrawn.length : 0;
-  const never = surf().filters.filter(f => !promoted.includes(f.id) && !isDisabled(f)).length;
+  const never = barFilters().filter(f => !promoted.includes(f.id) && !isDisabled(f)).length;
   return withdrawn + never;
 }
 function appliedOffBar() {
@@ -2147,7 +2212,7 @@ function filterState(f) {
 function panelGroups() {
   const s = surf();
   const promoted = promotedList();
-  const rest = s.filters.filter(f => !promoted.includes(f));
+  const rest = barFilters().filter(f => !promoted.includes(f));
   const out = [];
   if (promoted.length) out.push({ g:null, fs:promoted });
   if (rest.length) out.push({ g:'More filters', fs:rest });
@@ -2480,7 +2545,7 @@ function renderTelemetry() {
       <span class="op">${t.widths.get(id)}</span></span>`;
   }).join('') || '<span class="pill" data-t="out">no promoted chips</span>';
 
-  const never = surf().filters.filter(f => !t.order.includes(f.id) && !isDisabled(f)).length;
+  const never = barFilters().filter(f => !t.order.includes(f.id) && !isDisabled(f)).length;
   $('#kvCounts').innerHTML =
     line('withdrawn', t.withdrawn.length) +
     line('never promoted', never) +
@@ -2593,6 +2658,17 @@ product.addEventListener('click', e => {
   }
 
   // display toggle (two options — no popover needed)
+  const rm = hit('[data-symrm]');
+  if (rm) {
+    const f = F('symbols');
+    const next = (val('symbols') || []).filter(x => x !== rm.dataset.symrm);
+    setVal('symbols', next);
+    state.flow = null; render();
+    const again = document.querySelector('.symchip__x') || $('.symrow__add');
+    if (again) again.focus();
+    return;
+  }
+
   const dt = hit('[data-disptoggle]');
   if (dt) {
     const f = F(dt.dataset.disptoggle);
@@ -2946,6 +3022,8 @@ const FLOWS = [
   { id:'pm-vol', t:'Volatility lens', d:'True range, averaged', w:1180,
     run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
       { analysis:'volatility', data:'tr', calc:'avg' }); } },
+  { id:'pm-daily', t:'Daily', d:'Columns become weekdays', w:1180,
+    run:() => { pmBaseFlow(); state.values.matrix.freq = 'day'; } },
   { id:'pm-quarter', t:'Quarterly', d:'Four columns, same reductions', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.freq = 'quarter'; } },
   { id:'pm-highlight', t:'Highlight range', d:'Re-maps the scale, hides nothing', w:1180,
@@ -2954,10 +3032,14 @@ const FLOWS = [
   { id:'pm-universe', t:'US sectors', d:'Universe swaps the symbol set', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.universe = 'US sectors';
       state.values.matrix.symbols = PM.UNIVERSES['US sectors'].slice(0, 6); } },
+  { id:'pm-compare', t:'Compare picker', d:'Symbol row, not the filter bar', w:1180,
+    run:() => { pmBaseFlow(); state.popOpen = 'symbols'; } },
   { id:'pm-mob', t:'Matrix on mobile', d:'Sticky symbol column, scrolls', w:400,
     run:() => { pmBaseFlow(); state.input = 'touch'; } },
   { id:'pm-one', t:'One symbol', d:'Matrix down to a single row', w:1180,
-    run:() => { pmBaseFlow(); state.values.matrix.symbols = ['EFA']; } }
+    run:() => { pmBaseFlow(); state.values.matrix.symbols = ['EFA']; } },
+  { id:'pm-none', t:'Nothing compared', d:'Empty set means none, not all', w:1180,
+    run:() => { pmBaseFlow(); state.values.matrix.symbols = []; } }
 ];
 $('#flows').innerHTML = FLOWS.map((f, i) =>
   (f.g ? `<div class="flow__g">${f.g}</div>` : '') +
