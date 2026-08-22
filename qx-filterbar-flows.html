@@ -1069,7 +1069,7 @@ button{font:inherit;color:inherit}
             <li><b>Analysis carries the sentence.</b> It is a named-metric picker with a description under each option — Total Return, Typical Daily Move, Volatility, % Up Days, Best Day, Worst Day, Total Volume — and each one implies a datapoint and a reduction. Picking Custom grows the sentence two more slots so you can set that pair yourself, which is the only case where the raw vocabulary surfaces. Descriptions in an option list are new to the engine; the DS's Select already supports the label-plus-sublabel template, so this is its filter-popover counterpart.</li>
             <li><b>Choosing what to compare is not filtering.</b> The universe and the compared symbols sit in their own row under the bar, as removable chips with a Compare picker — the reference's second row, and the one place the removable-chip pattern earns its keep. An empty set there means none rather than "no constraint", so clearing the row empties the matrix instead of showing all eight.</li>
             <li><b>Annual drops a clause.</b> With the years as columns there is nothing for "in 2022" to pick, so the sentence loses it — the same mechanism that hides the datapoint and reduction behind a named metric. A sentence can shorten as well as grow.</li>
-            <li><b>Daily means weekday.</b> 252 date columns would not be a matrix, so daily frequency reduces by day of week — the effect a daily seasonality view exists to show. Day-of-month is the other reading; worth confirming which one the tool means.</li>
+            <li><b>Daily needs a month and a year.</b> A year of sessions is not a matrix, so picking Daily grows the sentence a Month slot and the columns become that month's trading days — weekends removed, so March 2022 opens on the 1st and runs to the 31st across 23 columns. Switching back to Monthly withdraws the slot again. It also exposes a real edge: at one session per cell the reductions that need a population collapse, so % Up Days would read 0 or 100 and Volatility 0. Rather than answer nonsense, Daily withholds those two metrics and says why in the popover; a user already on one of them when they pick Daily lands on Total Return, which at one session is that day's return.</li>
             <li><b>One control can drive another.</b> Choosing an Analysis sets the datapoint and the reduction behind it; choosing a Universe resets the compared symbols to that universe's members. That coupling had to be added to the engine — the spec assumes filters are independent.</li>
             <li><b>Two filter kinds had to be added.</b> A single-select <code>choice</code> (radio list with match counts, an explicit All at the top) and a <code>slider</code>, single or dual. A slider is the one control that cannot become a list of options, so its popover carries the control plus a live match count instead.</li>
             <li><b>Expiry sits below the bar</b>, at the team's direction. The spec puts navigation above the bar, so this is a deliberate departure: filters read first, then the expiry you are looking at. The strip still scrolls rather than collapses, and the Expiry chip filters which expiries it offers.</li>
@@ -1391,6 +1391,16 @@ const PM = (() => {
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   const QUARTERS = [['Q1',[0,1,2]],['Q2',[3,4,5]],['Q3',[6,7,8]],['Q4',[9,10,11]]];
   const WEEKDAYS = ['MON','TUE','WED','THU','FRI'];
+  /* Sessions of a calendar month, weekends removed. Deterministic — a fixed
+     year and month in, no clock read. */
+  const sessions = (year, mi) => {
+    const out = [], dim = new Date(year, mi + 1, 0).getDate();
+    for (let d = 1; d <= dim; d++) {
+      const wd = new Date(year, mi, d).getDay();
+      if (wd !== 0 && wd !== 6) out.push(d);
+    }
+    return out;
+  };
   const YEARS = [2022, 2023, 2024, 2025];
   const seed = s => [...s].reduce((a, c) => a + c.charCodeAt(0) * 31, 0);
 
@@ -1398,7 +1408,9 @@ const PM = (() => {
   function series(sym, year, mi, kind) {
     const base = seed(sym) * 0.37 + year * 3.11 + mi * 7.29;
     const h = i => { const x = Math.sin(base + i * 12.9898) * 43758.5453; return x - Math.floor(x); };
-    const n = 19 + Math.floor(h(0) * 5);
+    /* One observation per trading day, so a daily column is a real session and
+       a monthly cell aggregates the sessions that month actually had. */
+    const n = sessions(year, mi).length;
     const drift = (h(1) - 0.5) * 0.9;
     const vol = 0.55 + h(2) * 1.5;
     const out = [];
@@ -1427,7 +1439,7 @@ const PM = (() => {
     max:  a => Math.max(...a),
     count:a => a.length
   };
-  return { UNIVERSES, NAMES, MONTHS, QUARTERS, WEEKDAYS, YEARS, series, REDUCE };
+  return { UNIVERSES, NAMES, MONTHS, QUARTERS, WEEKDAYS, YEARS, series, sessions, REDUCE };
 })();
 
 /* Named metrics, each of which is a datapoint plus a reduction. Custom exposes
@@ -1447,8 +1459,15 @@ const pmAnalysis = () => PM_ANALYSES.find(a => a.id === val('analysis'));
 /* ---- filter set ---- */
 const PM_FILTERS = [
   /* Option labels read as sentence fragments, because that is where they sit. */
+  /* At daily granularity a cell holds one session, so the metrics that need a
+     population of returns — % Up Days, Volatility — would read 0 or 100 and 0.
+     They are withheld rather than shown answering nonsense. */
   { id:'analysis', label:'Analysis', kind:'choice', promoted:1, scoped:true, noAll:null,
-    options:PM_ANALYSES.map(a => [a.id, a.label, a.sub]),
+    help:() => val('freq') === 'day'
+      ? '% Up Days and Volatility need more than one session, so they are unavailable at daily granularity.' : '',
+    options:() => PM_ANALYSES
+      .filter(a => val('freq') !== 'day' || !['up', 'vola'].includes(a.id))
+      .map(a => [a.id, a.label, a.sub]),
     chip:v => v === 'custom' ? 'Custom' : (PM_ANALYSES.find(a => a.id === v) || {}).label,
     onSet:v => {
       const a = PM_ANALYSES.find(x => x.id === v);
@@ -1464,8 +1483,22 @@ const PM_FILTERS = [
   /* The popover lists proper option names; the chip shows the sentence fragment. */
   { id:'freq', label:'Frequency', kind:'choice', promoted:4, scoped:true, noAll:null,
     options:[['month','Monthly'],['quarter','Quarterly'],['year','Annual'],['day','Daily']],
-    chip:v => ({ month:'month', quarter:'quarter', year:'year', day:'weekday' })[v] },
-  { id:'year', label:'Year', kind:'choice', promoted:5, scoped:true, noAll:null,
+    chip:v => ({ month:'month', quarter:'quarter', year:'year', day:'day' })[v],
+    /* At daily granularity a cell holds one session, so the reductions that need
+       a population — % up days, volatility — collapse to 0 or 100. Picking Daily
+       moves those to Total Return, which at one session is that day's return. */
+    onSet:v => {
+      if (v !== 'day') return;
+      if (val('month') == null) setVal('month', '2');
+      if (['up','vola'].includes(val('analysis'))) {
+        setVal('analysis', 'total'); setVal('data', 'ret1d'); setVal('calc', 'total');
+      }
+    } },
+  { id:'month', label:'Month', kind:'choice', promoted:5, scoped:true, noAll:null,
+    options:PM.MONTHS.map((m, i) => [String(i),
+      ['January','February','March','April','May','June','July','August',
+       'September','October','November','December'][i]]) },
+  { id:'year', label:'Year', kind:'choice', promoted:6, scoped:true, noAll:null,
     options:PM.YEARS.map(y => [String(y), String(y)]) },
   /* Choosing what to compare is a selection, not a filter, so it gets its own
      row below the bar — and an empty set means none, not "no constraint". */
@@ -1489,7 +1522,17 @@ const ALL_MONTHS = [0,1,2,3,4,5,6,7,8,9,10,11];
 function pmCols() {
   const f = val('freq');
   if (f === 'quarter') return PM.QUARTERS.map(([k, ms]) => ({ key:k, months:ms }));
-  if (f === 'day') return PM.WEEKDAYS.map((k, i) => ({ key:k, months:ALL_MONTHS, wd:i }));
+  if (f === 'day') {
+    const mi = Number(val('month') || 0), year = Number(val('year'));
+    /* One column per session. Symbols carry slightly different session counts,
+       so the shortest one sets the width — every cell in the matrix is then a
+       real observation and no column is half empty. */
+    const syms = rowsNow();
+    const lens = syms.map(s => PM.series(s, year, mi, 'ret1d').length);
+    const n = lens.length ? Math.min(...lens) : 19;
+    return PM.sessions(year, mi).slice(0, n)
+      .map((d, i) => ({ key:String(d), months:[mi], dayIdx:i }));
+  }
   /* Annual makes the years the columns, which is why the sentence drops its
      "in <year>" clause: there is nothing left for it to pick. */
   if (f === 'year') return PM.YEARS.map(y => ({ key:String(y), months:ALL_MONTHS, year:y }));
@@ -1500,9 +1543,10 @@ function pmCell(sym, col) {
   const kind = val('data'), calc = val('calc');
   const obs = col.months.flatMap(mi => {
     const ser = PM.series(sym, year, mi, kind);
+    if (col.dayIdx != null) return ser[col.dayIdx] == null ? [] : [ser[col.dayIdx]];
     return col.wd == null ? ser : ser.filter((_, i) => i % 5 === col.wd);
   });
-  return PM.REDUCE[calc](obs);
+  return obs.length ? PM.REDUCE[calc](obs) : null;
 }
 const PM_AGG = [['Avg', 'avg'], ['Min', 'min'], ['Max', 'max']];
 function pmUnit() {
@@ -1512,6 +1556,7 @@ function pmUnit() {
   return val('data') === 'shares' ? 'M' : '%';
 }
 const pmFmt = v => {
+  if (v == null || !isFinite(v)) return '–';
   const u = pmUnit();
   if (u === 'M') return Math.round(v).toLocaleString() + 'M';
   if (u === '') return Math.round(v).toLocaleString();
@@ -1520,6 +1565,7 @@ const pmFmt = v => {
 
 /* light-to-mid brand ramp, so the value reads through it at every step */
 function pmHeat(v, lo, hi) {
+  if (v == null || !isFinite(v)) return 'transparent';
   const t = hi === lo ? 0.5 : Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
   const a = [242, 248, 254], b = [137, 193, 239];
   return `rgb(${a.map((c, i) => Math.round(c + (b[i] - c) * t)).join(',')})`;
@@ -1531,10 +1577,12 @@ function matrixResults() {
     'Pick at least one from the Symbols filter to build the matrix.');
   const cols = pmCols();
   const cells = syms.map(s => cols.map(c => pmCell(s, c)));
-  const rowAgg = (i, fn) => PM.REDUCE[fn](cells[i]);
-  const colAgg = (j, fn) => PM.REDUCE[fn](cells.map(r => r[j]));
-  const flat = cells.flat();
-  const dataLo = Math.min(...flat), dataHi = Math.max(...flat);
+  const agg = (fn, a) => { const v = a.filter(x => x != null); return v.length ? PM.REDUCE[fn](v) : null; };
+  const rowAgg = (i, fn) => agg(fn, cells[i]);
+  const colAgg = (j, fn) => agg(fn, cells.map(r => r[j]));
+  const flat = cells.flat().filter(v => v != null);
+  const dataLo = flat.length ? Math.min(...flat) : 0;
+  const dataHi = flat.length ? Math.max(...flat) : 0;
   const hv = val('highlight');
   const lo = hv && hv.min != null ? hv.min : dataLo;
   const hi = hv && hv.max != null ? hv.max : dataHi;
@@ -1553,7 +1601,7 @@ function matrixResults() {
   const foot = PM_AGG.map(([l, fn]) => `<tr class="sumrow">
       <td class="pmx__sym lbl">${l}</td>
       ${cols.map((c, j) => cell(colAgg(j, fn), 'sumcol')).join('')}
-      ${PM_AGG.map(([, fn2]) => cell(PM.REDUCE[fn2](cols.map((c, j) => colAgg(j, fn))), 'sumcol')).join('')}
+      ${PM_AGG.map(([, fn2]) => cell(agg(fn2, cols.map((c, j) => colAgg(j, fn))), 'sumcol')).join('')}
     </tr>`).join('');
 
   return `<div class="tblwrap scroller"><table class="pmx">${head}<tbody>${body}${foot}</tbody></table></div>
@@ -1744,7 +1792,8 @@ const SURFACES = {
       const parts = [{ t:'Showing' }, { id:'analysis' }];
       if (val('analysis') === 'custom') parts.push({ t:'—' }, { id:'calc' }, { t:'of' }, { id:'data' });
       parts.push({ t:'per' }, { id:'freq' });
-      if (val('freq') !== 'year') parts.push({ t:'in' }, { id:'year' });
+      if (val('freq') === 'day') parts.push({ t:'in' }, { id:'month' }, { id:'year' });
+      else if (val('freq') !== 'year') parts.push({ t:'in' }, { id:'year' });
       return parts;
     },
     base:() => PM.UNIVERSES[val('universe') || 'Global indices'],
@@ -1793,7 +1842,7 @@ const state = {
   pro:false, options:false,
   values:{ screener:{}, chain:{ window:5, view:'straddle' },
     analyzer:{ minProb:{min:70}, dte:{min:0,max:90} },
-    matrix:{ freq:'month', year:'2022', analysis:'up', data:'ret1d', calc:'pos',
+    matrix:{ freq:'month', year:'2022', month:'2', analysis:'up', data:'ret1d', calc:'pos',
       universe:'Global indices', symbols:['EFA','EEM','VGK','FXI','EWJ'] } },
   expiry:'e0', expScroll:0, rowScroll:0,
   panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null,
@@ -1811,6 +1860,8 @@ const vals = () => state.values[state.tab];
 const val = id => vals()[id];
 const setVal = (id, v) => { if (v == null) delete vals()[id]; else vals()[id] = v; };
 const optsOf = f => typeof f.options === 'function' ? f.options() : (f.options || []);
+/* help can depend on the other controls, so it is allowed to be a function */
+const helpOf = f => (typeof f.help === 'function' ? f.help() : f.help) || '';
 const pairs = f => optsOf(f).map(o => Array.isArray(o) ? o : [o, o]);
 
 const isGated = f => !!f.gated && !state.pro;
@@ -2219,7 +2270,7 @@ function popoverHTML(f) {
     ${f.search ? `<div class="pop__search"><input type="text" id="popSearch" placeholder="Search ${esc(f.label.toLowerCase())}" value="${esc(pop.search)}" aria-label="Search ${esc(f.label)}"></div>` : ''}
     ${list}
     ${isSlider ? sliderHTML(f, 'pop__custom') : (f.kind === 'range' ? customHTML(f, 'pop__custom') : '')}
-    ${f.help ? `<p class="pop__help">${f.help}</p>` : ''}
+    ${helpOf(f) ? `<p class="pop__help">${helpOf(f)}</p>` : ''}
     <div class="pop__foot">
       ${f.display ? '' : `<button class="qxbtn qxbtn--text" type="button" id="popClear">Clear</button>`}
       <button class="qxbtn qxbtn--primary" type="button" id="popDone">Done</button>
@@ -2308,7 +2359,7 @@ function controlBodyHTML(f, ns) {
   return `${rows.length ? `<div class="accbody__list" role="listbox"${f.kind === 'multi' ? ' aria-multiselectable="true"' : ''} aria-label="${esc(f.label)}">${rows.map(r => optHTML(f, r, ns)).join('')}</div>` : ''}
     ${f.kind === 'slider' ? sliderHTML(f, 'drill__custom') : ''}
     ${f.kind === 'range' ? customHTML(f, 'drill__custom') : ''}
-    ${f.help ? `<p class="setp__help">${f.help}</p>` : ''}`;
+    ${helpOf(f) ? `<p class="setp__help">${helpOf(f)}</p>` : ''}`;
 }
 /* Pointer: sections expand in place. */
 function accordionHTML() {
@@ -3025,7 +3076,7 @@ const base = () => {
     panelOpen:false, popOpen:null, gateOpen:null, drill:null, panelOpenFilter:null });
   state.values = { screener:{}, chain:{ window:5, view:'straddle' },
     analyzer:{ minProb:{min:70}, dte:{min:0,max:90} },
-    matrix:{ freq:'month', year:'2022', analysis:'up', data:'ret1d', calc:'pos',
+    matrix:{ freq:'month', year:'2022', month:'2', analysis:'up', data:'ret1d', calc:'pos',
       universe:'Global indices', symbols:['EFA','EEM','VGK','FXI','EWJ'] } };
   drillAnim = null;
   heights.clear(); measuredLabels.clear(); remeasures = 0;
@@ -3126,8 +3177,9 @@ const FLOWS = [
   { id:'pm-custom', t:'Custom…', d:'Sentence grows two more slots', w:1180,
     run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
       { analysis:'custom', data:'tr', calc:'avg' }); } },
-  { id:'pm-daily', t:'Daily', d:'Columns become weekdays', w:1180,
-    run:() => { pmBaseFlow(); state.values.matrix.freq = 'day'; } },
+  { id:'pm-daily', t:'Daily', d:'A month scopes the sessions', w:1180,
+    run:() => { pmBaseFlow(); Object.assign(state.values.matrix,
+      { freq:'day', month:'2', analysis:'total', data:'ret1d', calc:'total' }); } },
   { id:'pm-annual', t:'Annual', d:'Years become the columns', w:1180,
     run:() => { pmBaseFlow(); state.values.matrix.freq = 'year'; } },
   { id:'pm-quarter', t:'Quarterly', d:'Four columns, same reductions', w:1180,
