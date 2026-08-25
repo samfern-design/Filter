@@ -1,0 +1,643 @@
+<title>One Bar, Three Controls</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg:        #FBFCFD;
+    --surface:   #FFFFFF;
+    --surface-2: #F2F5F9;
+    --line:      #E1E7EE;
+    --line-2:    #C7D2DE;
+    --ink:       #10161D;
+    --ink-2:     #48535F;
+    --ink-3:     #6E7B8A;
+    --accent:    #0477D1;
+    --accent-bg: #E9F2FB;
+    --accent-ln: #A9CFEE;
+    --disp:      #0E7C86;
+    --disp-bg:   #E3F1F2;
+    --disp-ln:   #A5CFD2;
+    --gap:       #9A5A08;
+    --gap-bg:    #FBF1E1;
+    --gap-ln:    #E2C79A;
+    --shadow:    0 1px 2px rgba(16,22,29,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #0C1218;
+      --surface:   #141C24;
+      --surface-2: #1A2430;
+      --line:      #263340;
+      --line-2:    #37485A;
+      --ink:       #E8EDF2;
+      --ink-2:     #AFBAC6;
+      --ink-3:     #85929F;
+      --accent:    #4FA8EA;
+      --accent-bg: #132A3D;
+      --accent-ln: #2E5D86;
+      --disp:      #4BBFC7;
+      --disp-bg:   #0F2C2E;
+      --disp-ln:   #2A5B5F;
+      --gap:       #DFA755;
+      --gap-bg:    #2C2315;
+      --gap-ln:    #574526;
+      --shadow:    0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #0C1218;
+    --surface:   #141C24;
+    --surface-2: #1A2430;
+    --line:      #263340;
+    --line-2:    #37485A;
+    --ink:       #E8EDF2;
+    --ink-2:     #AFBAC6;
+    --ink-3:     #85929F;
+    --accent:    #4FA8EA;
+    --accent-bg: #132A3D;
+    --accent-ln: #2E5D86;
+    --disp:      #4BBFC7;
+    --disp-bg:   #0F2C2E;
+    --disp-ln:   #2A5B5F;
+    --gap:       #DFA755;
+    --gap-bg:    #2C2315;
+    --gap-ln:    #574526;
+    --shadow:    0 1px 2px rgba(0,0,0,.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.65 Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- page frame: a reading column, with wide blocks breaking out ----
+     Both levels are grids so a .wide child can break out from inside a
+     section, not only as a direct child of the page. minmax(0,·) rather
+     than a bare 1fr, which floors at min-content and would let the wide
+     tables and the diagram push the page into a sideways scroll. */
+  .page { display: grid; grid-template-columns: minmax(0, 1fr); padding: 0 24px 96px; }
+  .page > * { width: 100%; max-width: 1120px; margin-inline: auto; }
+  .page > header, .page > footer { max-width: 68ch; }
+  section { display: grid; grid-template-columns: minmax(0, 1fr); }
+  section > * { width: 100%; max-width: 68ch; margin-inline: auto; }
+  section > .wide { max-width: 1120px; }
+
+  /* ---- masthead ---- */
+  .mast { padding: 72px 0 40px; }
+  .mast__kicker {
+    font: 500 11px/1 Roboto, sans-serif; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 20px;
+  }
+  h1 {
+    font: 600 clamp(2.1rem, 5vw, 3rem)/1.1 "IBM Plex Serif", Georgia, serif;
+    letter-spacing: -.015em; margin: 0 0 20px; text-wrap: balance;
+  }
+  .mast__lede { font-size: 1.125rem; color: var(--ink-2); margin: 0 0 28px; text-wrap: pretty; }
+  .mast__meta {
+    display: flex; flex-wrap: wrap; gap: 8px 28px; padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font: 400 13px/1.5 "Roboto Mono", ui-monospace, monospace; color: var(--ink-3);
+  }
+  .mast__meta b { color: var(--ink-2); font-weight: 500; }
+
+  /* ---- sections ---- */
+  section { padding-top: 56px; }
+  h2 {
+    font: 600 1.55rem/1.25 "IBM Plex Serif", Georgia, serif;
+    margin: 0 0 8px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  .sub { color: var(--ink-3); margin: 0 0 28px; font-size: .9375rem; }
+  h3 {
+    font: 500 1.0625rem/1.4 Roboto, sans-serif;
+    margin: 36px 0 10px; letter-spacing: -.005em;
+  }
+  p { margin: 0 0 16px; text-wrap: pretty; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  strong { font-weight: 500; color: var(--ink); }
+  em { font-style: italic; }
+  code, .mono {
+    font: 400 .875em/1.4 "Roboto Mono", ui-monospace, monospace;
+    color: var(--ink-2); background: var(--surface-2);
+    border: 1px solid var(--line); border-radius: 3px; padding: .08em .34em;
+  }
+  ul { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  li::marker { color: var(--ink-3); }
+
+  /* ---- role key inline marks ---- */
+  .role {
+    font: 500 11px/1 Roboto, sans-serif; letter-spacing: .08em; text-transform: uppercase;
+    border: 1px solid; border-radius: 3px; padding: 3px 6px; white-space: nowrap;
+  }
+  .role--f { color: var(--accent); border-color: var(--accent-ln); background: var(--accent-bg); }
+  .role--p { color: var(--ink-2); border-color: var(--line-2); background: var(--surface-2); }
+  .role--d { color: var(--disp);   border-color: var(--disp-ln);   background: var(--disp-bg); }
+
+  /* ---- figures ---- */
+  figure { margin: 0; padding: 28px 0 4px; }
+  figcaption {
+    font-size: .875rem; color: var(--ink-3); margin-top: 18px;
+    padding-top: 14px; border-top: 1px solid var(--line); text-wrap: pretty;
+  }
+  .scroller { overflow-x: auto; }
+  svg.fig { display: block; width: 100%; height: auto; min-width: 640px; }
+
+  /* ---- Qmodii chip specimens: 4px radius, 1px border, 28px, Roboto 13 ---- */
+  .spec {
+    display: flex; flex-wrap: wrap; gap: 32px 40px;
+    padding: 30px 28px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 4px; box-shadow: var(--shadow);
+  }
+  .spec__cell { display: flex; flex-direction: column; gap: 12px; }
+  .spec__cap {
+    font: 400 12px/1.45 "Roboto Mono", ui-monospace, monospace;
+    color: var(--ink-3); max-width: 22ch;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; height: 28px;
+    padding: 0 8px; border-radius: 4px; border: 1px solid var(--line-2);
+    background: var(--surface); color: var(--ink-2);
+    font: 400 13px/1 Roboto, sans-serif; white-space: nowrap; align-self: flex-start;
+  }
+  .chip--set { background: var(--accent-bg); border-color: var(--accent-ln); color: var(--accent); }
+  .chip--set b { font-weight: 500; }
+  .chip__n {
+    font: 500 11px/1 Roboto, sans-serif; color: var(--ink-3);
+    border: 1px solid var(--line-2); border-radius: 3px; padding: 2px 4px;
+  }
+  .chip svg { flex: none; }
+  /* the whole label is ONE flex item — an inline <b> of its own would take
+     the 6px gap on both sides and open a hole mid-label */
+  .chip__lbl { display: inline; }
+
+  /* ---- tables ---- */
+  .tblwrap {
+    overflow-x: auto; border: 1px solid var(--line); border-radius: 4px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: .875rem; }
+  caption {
+    text-align: left; padding: 16px 18px 14px; border-bottom: 1px solid var(--line);
+    font: 500 12px/1.4 Roboto, sans-serif; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  th, td { text-align: left; padding: 11px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font: 500 12px/1.3 Roboto, sans-serif; color: var(--ink-3);
+    background: var(--surface-2); white-space: nowrap;
+  }
+  tbody th { font-weight: 500; color: var(--ink); white-space: nowrap; }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+  td.num, th.num { font-variant-numeric: tabular-nums; }
+  .cell-f { color: var(--accent); }
+  .cell-d { color: var(--disp); }
+  .no { color: var(--ink-3); }
+
+  /* state tables: a flow id, or a gap flag */
+  .flow {
+    font: 400 12px/1.3 "Roboto Mono", ui-monospace, monospace;
+    color: var(--ink-3); white-space: nowrap;
+  }
+  .todo {
+    display: inline-block; font: 500 11px/1 Roboto, sans-serif;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--gap); background: var(--gap-bg);
+    border: 1px solid var(--gap-ln); border-radius: 3px; padding: 3px 5px; white-space: nowrap;
+  }
+
+  /* ---- the two-question test ---- */
+  .qlist { display: grid; gap: 18px; margin: 0; padding: 0; counter-reset: q; }
+  /* the number is one column, ALL the prose is the other — so the prose is
+     wrapped in a single child, never laid into the grid line by line */
+  .qlist > div {
+    display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 16px;
+    padding: 18px 20px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 4px;
+  }
+  .qlist > div::before {
+    counter-increment: q; content: counter(q);
+    font: 600 1.1rem/1 "IBM Plex Serif", Georgia, serif; color: var(--accent);
+    padding-top: 3px;
+  }
+  .qlist h3 { margin: 0 0 6px; font-size: 1rem; }
+  .qlist p { margin: 0; font-size: .9375rem; color: var(--ink-2); }
+  .qlist p + p { margin-top: 8px; }
+
+  /* ---- callout ---- */
+  .note {
+    padding: 20px 22px; border-radius: 4px; background: var(--surface-2);
+    border: 1px solid var(--line); border-left: 2px solid var(--accent);
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .note--gap { border-left-color: var(--gap); }
+
+  /* ---- open questions ---- */
+  .open { display: grid; gap: 14px; }
+  .open__item {
+    padding: 18px 20px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 4px;
+  }
+  .open__item h3 { margin: 0 0 6px; font-size: .9375rem; }
+  .open__item p { margin: 0; font-size: .9375rem; color: var(--ink-2); }
+
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: .875rem; color: var(--ink-3);
+  }
+
+  :where(a, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-width: 620px) {
+    .mast { padding-top: 48px; }
+    .spec { gap: 26px; padding: 22px 18px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="mast">
+    <p class="mast__kicker">QX-FilterBar · control taxonomy</p>
+    <h1>One Bar, Three Controls</h1>
+    <p class="mast__lede">A dropdown and a filter can be the same widget. What separates them is whether the
+      control has an <em>off</em> state — and that single property decides counting, clearing, accenting,
+      and what survives when the bar runs out of room.</p>
+    <div class="mast__meta">
+      <span><b>37</b> controls</span>
+      <span><b>4</b> surfaces</span>
+      <span><b>18</b> of them single-select</span>
+      <span><b>9</b> filters, <b>9</b> not</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>The short answer</h2>
+    <p class="sub">Three roles, two of which look identical.</p>
+
+    <p>A <strong>filter</strong> narrows a set. It has a state that means <em>no constraint</em>, so setting
+      it is news — it gets an accent, a count in the All&nbsp;filters badge, and it is what Clear resets.</p>
+
+    <p>A <strong>parameter</strong> — what we have been calling a dropdown — picks a value the surface is
+      computed <em>from</em>. There is no "no constraint": every table needs a frequency, a year, a
+      universe. It always carries a value, so a set value is not news. Nothing counts it, Clear leaves it
+      alone, and it cannot be withdrawn to an overflow menu because the table is unreadable without it.</p>
+
+    <p>A <strong>display control</strong> changes how the same rows are drawn — straddle or stacked, table
+      or cards, where the heat ramp starts. Same accounting as a parameter, different reason: it is not
+      part of the question, so it is the first thing to leave the bar and the last thing anyone needs
+      pinned.</p>
+
+    <figure class="wide">
+      <div class="spec">
+        <div class="spec__cell">
+          <span class="chip"><span class="chip__lbl">Sector</span>
+            <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+          <span class="spec__cap"><span class="role role--f">Filter</span><br>unset — the off state exists, and this is it</span>
+        </div>
+        <div class="spec__cell">
+          <span class="chip chip--set"><span class="chip__lbl">Sector: <b>Financials</b> +2</span>
+            <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+          <span class="spec__cap"><span class="role role--f">Filter</span><br>set — accented, counted, cleared</span>
+        </div>
+        <div class="spec__cell">
+          <span class="chip"><span class="chip__lbl">Total Return</span>
+            <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+          <span class="spec__cap"><span class="role role--p">Parameter</span><br>always set — so never accented</span>
+        </div>
+        <div class="spec__cell">
+          <span class="chip"><span class="chip__lbl">Straddle</span>
+            <svg width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </span>
+          <span class="spec__cap"><span class="role role--d">Display</span><br>pixel-identical to a parameter</span>
+        </div>
+      </div>
+      <figcaption>Four chips, three roles. The last two are the same component in the same state — nothing
+        on the surface distinguishes a parameter from a display control, and nothing needs to. They differ
+        in what the badge counts, what Clear touches, and what order they leave the bar in.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>The test</h2>
+    <p class="sub">Two questions, asked in this order, classify every control we built.</p>
+
+    <div class="qlist">
+      <div><div>
+        <h3>Does it have an off state — a value that means <em>no constraint</em>?</h3>
+        <p>If yes, it is a filter. Not "does it default to off" — <em>can</em> it be off. Max&nbsp;spread
+          defaults to nothing and can return to nothing; Frequency cannot.</p>
+        <p>In the prototype this is one property: <code>noAll</code>. A filter names its off state
+          (<code>noAll:'All'</code>, <code>noAll:'Spot (311.51)'</code>) or accepts the default;
+          <code>noAll:null</code> declares that there isn't one, and the engine stops counting and clearing it.</p>
+      </div></div>
+      <div><div>
+        <h3>Does it change the numbers, or only their presentation?</h3>
+        <p>Numbers means parameter: swap Frequency and every cell is recomputed. Presentation means display
+          control: swap Straddle for Stacked and the same contracts are drawn a different way.</p>
+        <p>The consequence is withdrawal order. A parameter is pinned — you cannot read a matrix that
+          won't say what it is measuring. A display control goes first.</p>
+      </div></div>
+    </div>
+
+    <figure class="wide">
+      <div class="scroller">
+        <svg class="fig" viewBox="0 0 980 400" role="img" aria-label="Decision flow: any control on the bar is a filter if it has an off state; otherwise it is a parameter if it changes the numbers, or a display control if it only changes presentation. Filters are counted, cleared, accented and may withdraw. Parameters and display controls are none of those; parameters are pinned, display controls withdraw first.">
+          <defs>
+            <marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0.8 L7.5 4 L0 7.2 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <g fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55" marker-end="url(#ar)">
+            <path d="M152 200 H 180"/>
+            <path d="M386 186 H 640 V 84 H 674"/>
+            <path d="M386 216 H 404 V 280 H 416"/>
+            <path d="M622 266 H 652 V 208 H 674"/>
+            <path d="M622 294 H 652 V 332 H 674"/>
+          </g>
+
+          <rect x="16" y="178" width="136" height="44" rx="4" fill="var(--surface-2)" stroke="currentColor" stroke-width="1.2" opacity=".9"/>
+          <text x="84" y="205" text-anchor="middle" font-family="Roboto, sans-serif" font-size="12.5" fill="currentColor">A control on the bar</text>
+
+          <rect x="186" y="168" width="200" height="64" rx="4" fill="var(--surface)" stroke="currentColor" stroke-width="1.2"/>
+          <text x="286" y="192" text-anchor="middle" font-family="Roboto, sans-serif" font-size="11.5" fill="currentColor">Is there a value that means</text>
+          <text x="286" y="209" text-anchor="middle" font-family="Roboto, sans-serif" font-size="11.5" font-weight="500" fill="currentColor">no constraint?</text>
+
+          <rect x="416" y="248" width="206" height="64" rx="4" fill="var(--surface)" stroke="currentColor" stroke-width="1.2"/>
+          <text x="519" y="272" text-anchor="middle" font-family="Roboto, sans-serif" font-size="11.5" fill="currentColor">Does it change the numbers,</text>
+          <text x="519" y="289" text-anchor="middle" font-family="Roboto, sans-serif" font-size="11.5" fill="currentColor">or only their presentation?</text>
+
+          <g font-family="Roboto, sans-serif" font-size="10.5" fill="currentColor" opacity=".7">
+            <text x="404" y="178">yes</text>
+            <text x="394" y="248">no</text>
+            <text x="632" y="240" text-anchor="end">numbers</text>
+            <text x="632" y="318" text-anchor="end">presentation</text>
+          </g>
+
+          <g stroke-width="1.2">
+            <rect x="674" y="52" width="290" height="64" rx="4" fill="var(--accent-bg)" stroke="var(--accent-ln)"/>
+            <rect x="674" y="176" width="290" height="64" rx="4" fill="var(--surface-2)" stroke="var(--line-2)"/>
+            <rect x="674" y="300" width="290" height="64" rx="4" fill="var(--disp-bg)" stroke="var(--disp-ln)"/>
+          </g>
+          <g font-family="Roboto, sans-serif" font-size="12.5" font-weight="700" letter-spacing=".07em">
+            <text x="692" y="77" fill="var(--accent)">FILTER</text>
+            <text x="692" y="201" fill="currentColor">PARAMETER</text>
+            <text x="692" y="325" fill="var(--disp)">DISPLAY CONTROL</text>
+          </g>
+          <g font-family="Roboto, sans-serif" font-size="10.5" fill="currentColor" opacity=".72">
+            <text x="692" y="97">counted · cleared · accented · may withdraw</text>
+            <text x="692" y="221">not counted · not cleared · never accented · pinned</text>
+            <text x="692" y="345">not counted · not cleared · never accented · withdraws first</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>The classification and its consequences. Only the first branch is a design judgement; once
+        a control's role is fixed, the four behaviours on the right follow from it and are not separately
+        negotiable per control.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>What follows from the role</h2>
+    <p class="sub">Every row here is a behaviour the engine derives, not a per-control decision.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Behaviour by role · 37 controls across 4 surfaces</caption>
+        <thead>
+          <tr>
+            <th scope="col">Behaviour</th>
+            <th scope="col">Filter</th>
+            <th scope="col">Parameter</th>
+            <th scope="col">Display control</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Off state</th>
+            <td class="cell-f">Yes — <em>All</em>, or a named default</td>
+            <td>None — always carries a value</td>
+            <td class="cell-d">None</td></tr>
+          <tr><th scope="row">Counted in the All&nbsp;filters badge</th>
+            <td class="cell-f">Yes, when set</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><th scope="row">Reset by Clear</th>
+            <td class="cell-f">Yes</td>
+            <td class="no">No — would leave the table undefined</td>
+            <td class="no">No — a view choice is not a filter</td></tr>
+          <tr><th scope="row">Accent when set</th>
+            <td class="cell-f">Yes — set is the exception</td>
+            <td class="no">No — set is the norm</td><td class="no">No</td></tr>
+          <tr><th scope="row">Withdraws under overflow</th>
+            <td class="cell-f">Yes, right to left, gated ones last</td>
+            <td class="no">Never</td>
+            <td class="cell-d">First</td></tr>
+          <tr><th scope="row">Can empty the result</th>
+            <td class="cell-f">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><th scope="row">Per-option counts in the popover</th>
+            <td class="cell-f">Meaningful (<span class="mono">Financials 62</span>)</td>
+            <td class="no">Meaningless — every row is in scope</td><td class="no">Meaningless</td></tr>
+          <tr><th scope="row">Can drive another control</th>
+            <td>Rare</td>
+            <td>Common — Analysis sets Calculation and Data</td>
+            <td>Rare</td></tr>
+          <tr><th scope="row">Can withhold its own options</th>
+            <td class="no">No</td>
+            <td>Yes — % Up Days is gone at daily granularity</td>
+            <td class="no">No</td></tr>
+          <tr><th scope="row">Where it lives</th>
+            <td class="cell-f">The chip row</td>
+            <td>The chip row, or a sentence slot</td>
+            <td class="cell-d">Its own slot, or the action group</td></tr>
+          <tr><th scope="row">Count in the prototype</th>
+            <td class="cell-f num">27</td><td class="num">7</td><td class="cell-d num">3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Where the two blur</h3>
+    <p>The single-select dropdown is the most common widget on the bar — 18 of 37 controls — and it lands on
+      both sides of the line, nine and nine. Max&nbsp;spread, Min&nbsp;volume and Deliverables are radio
+      lists that filter; Frequency, Month and Universe are radio lists that don't. Nothing about the widget
+      predicts the behaviour, which is why the rule has to be a property on the control and not a component
+      choice.</p>
+
+    <div class="note">
+      <p><strong>One near-miss worth knowing about.</strong> How a control acts on the data is a separate
+        axis and not the one that matters here. Expiry, Strikes and Near <em>re-scope</em> rather than test
+        rows — the same mechanism the parameters use, flagged <code>scoped</code> in the engine — but they
+        each have an off state, so they are filters: counted, cleared, accented. Classify on
+        <code>noAll</code>, never on how the value is applied.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Filter chip — states</h2>
+    <p class="sub">Fifteen states. Eleven exist in the prototype; the flow name is where to look.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Filter chip · 15 states, 11 built</caption>
+        <thead>
+          <tr><th scope="col">State</th><th scope="col">What changes</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Unset</th><td>Label only, neutral border, chevron. No accent, no value.</td><td class="flow">default</td></tr>
+          <tr><th scope="row">Set — one value</th><td>Accent fill and border; label becomes <span class="mono">Sector: Financials</span>.</td><td class="flow">filtered</td></tr>
+          <tr><th scope="row">Set — several values</th><td>First value plus an overflow count: <span class="mono">+2</span>. Never a bare number.</td><td class="flow">ch-liq</td></tr>
+          <tr><th scope="row">Set — range, both bounds</th><td>Both ends in the label: <span class="mono">10–25</span>.</td><td class="flow">an-dual</td></tr>
+          <tr><th scope="row">Set — range, one bound</th><td>Direction word carries it: <span class="mono">over $10B</span>, <span class="mono">Over 80%</span>.</td><td class="flow">an-slider</td></tr>
+          <tr><th scope="row">Hover</th><td>Border steps to the stronger neutral; fill unchanged.</td><td class="flow">every flow</td></tr>
+          <tr><th scope="row">Focus visible</th><td>2px accent ring, offset. Independent of hover and of open.</td><td class="flow">every flow</td></tr>
+          <tr><th scope="row">Open</th><td><span class="mono">aria-expanded</span>, chevron rotated, popover anchored or sheet raised.</td><td class="flow">popover</td></tr>
+          <tr><th scope="row">Gated</th><td>Lock replaces the chevron; the click opens the upgrade gate, not the option list.</td><td class="flow">gated</td></tr>
+          <tr><th scope="row">Read-only</th><td>Value visible, chevron gone, not focusable. For shared and embedded views.</td><td class="flow">readonly</td></tr>
+          <tr><th scope="row">Withdrawn</th><td>Not on the bar at all; its value lives in the badge count and the panel.</td><td class="flow">overflow, hidden</td></tr>
+          <tr><th scope="row">Loading its options</th><td>Chip is live and clickable, option list is a skeleton. Today only the result count skeletons.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Disabled by a dependency</th><td>Nothing to choose until a parent is set — a sector filter before an exchange.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Sole cause of an empty result</th><td>The bar goes empty today, but no chip is blamed. Attribution is the missing half.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Invalid value</th><td>A custom range entered backwards, a bound outside the field. No error state exists yet.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Parameter — states</h2>
+    <p class="sub">The dropdown. Eleven states, and three of them have no filter equivalent.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Parameter · 11 states, 9 built</caption>
+        <thead>
+          <tr><th scope="col">State</th><th scope="col">What changes</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Rest</th><td>Always carries a value, so it never accents. The value <em>is</em> the label.</td><td class="flow">pm-default</td></tr>
+          <tr><th scope="row">Hover / focus / open</th><td>Identical to the filter chip. Same component, same affordances.</td><td class="flow">pm-chip</td></tr>
+          <tr><th scope="row">Mandatory</th><td>No Clear in the popover footer. Re-picking the current value is a no-op, not a toggle-off.</td><td class="flow">pm-chip</td></tr>
+          <tr><th scope="row">Coupled — driven</th><td>Its value was set by another control. Analysis writes Calculation and Data.</td><td class="flow">pm-custom</td></tr>
+          <tr><th scope="row">Options withheld</th><td>Options removed because another control makes them meaningless, plus a line saying why.</td><td class="flow">pm-daily</td></tr>
+          <tr><th scope="row">Appears / disappears</th><td>The control itself is conditional: Month exists only at daily frequency.</td><td class="flow">pm-daily</td></tr>
+          <tr><th scope="row">Sentence slot</th><td>Label suppressed, value inline in prose. The word in the sentence is the trigger.</td><td class="flow">pm-default</td></tr>
+          <tr><th scope="row">Sentence wraps</th><td>Prose breaks over two or three lines. No trigger to fall back on, so it must wrap.</td><td class="flow">pm-wrap, pm-mob</td></tr>
+          <tr><th scope="row">Long option list</th><td>Search inside the popover. Near carries 41 strikes and is past what a radio list should hold.</td><td class="flow">ch-near</td></tr>
+          <tr><th scope="row">One option</th><td>Nothing to choose. Show the value, drop the chevron, or hide it — undecided.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Loading its options</th><td>The list is a fetch. A parameter with no value cannot render the surface at all.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note note--gap">
+      <p><strong>The one that has no filter equivalent</strong> is a parameter that cannot render. A filter
+        with no options is simply not applied; a parameter with no value leaves the table with nothing to
+        compute. Whether that is a skeleton table, a disabled bar, or a blocking empty state is the biggest
+        gap in this inventory.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Display control — states</h2>
+    <p class="sub">Six. The short list, because it does the least.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Display control · 6 states, 5 built</caption>
+        <thead>
+          <tr><th scope="col">State</th><th scope="col">What changes</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Rest / hover / focus / open</th><td>Identical to a parameter. Deliberately so.</td><td class="flow">ch-stack</td></tr>
+          <tr><th scope="row">Segmented</th><td>Two or three options shown at once instead of behind a chevron — Table / Cards.</td><td class="flow">an-cards</td></tr>
+          <tr><th scope="row">In the chip row</th><td>Rides with the filters by product decision, still uncounted and uncleared.</td><td class="flow">ch-stack</td></tr>
+          <tr><th scope="row">In its own slot</th><td>Outside the bar's accounting entirely — the analyzer toggle, the matrix heat range.</td><td class="flow">an-cards, pm-highlight</td></tr>
+          <tr><th scope="row">Beside what it drives</th><td>Placed next to the thing it changes rather than with the filters.</td><td class="flow">pm-highlight</td></tr>
+          <tr><th scope="row">Remembered</th><td>A view choice probably should survive a reload; a filter probably shouldn't. Unspecified.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bar scenarios</h2>
+    <p class="sub">Composition-level. These are the ones that break layouts, not components.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>The whole bar · 19 scenarios, 16 built</caption>
+        <thead>
+          <tr><th scope="col">Scenario</th><th scope="col">What it tests</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Nothing set</th><td>The resting bar. Badge absent, Clear absent.</td><td class="flow">default</td></tr>
+          <tr><th scope="row">Some set</th><td>State in the labels, mixed accent, badge counting only what is set.</td><td class="flow">filtered</td></tr>
+          <tr><th scope="row">Overflow → menu</th><td>Chips withdraw right to left into All&nbsp;filters; trigger width reserved in advance.</td><td class="flow">overflow, squeezed</td></tr>
+          <tr><th scope="row">Overflow → wrap</th><td>Nothing withdraws; row height moves and the bar costs a fixed line.</td><td class="flow">wrap</td></tr>
+          <tr><th scope="row">Overflow → scroll</th><td>Whole line scrolls, chevrons on both edges, a partial chip as the signal.</td><td class="flow">scroll</td></tr>
+          <tr><th scope="row">Everything withdrawn</th><td>Trigger and Clear only. The overflow menu becomes the sole route to every control.</td><td class="flow">hidden, an-mob</td></tr>
+          <tr><th scope="row">Zero promoted</th><td>No chips authored at all — every filter behind the trigger by design, not by width.</td><td class="flow">zero</td></tr>
+          <tr><th scope="row">Empty result</th><td>Bar stays fully interactive; the result surface carries the empty state.</td><td class="flow">empty, ch-empty, an-empty</td></tr>
+          <tr><th scope="row">Loading</th><td>Bar live while the result is not. Filters remain settable during the fetch.</td><td class="flow">loading</td></tr>
+          <tr><th scope="row">Read-only</th><td>A shared or embedded view: values legible, nothing operable.</td><td class="flow">readonly</td></tr>
+          <tr><th scope="row">Entitlement mix</th><td>Gated chips among ungated ones, and gated ones held visible longest under squeeze.</td><td class="flow">gated</td></tr>
+          <tr><th scope="row">Touch — sheet</th><td>Bottom sheet instead of an anchored popover; 44px targets throughout.</td><td class="flow">sheet</td></tr>
+          <tr><th scope="row">Touch — drill-down</th><td>Level two, Back returns to the filter list, Esc closes the sheet outright.</td><td class="flow">drill</td></tr>
+          <tr><th scope="row">Pointer — drawer</th><td>Sections expand in place; expanding does not replay the open animation.</td><td class="flow">drawer</td></tr>
+          <tr><th scope="row">Sentence form</th><td>No trigger, no badge — every control mandatory and inline in prose.</td><td class="flow">pm-default</td></tr>
+          <tr><th scope="row">Action group collapse</th><td>Actions fold to one overflow before any filter is touched.</td><td class="flow">actions</td></tr>
+          <tr><th scope="row">Restored from a link</th><td>A filter set arriving from a URL or a saved screen, before the user touches anything.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Stale restored value</th><td>A saved set naming an option that no longer exists — a delisted symbol, a retired sector.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Undo after Clear</th><td>Clear discards several filters in one click and there is no way back.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Still open</h2>
+    <p class="sub">Four decisions the taxonomy exposes but does not settle.</p>
+
+    <div class="open">
+      <div class="open__item">
+        <h3>A filter sitting on its default value</h3>
+        <p>Strikes defaults to ±5 and can return to <em>All</em>. Is ±5 "set"? Today it accents and counts,
+          which means the bar opens with a filter already lit. The alternative is to treat an untouched
+          default as unset — truthful to the user, but then the chip's accent no longer tracks its value.</p>
+      </div>
+      <div class="open__item">
+        <h3>Whether display controls belong on the bar</h3>
+        <p>The chain's View rides in the chip row; the analyzer's Table/Cards sits in its own slot. Both
+          work, and the inconsistency is currently a product decision per surface rather than a rule. Pick
+          one before a fifth surface arrives.</p>
+      </div>
+      <div class="open__item">
+        <h3>Where a long list stops being a dropdown</h3>
+        <p>Near carries 41 strikes behind a single-select. Search patches it, but a searchable single-select
+          over a continuous numeric field is a different component — probably a combobox with a typed
+          value. Somewhere between 8 and 41 options the radio list is the wrong answer; we have not said
+          where.</p>
+      </div>
+      <div class="open__item">
+        <h3>Two accounting rules that leave the spec</h3>
+        <p>Per-option counts and the live result count were both removed at the team's direction. Both were
+          the spec's compensation for not being able to see into a filter before opening it, so the
+          selection count in the popover is now the only feedback a user gets before applying. Worth
+          watching in testing rather than assuming settled.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Derived from the QX-FilterBar flow prototype — 52 flows across screener, options chain, options
+    analyzer and performance matrix. Flow names in the Status columns are the prototype's own, so every
+    built state is inspectable rather than asserted.
+  </footer>
+
+</div>
