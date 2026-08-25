@@ -1,0 +1,591 @@
+<title>The Five Menus</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg:        #FBFCFD;
+    --surface:   #FFFFFF;
+    --surface-2: #F2F5F9;
+    --line:      #E1E7EE;
+    --line-2:    #C7D2DE;
+    --ink:       #10161D;
+    --ink-2:     #48535F;
+    --ink-3:     #6E7B8A;
+    --accent:    #0477D1;
+    --accent-bg: #E9F2FB;
+    --accent-ln: #A9CFEE;
+    --disp:      #0E7C86;
+    --disp-bg:   #E3F1F2;
+    --disp-ln:   #A5CFD2;
+    --gap:       #9A5A08;
+    --gap-bg:    #FBF1E1;
+    --gap-ln:    #E2C79A;
+    --shadow:    0 1px 2px rgba(16,22,29,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #0C1218;
+      --surface:   #141C24;
+      --surface-2: #1A2430;
+      --line:      #263340;
+      --line-2:    #37485A;
+      --ink:       #E8EDF2;
+      --ink-2:     #AFBAC6;
+      --ink-3:     #85929F;
+      --accent:    #4FA8EA;
+      --accent-bg: #132A3D;
+      --accent-ln: #2E5D86;
+      --disp:      #4BBFC7;
+      --disp-bg:   #0F2C2E;
+      --disp-ln:   #2A5B5F;
+      --gap:       #DFA755;
+      --gap-bg:    #2C2315;
+      --gap-ln:    #574526;
+      --shadow:    0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #0C1218;
+    --surface:   #141C24;
+    --surface-2: #1A2430;
+    --line:      #263340;
+    --line-2:    #37485A;
+    --ink:       #E8EDF2;
+    --ink-2:     #AFBAC6;
+    --ink-3:     #85929F;
+    --accent:    #4FA8EA;
+    --accent-bg: #132A3D;
+    --accent-ln: #2E5D86;
+    --disp:      #4BBFC7;
+    --disp-bg:   #0F2C2E;
+    --disp-ln:   #2A5B5F;
+    --gap:       #DFA755;
+    --gap-bg:    #2C2315;
+    --gap-ln:    #574526;
+    --shadow:    0 1px 2px rgba(0,0,0,.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 400 16px/1.65 Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Both levels are grids so a .wide child breaks out from inside a section.
+     minmax(0,·) rather than a bare 1fr, which floors at min-content and would
+     let the wide tables push the page into a sideways scroll. */
+  .page { display: grid; grid-template-columns: minmax(0, 1fr); padding: 0 24px 96px; }
+  .page > * { width: 100%; max-width: 1120px; margin-inline: auto; }
+  .page > header, .page > footer { max-width: 68ch; }
+  section { display: grid; grid-template-columns: minmax(0, 1fr); }
+  section > * { width: 100%; max-width: 68ch; margin-inline: auto; }
+  section > .wide { max-width: 1120px; }
+
+  .mast { padding: 72px 0 40px; }
+  .mast__kicker {
+    font: 500 11px/1 Roboto, sans-serif; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 20px;
+  }
+  h1 {
+    font: 600 clamp(2.1rem, 5vw, 3rem)/1.1 "IBM Plex Serif", Georgia, serif;
+    letter-spacing: -.015em; margin: 0 0 20px; text-wrap: balance;
+  }
+  .mast__lede { font-size: 1.125rem; color: var(--ink-2); margin: 0 0 28px; text-wrap: pretty; }
+  .mast__meta {
+    display: flex; flex-wrap: wrap; gap: 8px 28px; padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font: 400 13px/1.5 "Roboto Mono", ui-monospace, monospace; color: var(--ink-3);
+  }
+  .mast__meta b { color: var(--ink-2); font-weight: 500; }
+
+  section { padding-top: 56px; }
+  h2 {
+    font: 600 1.55rem/1.25 "IBM Plex Serif", Georgia, serif;
+    margin: 0 0 8px; letter-spacing: -.01em; text-wrap: balance;
+  }
+  .sub { color: var(--ink-3); margin: 0 0 28px; font-size: .9375rem; }
+  h3 { font: 500 1.0625rem/1.4 Roboto, sans-serif; margin: 36px 0 10px; letter-spacing: -.005em; }
+  p { margin: 0 0 16px; text-wrap: pretty; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  strong { font-weight: 500; color: var(--ink); }
+  code, .mono {
+    font: 400 .875em/1.4 "Roboto Mono", ui-monospace, monospace;
+    color: var(--ink-2); background: var(--surface-2);
+    border: 1px solid var(--line); border-radius: 3px; padding: .08em .34em;
+  }
+  ul { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 8px; }
+  li::marker { color: var(--ink-3); }
+
+  figure { margin: 0; padding: 28px 0 4px; }
+  figcaption {
+    font-size: .875rem; color: var(--ink-3); margin-top: 18px;
+    padding-top: 14px; border-top: 1px solid var(--line); text-wrap: pretty;
+  }
+  .scroller { overflow-x: auto; }
+  svg.fig { display: block; width: 100%; height: auto; min-width: 660px; }
+
+  /* ---- wireframe stacks: the five menus, part by part ---- */
+  .wfgrid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .wf {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--line); border-radius: 4px;
+    background: var(--surface); box-shadow: var(--shadow); overflow: hidden;
+  }
+  .wf__name {
+    font: 500 12px/1.3 Roboto, sans-serif; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--ink-3); padding: 13px 14px; border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .wf__parts { display: flex; flex-direction: column; gap: 5px; padding: 12px; flex: 1; }
+  .wf__part {
+    font: 400 12px/1.35 "Roboto Mono", ui-monospace, monospace; color: var(--ink-2);
+    border: 1px solid var(--line-2); border-radius: 3px; padding: 7px 9px;
+    background: var(--surface-2);
+  }
+  .wf__part--key { border-color: var(--accent-ln); background: var(--accent-bg); color: var(--accent); }
+  .wf__part--opt { border-style: dashed; color: var(--ink-3); background: transparent; }
+  .wf__part--body { flex: 1; min-height: 54px; }
+  .wf__note {
+    font: 400 12px/1.45 Roboto, sans-serif; color: var(--ink-3);
+    padding: 0 14px 13px; margin: 0;
+  }
+  .wflegend {
+    display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 18px;
+    font: 400 12px/1.4 Roboto, sans-serif; color: var(--ink-3);
+  }
+  .wflegend span { display: inline-flex; align-items: center; gap: 7px; }
+  .wflegend i {
+    width: 22px; height: 12px; border-radius: 2px; flex: none;
+    border: 1px solid var(--line-2); background: var(--surface-2);
+  }
+  .wflegend i.k { border-color: var(--accent-ln); background: var(--accent-bg); }
+  .wflegend i.o { border-style: dashed; background: transparent; }
+
+  .tblwrap {
+    overflow-x: auto; border: 1px solid var(--line); border-radius: 4px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: .875rem; }
+  caption {
+    text-align: left; padding: 16px 18px 14px; border-bottom: 1px solid var(--line);
+    font: 500 12px/1.4 Roboto, sans-serif; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  th, td { text-align: left; padding: 11px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font: 500 12px/1.3 Roboto, sans-serif; color: var(--ink-3);
+    background: var(--surface-2); white-space: nowrap;
+  }
+  tbody th { font-weight: 500; color: var(--ink); }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+  .yes { color: var(--accent); }
+  .no { color: var(--ink-3); }
+  .flow {
+    font: 400 12px/1.3 "Roboto Mono", ui-monospace, monospace;
+    color: var(--ink-3); white-space: nowrap;
+  }
+  .todo {
+    display: inline-block; font: 500 11px/1 Roboto, sans-serif;
+    letter-spacing: .06em; text-transform: uppercase;
+    color: var(--gap); background: var(--gap-bg);
+    border: 1px solid var(--gap-ln); border-radius: 3px; padding: 3px 5px; white-space: nowrap;
+  }
+
+  .note {
+    padding: 20px 22px; border-radius: 4px; background: var(--surface-2);
+    border: 1px solid var(--line); border-left: 2px solid var(--accent);
+  }
+  .note p:last-child { margin-bottom: 0; }
+  .note--gap { border-left-color: var(--gap); }
+
+  .open { display: grid; gap: 14px; }
+  .open__item {
+    padding: 18px 20px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 4px;
+  }
+  .open__item h3 { margin: 0 0 6px; font-size: .9375rem; }
+  .open__item p { margin: 0; font-size: .9375rem; color: var(--ink-2); }
+
+  footer {
+    margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: .875rem; color: var(--ink-3);
+  }
+
+  :where(a, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-width: 620px) { .mast { padding-top: 48px; } }
+</style>
+
+<div class="page">
+
+  <header class="mast">
+    <p class="mast__kicker">QX-FilterBar · menu states</p>
+    <h1>The Five Menus</h1>
+    <p class="mast__lede">Which menu opens is decided by the input mode and where you clicked — never by
+      the filter. The same Sector control appears in four different containers, and the container
+      changes what you can do to it.</p>
+    <div class="mast__meta">
+      <span><b>5</b> presentations</span>
+      <span><b>6</b> body kinds</span>
+      <span><b>33</b> states</span>
+      <span><b>9</b> gaps</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Which menu opens</h2>
+    <p class="sub">Two overrides first, then a two-by-two.</p>
+
+    <p>Nothing about a filter decides its menu. Read-only and gated are checked first and short-circuit
+      everything; after that, pointer versus touch picks the family and the entry point picks the level.
+      A filter that is unreachable on the bar — withdrawn into the overflow — is only ever reached through
+      the trigger, so it never gets a popover of its own.</p>
+
+    <figure class="wide">
+      <div class="scroller">
+        <svg class="fig" viewBox="0 0 940 372" role="img" aria-label="Two overrides are checked first: a read-only bar opens nothing, and a gated filter opens the Gate dialog. Otherwise the input mode and entry point decide: pointer plus a chip gives an anchored popover, pointer plus the All-filters trigger gives the drawer, touch plus a chip gives the sheet opened straight to that filter, and touch plus the trigger gives the sheet at its filter list.">
+          <defs>
+            <marker id="a2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0.8 L7.5 4 L0 7.2 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <text x="16" y="26" font-family="Roboto, sans-serif" font-size="11" font-weight="500"
+                letter-spacing=".1em" fill="currentColor" opacity=".55">FIRST, TWO OVERRIDES</text>
+
+          <g fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5" marker-end="url(#a2)">
+            <path d="M132 68 H 176"/>
+            <path d="M132 122 H 176"/>
+          </g>
+          <g stroke-width="1.2" fill="var(--surface-2)" stroke="var(--line-2)">
+            <rect x="16" y="48" width="116" height="40" rx="4"/>
+            <rect x="16" y="102" width="116" height="40" rx="4"/>
+          </g>
+          <g font-family="Roboto, sans-serif" font-size="12" fill="currentColor">
+            <text x="74" y="73" text-anchor="middle">read-only</text>
+            <text x="74" y="127" text-anchor="middle">gated</text>
+            <text x="184" y="73" opacity=".8">nothing opens</text>
+            <text x="184" y="127" opacity=".8">the Gate dialog</text>
+          </g>
+
+          <line x1="16" y1="168" x2="300" y2="168" stroke="currentColor" stroke-width="1" opacity=".2"/>
+          <text x="16" y="196" font-family="Roboto, sans-serif" font-size="11" font-weight="500"
+                letter-spacing=".1em" fill="currentColor" opacity=".55">OTHERWISE</text>
+          <text x="16" y="222" font-family="Roboto, sans-serif" font-size="12" fill="currentColor" opacity=".75">the input mode picks</text>
+          <text x="16" y="240" font-family="Roboto, sans-serif" font-size="12" fill="currentColor" opacity=".75">the family, the entry</text>
+          <text x="16" y="258" font-family="Roboto, sans-serif" font-size="12" fill="currentColor" opacity=".75">point picks the level</text>
+
+          <text x="452" y="42" font-family="Roboto, sans-serif" font-size="11.5" font-weight="500" fill="currentColor" opacity=".65">from a chip</text>
+          <text x="708" y="42" font-family="Roboto, sans-serif" font-size="11.5" font-weight="500" fill="currentColor" opacity=".65">from the All&#8209;filters trigger</text>
+          <text x="404" y="118" text-anchor="end" font-family="Roboto, sans-serif" font-size="11.5" font-weight="500" fill="currentColor" opacity=".65">Pointer</text>
+          <text x="404" y="250" text-anchor="end" font-family="Roboto, sans-serif" font-size="11.5" font-weight="500" fill="currentColor" opacity=".65">Touch</text>
+
+          <g stroke-width="1.2">
+            <rect x="420" y="58" width="248" height="112" rx="4" fill="var(--accent-bg)" stroke="var(--accent-ln)"/>
+            <rect x="684" y="58" width="240" height="112" rx="4" fill="var(--surface-2)" stroke="var(--line-2)"/>
+            <rect x="420" y="190" width="248" height="112" rx="4" fill="var(--accent-bg)" stroke="var(--accent-ln)"/>
+            <rect x="684" y="190" width="240" height="112" rx="4" fill="var(--surface-2)" stroke="var(--line-2)"/>
+          </g>
+          <g font-family="Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing=".05em">
+            <text x="440" y="88" fill="var(--accent)">POPOVER</text>
+            <text x="704" y="88" fill="currentColor">DRAWER</text>
+            <text x="440" y="220" fill="var(--accent)">SHEET · DRILLED</text>
+            <text x="704" y="220" fill="currentColor">SHEET · LIST</text>
+          </g>
+          <g font-family="Roboto, sans-serif" font-size="11" fill="currentColor" opacity=".72">
+            <text x="440" y="110">anchored under the chip</text>
+            <text x="440" y="128">one control, its own Clear</text>
+            <text x="440" y="146">non-modal, closes on outside click</text>
+            <text x="704" y="110">every control, grouped</text>
+            <text x="704" y="128">sections expand in place</text>
+            <text x="704" y="146">modal, scrim, Tab trapped</text>
+            <text x="440" y="242">level two, opened straight to it</text>
+            <text x="440" y="260">Back returns to the list</text>
+            <text x="440" y="278">no per-filter Clear</text>
+            <text x="704" y="242">level one, the filter list</text>
+            <text x="704" y="260">state text on every row</text>
+            <text x="704" y="278">modal, scrim, Tab trapped</text>
+          </g>
+
+          <text x="420" y="332" font-family="Roboto, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">A chip never gets its own popover on touch — the sheet is the only single-filter surface there.</text>
+          <text x="420" y="352" font-family="Roboto, sans-serif" font-size="11.5" fill="currentColor" opacity=".65">A withdrawn chip has no anchor, so its popover cannot open at all; the trigger is the only route.</text>
+        </svg>
+      </div>
+      <figcaption>The five menus and how you arrive at each. The two blue cells are the single-filter
+        surfaces and the two neutral ones are the all-filters surfaces — that split, not the pointer/touch
+        split, is what changes which buttons the footer carries.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Anatomy</h2>
+    <p class="sub">Same control, four containers. The parts that differ are the ones that matter.</p>
+
+    <div class="wide">
+      <div class="wfgrid">
+        <div class="wf">
+          <div class="wf__name">Popover</div>
+          <div class="wf__parts">
+            <div class="wf__part">head · filter label</div>
+            <div class="wf__part wf__part--opt">search</div>
+            <div class="wf__part wf__part--body">option list — scrolls, 300px cap</div>
+            <div class="wf__part wf__part--opt">custom range or slider</div>
+            <div class="wf__part wf__part--opt">help text</div>
+            <div class="wf__part wf__part--key">foot · Clear + Done</div>
+          </div>
+          <p class="wf__note">284px wide, clamped to the container. Head and foot pin; only the list scrolls.</p>
+        </div>
+
+        <div class="wf">
+          <div class="wf__name">Drawer · pointer</div>
+          <div class="wf__parts">
+            <div class="wf__part">head · All filters + hint + close</div>
+            <div class="wf__part wf__part--body">group label → accordion rows → one expanded body</div>
+            <div class="wf__part wf__part--key">foot · Clear all + Show 1,284 results</div>
+          </div>
+          <p class="wf__note">Modal with a scrim. Each row carries its own state text, so the panel reads as an inventory before you open anything.</p>
+        </div>
+
+        <div class="wf">
+          <div class="wf__name">Sheet · level 1</div>
+          <div class="wf__parts">
+            <div class="wf__part wf__part--opt">drag handle</div>
+            <div class="wf__part">head · All filters + hint + close</div>
+            <div class="wf__part wf__part--body">group label → drill rows, each with a chevron</div>
+            <div class="wf__part wf__part--key">foot · Clear all + Show 1,284 results</div>
+          </div>
+          <p class="wf__note">Same head and foot as the drawer. Rows navigate instead of expanding.</p>
+        </div>
+
+        <div class="wf">
+          <div class="wf__name">Sheet · level 2</div>
+          <div class="wf__parts">
+            <div class="wf__part">head · ‹ All filters · Sector · close</div>
+            <div class="wf__part wf__part--opt">search</div>
+            <div class="wf__part wf__part--body">the same option list as the popover</div>
+            <div class="wf__part wf__part--key">foot · Clear all + Show 1,284 results</div>
+          </div>
+          <p class="wf__note">The body is the popover's, the footer is the panel's — which is where the one real inconsistency lives.</p>
+        </div>
+
+        <div class="wf">
+          <div class="wf__name">Gate</div>
+          <div class="wf__parts">
+            <div class="wf__part">PRO tag</div>
+            <div class="wf__part">“Analyst rating is a Pro filter”</div>
+            <div class="wf__part wf__part--body">what it unlocks, and that the other 13 filters are unaffected</div>
+            <div class="wf__part wf__part--key">Compare plans + Not now</div>
+          </div>
+          <p class="wf__note">Replaces the popover outright rather than disabling its options. 268px.</p>
+        </div>
+      </div>
+      <div class="wflegend">
+        <span><i class="k"></i> the footer — what differs most</span>
+        <span><i></i> always present</span>
+        <span><i class="o"></i> conditional</span>
+      </div>
+    </div>
+
+    <div class="note note--gap">
+      <p><strong>The footer inconsistency.</strong> A popover's Clear clears that one filter. The drill-down
+        has no per-filter Clear at all — the only Clear in reach is the panel's <em>Clear all</em>. So on
+        touch there is no way to empty a single filter except deselecting its options one at a time. Either
+        the drill-down needs its own Clear in the head, or the panel footer needs to become
+        context-sensitive.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Six bodies</h2>
+    <p class="sub">What fills the menu is decided by the control's kind, and it is the same fill in every container.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Body by control kind</caption>
+        <thead>
+          <tr><th scope="col">Kind</th><th scope="col">Body</th><th scope="col">Selection</th><th scope="col">Example</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Multi</th>
+            <td>Checkbox rows. Search when the list is long.</td>
+            <td><span class="mono">listbox</span>, multi-selectable</td>
+            <td>Sector, Strategy, Index membership</td></tr>
+          <tr><th scope="row">Choice, with an off state</th>
+            <td>Radio rows, and the first row <em>is</em> the off state — named, not blank.</td>
+            <td><span class="mono">All</span>, <span class="mono">Spot (311.51)</span></td>
+            <td>Strikes, Near, Max spread</td></tr>
+          <tr><th scope="row">Choice, mandatory</th>
+            <td>Radio rows only. No off row, and no Clear in the footer.</td>
+            <td>Always exactly one</td>
+            <td>Frequency, Year, Universe, View</td></tr>
+          <tr><th scope="row">Choice, with descriptions</th>
+            <td>Two-line rows: option name over a sublabel explaining it.</td>
+            <td>Always exactly one</td>
+            <td>Analysis — seven named metrics</td></tr>
+          <tr><th scope="row">Range</th>
+            <td>Preset radios, then a <em>Custom range</em> pair of number inputs.</td>
+            <td>A preset or a typed pair, never both</td>
+            <td>Market cap, P/E, Volume</td></tr>
+          <tr><th scope="row">Slider</th>
+            <td>Preset radios, then the track itself with a numeric box per thumb. With no presets the list is absent and the menu is only the control.</td>
+            <td>A preset or a dragged value</td>
+            <td>Min probability (one thumb), Days to exp (two)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:24px">The slider is the reason the menu cannot simply be "a list of options" — it
+      is the one control that has no option list to fall back on. Presets were added on top precisely so it
+      reads like its neighbours, but the control underneath is still a range input, and that is what a
+      keyboard user lands on.</p>
+  </section>
+
+  <section>
+    <h2>Content states</h2>
+    <p class="sub">What the body can be showing. Fifteen states; four are unbuilt.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Inside the menu · 15 states, 11 built</caption>
+        <thead>
+          <tr><th scope="col">State</th><th scope="col">What it looks like</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Off state selected</th><td>The named first row is on. This is the resting state of every filter, not an empty menu.</td><td class="flow">ch-chip</td></tr>
+          <tr><th scope="row">One selected</th><td>Radio filled, or one box checked.</td><td class="flow">popover</td></tr>
+          <tr><th scope="row">Several selected</th><td>Multiple boxes checked; order of selection is not preserved or shown.</td><td class="flow">filtered</td></tr>
+          <tr><th scope="row">Every option selected</th><td>Identical result to selecting none, and currently no different treatment. Worth a decision.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Searching, with matches</th><td>List narrows live; selections outside the match set stay set but are not visible.</td><td class="flow">ch-near</td></tr>
+          <tr><th scope="row">Searching, no match</th><td>One inert row: <em>No match for "xyz"</em>. Footer stays live.</td><td class="flow">ch-near</td></tr>
+          <tr><th scope="row">Long list</th><td>List scrolls to a 300px cap; head and footer pin so Done never scrolls away.</td><td class="flow">ch-near</td></tr>
+          <tr><th scope="row">Options with descriptions</th><td>Two-line rows. Taller list, so fewer visible before scrolling.</td><td class="flow">pm-chip</td></tr>
+          <tr><th scope="row">Options withheld</th><td>Rows removed because another control makes them meaningless, plus a line saying why.</td><td class="flow">pm-daily</td></tr>
+          <tr><th scope="row">Help text</th><td>A sentence under the list, above the footer. Explains a term or a restriction.</td><td class="flow">ch-panel</td></tr>
+          <tr><th scope="row">Preset chosen</th><td>A radio is on and the custom inputs sit empty beneath it.</td><td class="flow">an-slider</td></tr>
+          <tr><th scope="row">Custom typed</th><td>Inputs carry values and every preset radio is off. Mutually exclusive by construction.</td><td class="flow">an-dual</td></tr>
+          <tr><th scope="row">No options at all</th><td>A list whose source is empty — symbols before a universe resolves. Renders as nothing.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Invalid custom range</th><td>Min above max, or a bound outside the field. No validation, no message.</td><td><span class="todo">Needs design</span></td></tr>
+          <tr><th scope="row">Loading its options</th><td>The list is a fetch. Menu opens into an empty box today.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Placement states</h2>
+    <p class="sub">The popover only. The panel is edge-anchored and has none of these.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Anchoring · 3 verified, 2 unexercised, 1 unbuilt</caption>
+        <thead>
+          <tr><th scope="col">State</th><th scope="col">Rule</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Below the chip</th><td>Default. 10px below the trigger, left edges flush — measured at every chip on all four surfaces.</td><td class="flow">every flow</td></tr>
+          <tr><th scope="row">Flipped above</th><td>Taken when the menu does not fit below but does fit above. In practice only controls that sit <em>below</em> the bar ever flip — the matrix's Highlighting is the one that does.</td><td class="flow">pm-highlight</td></tr>
+          <tr><th scope="row">Shifted horizontally</th><td>Held at least 10px inside the container. Highlighting shifts 204px left of its anchor to stay in.</td><td class="flow">pm-highlight</td></tr>
+          <tr><th scope="row">Clamped and scrolling</th><td>Fits neither way: stays below, max-height set to the space available, floor of 180px.</td><td class="flow">code path, no flow</td></tr>
+          <tr><th scope="row">Narrowed</th><td>Width is 284px or the container minus 20, whichever is smaller — so it would need a container under 304px to fire, and the narrowest breakpoint here is 360px.</td><td class="flow">code path, no flow</td></tr>
+          <tr><th scope="row">Anchor lost</th><td>The chip was withdrawn while open — the menu closes rather than re-anchoring to the trigger. Abrupt, and arguably should hand off to the panel.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p>Placement measures the <strong>component's container</strong>, not the viewport — the same rule the
+        bar uses for collapse. A filter bar embedded in a 700px widget on a 1600px screen flips and clamps
+        against the widget, which is the only behaviour that survives being embedded.</p>
+    </div>
+
+    <div class="note note--gap" style="margin-top:16px">
+      <p><strong>Two rules that never fire.</strong> I measured every chip on all four surfaces at eleven
+        widths: the clamp and the narrow path are never reached. Clamping needs a container too short for
+        the menu either way, and narrowing needs one under 304px — neither happens down to the 360px
+        floor. They are correct code guarding cases the current breakpoints exclude, which means either the
+        supported minimum is wrong or the rules are speculative. Worth deciding rather than carrying.</p>
+      <p>Also: the popover's CSS width (272px) is dead — placement overwrites it with 284 on every open.
+        A developer reading the stylesheet will get the wrong number.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Entry, dismissal, focus</h2>
+    <p class="sub">Twelve behaviours. These are what testing catches and static comps never do.</p>
+
+    <div class="wide tblwrap">
+      <table>
+        <caption>Behaviour · 12 states, 11 built</caption>
+        <thead>
+          <tr><th scope="col">Moment</th><th scope="col">Behaviour</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Menu opens</th><td>The menu animates in; nothing else does. The surrounding tool never moves or fades.</td><td class="flow">drawer</td></tr>
+          <tr><th scope="row">Section expands</th><td>The entry transition does not replay — only the section opens.</td><td class="flow">drawer</td></tr>
+          <tr><th scope="row">Drill forward</th><td>Level two slides in from the leading edge.</td><td class="flow">drill</td></tr>
+          <tr><th scope="row">Drill back</th><td>Level one returns from the opposite direction, so the gesture reads as reversal.</td><td class="flow">drill</td></tr>
+          <tr><th scope="row">Focus on open</th><td>Search field, else the first option, else the slider, else the first button.</td><td class="flow">popover</td></tr>
+          <tr><th scope="row">Focus on close</th><td>Returns to the originating chip — or to the All&nbsp;filters trigger if that chip has since been withdrawn.</td><td class="flow">overflow</td></tr>
+          <tr><th scope="row">Arrow keys</th><td>Move between options inside whichever menu is open. They do not wrap at the ends.</td><td class="flow">popover, drawer</td></tr>
+          <tr><th scope="row">Escape</th><td>Closes the popover, or the panel. From level two it closes the sheet outright rather than stepping back.</td><td class="flow">drill</td></tr>
+          <tr><th scope="row">Back</th><td>The only way to step from level two to level one without losing the sheet.</td><td class="flow">drill</td></tr>
+          <tr><th scope="row">Click outside</th><td>Closes the popover. The originating chip is exempt, so its own click toggles instead of closing and reopening.</td><td class="flow">popover</td></tr>
+          <tr><th scope="row">Scrim</th><td>Tapping it closes the panel. Present on the drawer and the sheet, never on a popover.</td><td class="flow">sheet</td></tr>
+          <tr><th scope="row">Tab</th><td>Trapped inside the panel, which is modal. <strong>Not</strong> trapped in the popover, which is not — and nothing closes it on the way out, so Tab leaves an orphaned menu open behind the focus ring.</td><td><span class="todo">Needs design</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What to settle</h2>
+    <p class="sub">Ranked by how much rework the answer causes later.</p>
+
+    <div class="open">
+      <div class="open__item">
+        <h3>Tab out of a popover</h3>
+        <p>The clearest bug in the set. A popover is non-modal by design, so Tab should leave it — but it
+          should close on the way out. Fixing it is a focusout handler; deciding it needs a rule for whether
+          leaving a menu commits or discards.</p>
+      </div>
+      <div class="open__item">
+        <h3>Per-filter Clear on touch</h3>
+        <p>The drill-down borrows the panel's footer, so <em>Clear all</em> is the only Clear a touch user can
+          reach. Either the drill head gains a Clear, or the footer becomes context-sensitive at level two.
+          The first is smaller; the second is more consistent with the popover.</p>
+      </div>
+      <div class="open__item">
+        <h3>Empty and loading lists</h3>
+        <p>Three of the four content gaps are the same gap: the menu assumes its options exist. Once any
+          filter's options come from a request rather than a constant, every menu needs a skeleton, an empty
+          message, and a failure state — and the footer has to stay honest while they show.</p>
+      </div>
+      <div class="open__item">
+        <h3>Search visibility</h3>
+        <p>Searching hides rows, including selected ones, so a user can be four selections deep and see
+          none of them. A selected-first ordering, or a count of hidden selections, would fix it. Only bites
+          on the long lists — Sector, Near, Index membership.</p>
+      </div>
+      <div class="open__item">
+        <h3>Where the anchor goes when the chip leaves</h3>
+        <p>Resizing while a popover is open can withdraw its chip. Closing is defensible; handing off to the
+          panel drilled to that filter is better and costs one branch. Rare, but it is the kind of thing that
+          only ever gets found in a demo.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Companion to <em>One Bar, Three Controls</em>. Both are read out of the QX-FilterBar flow prototype —
+    the flow names in the Status columns are the prototype's own, so every built state is inspectable
+    rather than asserted.
+  </footer>
+
+</div>
